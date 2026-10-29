@@ -113,10 +113,18 @@ def main():
 
     crop, f = loader("asset_sheet.png")
     k = 1 / f  # normalise to the 1254 reference
-    icon = crop((22, 52, 360, 390))
-    up(icon, 1024 / icon.width).save(ROOT / "assets/branding/app_icon.png")
-    logo = remove_dark_background(crop((386, 50, 810, 448)))
+    logo = remove_dark_background(crop((386, 50, 810, 412)))  # without slogan
     up(logo, 2 * k).save(ROOT / "assets/branding/logo.png")
+    # App icon = logo (shield + "G04 Passwort") on the night-blue backdrop.
+    yy, xx = np.mgrid[0:1024, 0:1024]
+    d = np.clip(np.sqrt((xx - 512) ** 2 + (yy - 470) ** 2) / 620, 0, 1)
+    chans = [(a * (1 - d) + b * d).astype("uint8") for a, b in [(14, 2), (52, 6), (130, 18)]]
+    bg = Image.merge("RGB", [Image.fromarray(ch) for ch in chans]).convert("RGBA")
+    mark = up(logo, 1)
+    scale = 860 / max(mark.size)
+    mark = mark.resize((round(mark.width * scale), round(mark.height * scale)), Image.LANCZOS)
+    bg.alpha_composite(mark, ((1024 - mark.width) // 2, (1024 - mark.height) // 2))
+    bg.convert("RGB").save(ROOT / "assets/branding/app_icon.png")
     shield = logo.crop((0, 0, logo.width, round(logo.height * 0.66)))
     up(shield, 2 * k).save(ROOT / "assets/branding/logo_mark.png")
     lock = radial_fade(crop((935, 695, 1215, 1055)))

@@ -61,6 +61,7 @@ class _FieldRowState extends ConsumerState<FieldRow> {
                     const SizedBox(height: 3),
                     SelectableText(
                       shown.isEmpty ? '—' : shown,
+                      minLines: 1,
                       maxLines: _revealed ? null : widget.maxLines,
                       style: context.text.bodyLarge?.copyWith(
                         fontFamily:

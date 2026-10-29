@@ -82,7 +82,7 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Center(
             child: Text(
-              '${AppConstants.copyright} · ${AppConstants.tagline}',
+              AppConstants.copyright,
               style: context.text.bodySmall?.copyWith(
                 color: AppColors.textMuted,
               ),

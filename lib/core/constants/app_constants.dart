@@ -1,7 +1,6 @@
 /// App-wide constants for G04Passwort.
 abstract final class AppConstants {
   static const String appName = 'G04Passwort';
-  static const String tagline = 'Deine Passwörter. Sicher. Immer.';
   static const String version = '1.0.0';
   static const String buildNumber = '1';
   static const String copyright = '© 2026 PaulFV';

@@ -3,7 +3,6 @@
 </p>
 
 <h1 align="center">G04Passwort</h1>
-<p align="center"><b>Deine Passwörter. Sicher. Immer.</b></p>
 
 <p align="center">
   <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.47%2B-02569B?logo=flutter">
