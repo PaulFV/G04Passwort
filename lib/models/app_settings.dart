@@ -1,15 +1,18 @@
 import 'package:flutter/foundation.dart';
 
 /// Available background artworks (Design & Personalisierung).
+/// Artwork is taken from the original design board (docs/design).
 enum AppBackgroundStyle {
   mountains('Berge', 'assets/images/bg_mountains.jpg'),
-  nebula('Nebula', 'assets/images/bg_nebula.jpg'),
-  polar('Polarlicht', 'assets/images/bg_polar.jpg');
+  summit('Gipfel', 'assets/images/bg_summit.jpg'),
+  night('Nacht', null);
 
   const AppBackgroundStyle(this.label, this.asset);
 
   final String label;
-  final String asset;
+
+  /// `null` = plain night gradient without image.
+  final String? asset;
 }
 
 /// User preferences. Non-secret, stored as JSON in secure storage so they
