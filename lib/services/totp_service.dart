@@ -109,7 +109,7 @@ class TotpService {
     TotpAlgorithm algorithm = TotpAlgorithm.sha1,
   }) async {
     final msg = ByteData(8)
-      ..setUint32(0, (counter >> 32) & 0xFFFFFFFF)
+      ..setUint32(0, (counter ~/ 0x100000000) & 0xFFFFFFFF) // web-safe high word
       ..setUint32(4, counter & 0xFFFFFFFF);
     final hmac = switch (algorithm) {
       TotpAlgorithm.sha1 => Hmac.sha1(),

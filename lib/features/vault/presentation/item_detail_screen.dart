@@ -271,8 +271,8 @@ class ItemDetailScreen extends ConsumerWidget {
     if (!ok) return;
     await ref.read(vaultActionsProvider).delete(item.id);
     if (context.mounted) {
-      context.pop();
       context.showSnack('Eintrag gelöscht');
+      context.pop();
     }
   }
 }

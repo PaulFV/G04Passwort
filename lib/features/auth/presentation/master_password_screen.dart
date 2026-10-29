@@ -216,7 +216,7 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
-                        'Schlüssel wird mit Argon2id abgeleitet …',
+                        'Schlüssel wird sicher abgeleitet …',
                         textAlign: TextAlign.center,
                         style: context.text.bodySmall?.copyWith(
                           color: AppColors.textMuted,

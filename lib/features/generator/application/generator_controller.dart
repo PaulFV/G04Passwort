@@ -65,6 +65,13 @@ class GeneratorController extends Notifier<GeneratorState> {
         !options.symbols) {
       options = options.copyWith(lowercase: true);
     }
+    // PINs are 4–12 digits; switching to PIN mode picks a sensible length.
+    if (options.mode == GeneratorMode.pin && options.length > 12) {
+      options = options.copyWith(length: 6);
+    } else if (options.mode == GeneratorMode.password &&
+        state.options.mode == GeneratorMode.pin) {
+      options = options.copyWith(length: 16);
+    }
     state = state.copyWith(
       options: options,
       password: ref.read(passwordGeneratorProvider).generate(options),

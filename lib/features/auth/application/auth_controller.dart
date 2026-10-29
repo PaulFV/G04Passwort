@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -90,7 +91,10 @@ class AuthController extends Notifier<AuthState> {
     final initialized = results[0]! as bool;
     final settings = ref.read(settingsControllerProvider);
     final header = await auth.readHeader();
+    final lockout = await _loadLockout();
     state = state.copyWith(
+      failedAttempts: lockout.attempts,
+      lockedUntil: lockout.until,
       biometricKind: results[1]! as BiometricKind,
       passwordHint: header?.passwordHint,
       status: !settings.onboardingDone
@@ -102,6 +106,37 @@ class AuthController extends Notifier<AuthState> {
     await ref
         .read(screenProtectionProvider)
         .setEnabled(settings.screenshotProtection);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Brute-force protection – persisted so an app restart does not reset it.
+  // ---------------------------------------------------------------------------
+
+  Future<({int attempts, DateTime? until})> _loadLockout() async {
+    final raw = await ref.read(secureStorageProvider).read(StorageKeys.lockout);
+    if (raw == null) return (attempts: 0, until: null);
+    try {
+      final j = jsonDecode(raw) as Map<String, dynamic>;
+      final until = j['until'] as int?;
+      return (
+        attempts: j['attempts'] as int? ?? 0,
+        until: until == null ? null : DateTime.fromMillisecondsSinceEpoch(until),
+      );
+    } on Object {
+      return (attempts: 0, until: null);
+    }
+  }
+
+  Future<void> _saveLockout(int attempts, DateTime? until) async {
+    final storage = ref.read(secureStorageProvider);
+    if (attempts == 0) {
+      await storage.delete(StorageKeys.lockout);
+    } else {
+      await storage.write(
+        StorageKeys.lockout,
+        jsonEncode({'attempts': attempts, 'until': until?.millisecondsSinceEpoch}),
+      );
+    }
   }
 
   Future<void> completeOnboarding() async {
@@ -119,6 +154,9 @@ class AuthController extends Notifier<AuthState> {
     state = state.copyWith(busy: true, clearError: true);
     try {
       await ref.read(authRepositoryProvider).createVault(password, hint: hint);
+      // A new vault never inherits a biometric unlock of an old one.
+      await ref.read(settingsControllerProvider.notifier).setBiometricFlag(false);
+      await _saveLockout(0, null);
       await ref.read(vaultRepositoryProvider).load();
       state = state.copyWith(
         status: AuthStatus.unlocked,
@@ -156,6 +194,7 @@ class AuthController extends Notifier<AuthState> {
     try {
       await ref.read(authRepositoryProvider).unlock(password);
       await ref.read(vaultRepositoryProvider).load();
+      await _saveLockout(0, null);
       state = state.copyWith(
         status: AuthStatus.unlocked,
         busy: false,
@@ -173,6 +212,7 @@ class AuthController extends Notifier<AuthState> {
         ).toInt();
         until = DateTime.now().add(Duration(seconds: min(30 * factor, 900)));
       }
+      await _saveLockout(attempts, until);
       state = state.copyWith(
         busy: false,
         failedAttempts: attempts,
@@ -184,6 +224,9 @@ class AuthController extends Notifier<AuthState> {
       return false;
     } on VaultException catch (e) {
       state = state.copyWith(busy: false, error: e.message);
+      return false;
+    } on Object catch (e) {
+      state = state.copyWith(busy: false, error: 'Entsperren fehlgeschlagen: $e');
       return false;
     }
   }
@@ -198,10 +241,13 @@ class AuthController extends Notifier<AuthState> {
         .read(authRepositoryProvider)
         .unlockWithStoredKey();
     if (!unlocked) {
+      // The stored key was missing or did not match this vault.
+      await ref.read(settingsControllerProvider.notifier).setBiometricFlag(false);
       state = state.copyWith(
         busy: false,
         error:
-            'Biometrie-Schlüssel nicht gefunden. Bitte Master-Passwort verwenden.',
+            'Biometrie-Schlüssel ungültig. Bitte mit dem Master-Passwort entsperren '
+            'und Biometrie in den Einstellungen erneut aktivieren.',
       );
       return false;
     }
@@ -268,6 +314,7 @@ class AuthController extends Notifier<AuthState> {
   /// Deletes the vault irrevocably.
   Future<void> resetVault() async {
     await ref.read(authRepositoryProvider).resetVault();
+    await _saveLockout(0, null);
     ref.read(vaultRepositoryProvider).clear();
     await ref.read(settingsControllerProvider.notifier).setBiometricFlag(false);
     state = const AuthState(status: AuthStatus.setup);

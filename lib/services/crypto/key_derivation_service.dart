@@ -27,15 +27,12 @@ class KdfParams {
   );
 
   /// Argon2id with OWASP recommended parameters (19 MiB, t=2, p=1).
-  /// On the web (single-threaded JS) the memory cost is reduced a little
-  /// and compensated by more iterations.
+  ///
+  /// On the web, Argon2id would run as single-threaded JavaScript on the UI
+  /// thread (10–20 s, frozen UI). There PBKDF2-HMAC-SHA256 with 600 000
+  /// iterations is used instead, which runs natively via WebCrypto.
   factory KdfParams.recommended(Uint8List salt) => kIsWeb
-      ? KdfParams(
-          algorithm: KdfAlgorithm.argon2id,
-          salt: salt,
-          memoryKiB: 12288,
-          iterations: 3,
-        )
+      ? KdfParams.pbkdf2(salt)
       : KdfParams(algorithm: KdfAlgorithm.argon2id, salt: salt);
 
   /// PBKDF2-HMAC-SHA256 fallback (OWASP 2023: 600 000 iterations).

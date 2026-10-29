@@ -29,4 +29,5 @@ abstract final class AppConstants {
 abstract final class StorageKeys {
   static const String settings = 'g04.settings.v1';
   static const String biometricVaultKey = 'g04.bio.vault_key.v1';
+  static const String lockout = 'g04.lockout.v1';
 }

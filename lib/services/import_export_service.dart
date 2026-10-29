@@ -207,7 +207,14 @@ class ImportExportService {
     String cell(List<String> row, int i) =>
         i >= 0 && i < row.length ? row[i].trim() : '';
 
-    final folderIds = <String, String>{};
+    final folderIds = <String, String>{
+      for (final f in _vault.folders) f.name: f.id,
+    };
+    final known = <String>{
+      for (final i in _vault.items)
+        if (i.login != null)
+          _dedupeKey(i.title, i.login!.username, i.login!.password, i.login!.primaryUrl ?? ''),
+    };
     final items = <VaultItem>[];
     var skipped = 0;
     for (final row in rows.skip(1)) {
@@ -219,6 +226,13 @@ class ImportExportService {
         skipped++;
         continue;
       }
+      var title = cell(row, iTitle);
+      if (title.isEmpty) title = Uri.tryParse(url)?.host ?? user;
+      // Re-importing the same file must not create duplicates.
+      if (!known.add(_dedupeKey(title, user, pass, url))) {
+        skipped++;
+        continue;
+      }
       final folderName = cell(row, iFolder);
       String? folderId;
       if (folderName.isNotEmpty) {
@@ -227,8 +241,6 @@ class ImportExportService {
         )).id;
       }
       final now = DateTime.now();
-      var title = cell(row, iTitle);
-      if (title.isEmpty) title = Uri.tryParse(url)?.host ?? user;
       final totp = cell(row, iTotp);
       items.add(
         VaultItem(
@@ -255,6 +267,9 @@ class ImportExportService {
     await _vault.saveAll(items);
     return ImportResult(imported: items.length, skipped: skipped);
   }
+
+  static String _dedupeKey(String title, String user, String pass, String url) =>
+      [title.trim().toLowerCase(), user.trim(), pass, url.trim()].join('\u0000');
 
   /// Exports all logins as **unencrypted** CSV (Bitwarden compatible).
   String exportCsv(List<VaultItem> items) {

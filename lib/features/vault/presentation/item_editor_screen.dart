@@ -287,6 +287,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             },
             const SizedBox(height: 12),
             DropdownButtonFormField<ItemCategory>(
+              // Re-created when the type tab changes so the new default shows.
+              key: ValueKey('category-${_item.type.name}'),
               initialValue: _category,
               decoration: const InputDecoration(
                 labelText: 'Kategorie',

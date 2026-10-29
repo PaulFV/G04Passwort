@@ -60,12 +60,21 @@ class AuthRepositoryImpl implements AuthRepository {
     required CryptoService crypto,
     required KeyDerivationService kdf,
     required SecureStorageService storage,
+    KdfParams Function(Uint8List salt) kdfParams = KdfParams.recommended,
   }) : _db = database,
        _crypto = crypto,
        _kdf = kdf,
-       _storage = storage;
+       _storage = storage,
+       _kdfParams = kdfParams;
 
   static const _headerKey = 'vault_header';
+
+  /// Encrypted known value used to verify a vault key without the master
+  /// password (biometric unlock, stale keychain entries after reinstall).
+  static const _keyCheckKey = 'key_check';
+  static const _keyCheckPlain = 'g04passwort:key-check:v1';
+
+  final KdfParams Function(Uint8List salt) _kdfParams;
 
   final AppDatabase _db;
   final CryptoService _crypto;
@@ -92,7 +101,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> createVault(String masterPassword, {String? hint}) async {
-    final params = KdfParams.recommended(
+    final params = _kdfParams(
       _crypto.randomBytes(KeyDerivationService.saltLength),
     );
     final kek = await _kdf.deriveKey(masterPassword, params);
@@ -111,7 +120,29 @@ class AuthRepositoryImpl implements AuthRepository {
       passwordHint: hint,
     );
     await _db.writeMeta(_headerKey, header.encode());
+    await _writeKeyCheck(vaultKey);
+    // A biometric key of a previous (deleted) vault may survive in the
+    // keychain after a reinstall – it must never unlock the new vault.
+    await removeBiometricKey();
     _vaultKey = vaultKey;
+  }
+
+  Future<void> _writeKeyCheck(List<int> key) async => _db.writeMeta(
+    _keyCheckKey,
+    await _crypto.encryptString(_keyCheckPlain, key, aad: _keyCheckKey),
+  );
+
+  /// `true` if [key] belongs to this vault. Vaults created before the key
+  /// check existed return `null` (unknown).
+  Future<bool?> _matchesVault(List<int> key) async {
+    final check = await _db.readMeta(_keyCheckKey);
+    if (check == null) return null;
+    try {
+      return await _crypto.decryptString(check, key, aad: _keyCheckKey) ==
+          _keyCheckPlain;
+    } on DataIntegrityException {
+      return false;
+    }
   }
 
   @override
@@ -133,9 +164,12 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> unlock(String masterPassword) async {
     final header = await readHeader();
-    if (header == null)
+    if (header == null) {
       throw const InvalidBackupException('Kein Tresor vorhanden.');
-    _vaultKey = await unwrapKey(header, masterPassword);
+    }
+    final key = await unwrapKey(header, masterPassword);
+    if (await _matchesVault(key) == null) await _writeKeyCheck(key);
+    _vaultKey = key;
   }
 
   @override
@@ -170,6 +204,11 @@ class AuthRepositoryImpl implements AuthRepository {
     final key = base64Decode(raw);
     final header = await readHeader();
     if (header == null || key.length != CryptoService.keyLength) return false;
+    if (await _matchesVault(key) != true) {
+      // Stale or foreign key – discard it, the user must use the password.
+      await removeBiometricKey();
+      return false;
+    }
     _vaultKey = key;
     return true;
   }
@@ -183,7 +222,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final header = await readHeader();
     if (header == null) throw const VaultLockedException();
     final vaultKey = await unwrapKey(header, current);
-    final params = KdfParams.recommended(
+    final params = _kdfParams(
       _crypto.randomBytes(KeyDerivationService.saltLength),
     );
     final kek = await _kdf.deriveKey(next, params);
