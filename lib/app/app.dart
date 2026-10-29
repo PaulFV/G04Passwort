@@ -78,6 +78,7 @@ class _SecurityLayerState extends ConsumerState<_SecurityLayer>
       behavior: HitTestBehavior.translucent,
       onPointerDown: (_) => autoLock.onUserActivity(),
       onPointerSignal: (_) => autoLock.onUserActivity(),
+      onPointerHover: (_) => autoLock.onUserActivity(),
       child: Focus(
         canRequestFocus: false,
         skipTraversal: true,

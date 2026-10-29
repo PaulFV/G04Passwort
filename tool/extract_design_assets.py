@@ -80,7 +80,16 @@ def remove_dark_background(rgb):
     keep = np.zeros(fn + 1, bool)
     for i, (s, m) in enumerate(zip(sizes, means), 1):
         keep[i] = s > 2000 or m > 110
-    alpha = Image.fromarray(np.where(keep[flab], 255, 0).astype("uint8")).filter(ImageFilter.GaussianBlur(0.8))
+    fg = keep[flab]
+    # Remove dim glow fragments (painted checkerboard behind the glow) that
+    # touch the transparent background; the dark shield interior is
+    # enclosed by the bright rim and therefore kept.
+    dim = fg & (bright < 115)
+    dlab, dn = ndimage.label(dim)
+    touching = ndimage.binary_dilation(~fg, iterations=2) & dim
+    for i in set(np.unique(dlab[touching])) - {0}:
+        fg[dlab == i] = False
+    alpha = Image.fromarray(np.where(fg, 255, 0).astype("uint8")).filter(ImageFilter.GaussianBlur(0.8))
     out = rgb.convert("RGBA")
     out.putalpha(alpha)
     return out

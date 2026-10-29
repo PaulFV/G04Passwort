@@ -74,6 +74,7 @@ class NeonButton extends StatelessWidget {
       opacity: enabled ? 1 : 0.55,
       child: Container(
         height: 54,
+        width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: radius,
           gradient: outlined ? null : AppColors.primaryGradient(accent),

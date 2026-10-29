@@ -19,20 +19,21 @@ class SplashScreen extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.bottomCenter,
-            child: Image.asset(
-              'assets/images/bg_splash.jpg',
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.bottomCenter,
-            ),
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
+            // Fade the earth artwork in from the top so it blends into the
+            // dark background without a visible edge.
+            child: ShaderMask(
+              blendMode: BlendMode.dstIn,
+              shaderCallback: (rect) => const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [AppColors.backgroundDeep, Color(0x0002040C)],
-                stops: [0.45, 0.75],
+                colors: [Color(0x00000000), Color(0xFF000000)],
+                stops: [0, 0.35],
+              ).createShader(rect),
+              child: Image.asset(
+                'assets/images/bg_splash.jpg',
+                width: double.infinity,
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.bottomCenter,
               ),
             ),
           ),
