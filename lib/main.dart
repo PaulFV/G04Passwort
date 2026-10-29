@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'app/app.dart';
 import 'core/di/providers.dart';
 import 'core/theme/app_colors.dart';
+import 'models/app_settings.dart';
 import 'repositories/settings_repository.dart';
 import 'services/secure_storage_service.dart';
 
@@ -28,7 +29,16 @@ Future<void> main() async {
   );
 
   final storage = SecureStorageService();
-  final settings = await SettingsRepositoryImpl(storage).load();
+  // Never block the first frame: fall back to defaults if the platform
+  // storage is slow or unavailable (e.g. restricted browser modes).
+  var settings = const AppSettings();
+  try {
+    settings = await SettingsRepositoryImpl(
+      storage,
+    ).load().timeout(const Duration(seconds: 4));
+  } on Object catch (e) {
+    debugPrint('Settings could not be loaded: $e');
+  }
 
   runApp(
     ProviderScope(

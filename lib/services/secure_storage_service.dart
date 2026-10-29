@@ -24,7 +24,8 @@ class SecureStorageService {
   Future<String?> read(String key) async {
     try {
       return await _storage.read(key: key);
-    } on Exception {
+    } on Object {
+      // Web/JS errors are not Exceptions – never let storage crash startup.
       return null;
     }
   }

@@ -82,6 +82,20 @@ class AuthController extends Notifier<AuthState> {
   }
 
   Future<void> _init() async {
+    try {
+      await _initVault().timeout(const Duration(seconds: 20));
+    } on Object catch (e) {
+      // Storage could not be opened (e.g. browser blocks IndexedDB). Show
+      // the error instead of hanging on the splash screen forever.
+      final settings = ref.read(settingsControllerProvider);
+      state = state.copyWith(
+        status: settings.onboardingDone ? AuthStatus.setup : AuthStatus.onboarding,
+        error: 'Speicher konnte nicht geöffnet werden: $e',
+      );
+    }
+  }
+
+  Future<void> _initVault() async {
     final auth = ref.read(authRepositoryProvider);
     final results = await Future.wait<Object?>([
       auth.isVaultInitialized(),
