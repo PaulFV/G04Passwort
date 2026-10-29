@@ -28,6 +28,7 @@ Future<void> showSuccessDialog(
           padding: const EdgeInsets.all(24),
           child: GlassCard(
             glowColor: AppColors.success,
+            blur: 16,
             padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,

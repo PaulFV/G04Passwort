@@ -17,7 +17,7 @@ class GlassCard extends StatelessWidget {
     this.borderRadius = AppSpacing.radius,
     this.glowColor,
     this.borderColor,
-    this.blur = 16,
+    this.blur = 0,
   });
 
   final Widget child;
@@ -29,6 +29,9 @@ class GlassCard extends StatelessWidget {
   /// Optional outer glow (e.g. for highlighted cards).
   final Color? glowColor;
   final Color? borderColor;
+
+  /// Backdrop blur sigma. 0 (default) skips the costly BackdropFilter –
+  /// recommended for list rows; use ~16 for hero cards and dialogs.
   final double blur;
 
   @override
@@ -58,28 +61,27 @@ class GlassCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Material(
+        child: _maybeBlur(
+          Material(
             type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: radius,
-              child: Ink(
-                decoration: BoxDecoration(
-                  borderRadius: radius,
-                  border: Border.all(color: border, width: 1),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? const [Color(0xB3132B5C), Color(0x990A1530)]
-                        : [
-                            Colors.white.withValues(alpha: 0.92),
-                            Colors.white.withValues(alpha: 0.75),
-                          ],
-                  ),
+            child: Ink(
+              decoration: BoxDecoration(
+                borderRadius: radius,
+                border: Border.all(color: border, width: 1),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? const [Color(0xB3132B5C), Color(0x990A1530)]
+                      : [
+                          Colors.white.withValues(alpha: 0.92),
+                          Colors.white.withValues(alpha: 0.75),
+                        ],
                 ),
+              ),
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: radius,
                 child: Padding(padding: padding, child: child),
               ),
             ),
@@ -88,4 +90,8 @@ class GlassCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _maybeBlur(Widget child) => blur <= 0
+      ? child
+      : BackdropFilter(filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur), child: child);
 }
