@@ -53,11 +53,12 @@ jobs:
       - run: flutter pub get
       - name: Fetch drift web assets (sqlite3.wasm, drift_worker.js)
         run: bash tool/setup_web.sh
-      - run: bash tool/ci_annotate.sh "build web" flutter build web --release --no-web-resources-cdn
+      - run: bash tool/ci_annotate.sh "build web" flutter build web --release --no-web-resources-cdn --base-href /G04Passwort/
       - name: Publish web preview branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           cd build/web
+          touch .nojekyll
           git init -q -b web-preview
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -75,6 +76,8 @@ jobs:
     name: Build Android APK
     runs-on: ubuntu-latest
     needs: analyze-and-test
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -86,11 +89,16 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: bash tool/ci_annotate.sh "build apk" flutter build apk --debug
-      - uses: actions/upload-artifact@v5
-        continue-on-error: true
-        with:
-          name: g04passwort-debug-apk
-          retention-days: 3
-          path: build/app/outputs/flutter-apk/app-debug.apk
-
+      - run: bash tool/ci_annotate.sh "build apk" flutter build apk --release
+      - name: Publish test APK as pre-release "preview"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk G04Passwort-preview.apk
+          gh release delete preview --yes --cleanup-tag || true
+          gh release create preview G04Passwort-preview.apk \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "G04Passwort Test-Version (Android)" \
+            --notes "Automatisch gebaute Test-APK von Commit ${GITHUB_SHA::7}. Auf dem Handy herunterladen und installieren (Installation aus unbekannten Quellen erlauben). Signiert mit Debug-Schlüssel – nur zum Testen, nicht für den Play Store."
