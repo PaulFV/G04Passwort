@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- LaunchTheme must inherit from Theme.AppCompat (required by local_auth
+         on older Android versions). The window background matches the
+         G04Passwort dark UI so there is no white flash on start-up. -->
+    <style name="LaunchTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:statusBarColor">#05070F</item>
+        <item name="android:navigationBarColor">#05070F</item>
+    </style>
+    <style name="NormalTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/g04_background</item>
+    </style>
+</resources>

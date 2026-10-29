@@ -1,0 +1,31 @@
+# Static analysis configuration for G04Passwort.
+# Based on the official flutter_lints rule set plus stricter rules that help
+# keep a security-sensitive code base clean and predictable.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    missing_required_param: error
+    missing_return: error
+  exclude:
+    - "**/*.g.dart"
+    - "build/**"
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_print
+    - avoid_dynamic_calls
+    - cancel_subscriptions
+    - close_sinks
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+    - prefer_single_quotes
+    - require_trailing_commas
+    - sort_child_properties_last
+    - unawaited_futures
+    - use_super_parameters
