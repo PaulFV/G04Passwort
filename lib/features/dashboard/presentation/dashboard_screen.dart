@@ -45,7 +45,9 @@ class DashboardScreen extends ConsumerWidget {
                         TextSpan(
                           text: 'G04',
                           style: context.text.titleLarge?.copyWith(
-                            color: AppColors.neonBlueLight,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.neonBlueLight
+                                : AppColors.neonBlue,
                             fontWeight: FontWeight.w900,
                             shadows: const [
                               Shadow(color: AppColors.neonBlue, blurRadius: 12),

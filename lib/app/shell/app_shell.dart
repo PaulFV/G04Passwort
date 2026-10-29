@@ -62,7 +62,9 @@ class _GlassBottomBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.backgroundDeep.withValues(alpha: 0.78),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.backgroundDeep.withValues(alpha: 0.78)
+                : Colors.white.withValues(alpha: 0.85),
             border: Border(
               top: BorderSide(color: accent.withValues(alpha: 0.35)),
             ),
@@ -108,7 +110,10 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
-    final color = selected ? AppColors.neonBlueLight : AppColors.textMuted;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = selected
+        ? (isDark ? AppColors.neonBlueLight : accent)
+        : AppColors.textMuted;
     return InkResponse(
       onTap: onTap,
       radius: 40,

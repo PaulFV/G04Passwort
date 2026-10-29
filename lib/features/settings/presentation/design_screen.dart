@@ -168,7 +168,9 @@ class _BackgroundTile extends StatelessWidget {
                   child: Text(
                     style.label,
                     textAlign: TextAlign.center,
-                    style: context.text.labelSmall,
+                    style: context.text.labelSmall?.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

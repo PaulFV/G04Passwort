@@ -61,8 +61,9 @@ Tresor-Schlüssel (zufällig, 256 Bit) ──AES-256-GCM + AAD──► jeder Ei
 - **Zero-Knowledge:** Das Master-Passwort verlässt nie das Gerät. Ohne Passwort ist kein Zugriff möglich, auch nicht für den Entwickler.
 - **Authentifizierte Verschlüsselung:** AES-256-GCM mit zufälliger 96-Bit-Nonce pro Datensatz. Die Associated Data (`item:<id>`) verhindert das Vertauschen von Datensätzen.
 - **Datenbank ohne Klartext:** SQLite (Drift) speichert nur `id`, Zeitstempel und verschlüsselte Payloads.
-- **Key-Derivation im Hintergrund-Isolate:** Argon2id als Standard, PBKDF2-SHA256 (600 000 Iterationen) als Fallback. Die Parameter liegen im Header und lassen sich später erhöhen.
-- **Brute-Force-Schutz:** Nach 5 Fehlversuchen greift eine exponentielle Sperre.
+- **Key-Derivation:** Argon2id (Hintergrund-Isolate) auf Android, iOS und Desktop; im Web PBKDF2-SHA256 mit 600 000 Iterationen über WebCrypto, damit die Oberfläche nicht einfriert. Die Parameter liegen im Header und lassen sich später erhöhen.
+- **Brute-Force-Schutz:** Nach 5 Fehlversuchen greift eine exponentielle Sperre, die auch einen Neustart der App übersteht.
+- **Schlüsselprüfung:** Ein veralteter Biometrie-Schlüssel (z. B. nach Neuinstallation) wird erkannt und verworfen.
 - **Biometrie:** Der Tresor-Schlüssel liegt nach Aktivierung im Keychain/Keystore (`flutter_secure_storage`) und wird erst nach erfolgreichem `local_auth`-Prompt gelesen.
 - **Speicherhygiene:** Schlüssel liegen nur im RAM, werden beim Sperren überschrieben, und die Zwischenablage wird geleert.
 - **Master-Passwort ändern:** Dabei wird nur der Tresor-Schlüssel neu verpackt. Die Einträge bleiben unverändert.
