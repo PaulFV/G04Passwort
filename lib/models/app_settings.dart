@@ -1,18 +1,25 @@
 import 'package:flutter/foundation.dart';
 
 /// Available background artworks (Design & Personalisierung).
-/// Artwork is taken from the original design board (docs/design).
+/// Selectable backgrounds – artwork taken 1:1 from the design files
+/// (docs/design/asset_sheet.png & design_board.png).
 enum AppBackgroundStyle {
+  dashboard('Wellen', 'assets/images/bg_dashboard.jpg'),
+  login('Horizont', 'assets/images/bg_login.jpg'),
+  earth('Erde', 'assets/images/bg_earth.jpg'),
   mountains('Berge', 'assets/images/bg_mountains.jpg'),
   summit('Gipfel', 'assets/images/bg_summit.jpg'),
-  night('Nacht', null);
+  waves('Glow', 'assets/images/bg_waves.jpg'),
+  shield('Schild', 'assets/images/bg_shield.jpg'),
+  flow('Flow', 'assets/images/bg_flow.jpg'),
+  circuit('Circuit', 'assets/images/bg_circuit.jpg'),
+  hex('Hexagon', 'assets/images/bg_hex.jpg'),
+  curve('Kurve', 'assets/images/bg_curve.jpg');
 
   const AppBackgroundStyle(this.label, this.asset);
 
   final String label;
-
-  /// `null` = plain night gradient without image.
-  final String? asset;
+  final String asset;
 }
 
 /// User preferences. Non-secret, stored as JSON in secure storage so they
@@ -23,7 +30,7 @@ class AppSettings {
     this.onboardingDone = false,
     this.darkMode = true,
     this.accentIndex = 0,
-    this.background = AppBackgroundStyle.mountains,
+    this.background = AppBackgroundStyle.dashboard,
     this.autoLockSeconds = 30,
     this.lockOnBackground = true,
     this.clipboardClearSeconds = 30,
@@ -43,7 +50,7 @@ class AppSettings {
         accentIndex: j['accentIndex'] as int? ?? 0,
         background: AppBackgroundStyle.values.firstWhere(
           (b) => b.name == j['background'],
-          orElse: () => AppBackgroundStyle.mountains,
+          orElse: () => AppBackgroundStyle.dashboard,
         ),
         autoLockSeconds: j['autoLockSeconds'] as int? ?? 30,
         lockOnBackground: j['lockOnBackground'] as bool? ?? true,

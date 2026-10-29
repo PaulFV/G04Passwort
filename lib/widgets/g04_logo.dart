@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
 
-/// Asset path of the original G04Passwort app icon (from the design board).
+/// Original artwork from the asset sheet.
 const String kAppIconAsset = 'assets/branding/app_icon.png';
+const String kLogoAsset = 'assets/branding/logo.png';
+const String kLogoMarkAsset = 'assets/branding/logo_mark.png';
+const String kLock3dAsset = 'assets/branding/lock_3d.png';
 
 /// The G04Passwort brand mark: the original 3D padlock icon from the design
 /// board with a softly pulsing neon glow behind it.

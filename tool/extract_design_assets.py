@@ -1,44 +1,127 @@
-"""Extracts the app artwork (app icon, backgrounds, feature icons) from the
-original G04Passwort design board (docs/design/design_board.png).
+"""Extracts the app artwork from the original G04Passwort design files.
 
-Usage: python3 tool/extract_design_assets.py
-Replace docs/design/design_board.png with a higher resolution export (same
-layout, any size) and re-run to get sharper assets.
+Sources (docs/design):
+  * design_board.png – screen design board (mountain backgrounds)
+  * asset_sheet.png  – asset sheet (app icon, logo, splash, backgrounds,
+                       3D lock, 16 feature icons, extra backgrounds)
+
+Usage:  pip install pillow numpy scipy && python3 tool/extract_design_assets.py
+
+Coordinates refer to the 1254x1254 sheets; higher resolution exports with
+the same layout are scaled automatically. Dedicated high-res files can also
+simply be copied over the generated assets (same file names).
 """
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageFilter
+from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[1]
-BOARD = ROOT / "docs/design/design_board.png"
-REF = 1254  # coordinates below refer to the 1254x1254 board
+DESIGN = ROOT / "docs/design"
+REF = 1254
 
-FEATURES = {
-    "aes": (530, 27, 612, 96), "biometric": (635, 27, 717, 96),
-    "cloud": (737, 27, 820, 96), "twofa": (840, 27, 922, 96),
-    "autolock": (941, 27, 1023, 96), "generator": (530, 158, 612, 227),
-    "autosave": (635, 158, 717, 227), "securitycheck": (737, 158, 820, 227),
-    "cards": (840, 158, 922, 227), "documents": (941, 158, 1023, 227),
+SHEET_ICONS = {
+    # row 1
+    "passwords": (28, 790, 118, 877), "generator": (148, 790, 235, 877),
+    "security": (262, 790, 350, 877), "cards": (376, 790, 464, 877),
+    "documents": (489, 790, 578, 877), "notes": (606, 790, 694, 877),
+    "cloud": (721, 790, 810, 877), "settings": (837, 790, 923, 877),
+    # row 2
+    "biometric": (28, 925, 118, 1012), "search": (148, 925, 235, 1012),
+    "folder": (262, 925, 350, 1012), "favorites": (376, 925, 464, 1012),
+    "tags": (489, 925, 578, 1012), "totp": (606, 925, 694, 1012),
+    "import_export": (721, 925, 810, 1012), "analysis": (837, 925, 923, 1012),
+}
+
+SHEET_BACKGROUNDS = {
+    "bg_login.jpg": (24, 492, 449, 727),
+    "bg_dashboard.jpg": (471, 492, 831, 727),
+    "bg_splash.jpg": (856, 420, 1233, 650),
+    "bg_earth.jpg": (23, 1094, 220, 1227),
+    "bg_waves.jpg": (234, 1094, 400, 1227),
+    "bg_shield.jpg": (414, 1094, 613, 1227),
+    "bg_flow.jpg": (625, 1094, 770, 1227),
+    "bg_circuit.jpg": (782, 1094, 938, 1227),
+    "bg_hex.jpg": (951, 1094, 1059, 1227),
+    "bg_curve.jpg": (1072, 1094, 1234, 1227),
+}
+
+BOARD_BACKGROUNDS = {
+    "bg_mountains.jpg": (225, 0, 520, 86),
+    "bg_summit.jpg": (1040, 150, 1254, 288),
 }
 
 
-def main():
-    im = Image.open(BOARD).convert("RGB")
+def up(img, scale):
+    size = (round(img.width * scale), round(img.height * scale))
+    return img.resize(size, Image.LANCZOS).filter(
+        ImageFilter.UnsharpMask(radius=2, percent=70, threshold=2))
+
+
+def loader(name):
+    im = Image.open(DESIGN / name).convert("RGB")
     f = im.width / REF
+    return lambda box: im.crop(tuple(round(v * f) for v in box)), f
 
-    def crop(box):
-        return im.crop(tuple(round(v * f) for v in box))
 
-    def up(img, size):
-        return img.resize(size, Image.LANCZOS).filter(
-            ImageFilter.UnsharpMask(radius=2, percent=80, threshold=2))
+def remove_dark_background(rgb):
+    """Makes the dark background connected to the image border transparent
+    (removes the painted checkerboard of the logo)."""
+    arr = np.array(rgb).astype(int)
+    bright = arr.max(2)
+    lab, _ = ndimage.label(bright < 72)
+    border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+    fg = ~np.isin(lab, list(border))
+    flab, fn = ndimage.label(fg)
+    idx = range(1, fn + 1)
+    sizes = ndimage.sum(np.ones_like(bright), flab, idx)
+    means = ndimage.mean(bright, flab, idx)
+    keep = np.zeros(fn + 1, bool)
+    for i, (s, m) in enumerate(zip(sizes, means), 1):
+        keep[i] = s > 2000 or m > 110
+    alpha = Image.fromarray(np.where(keep[flab], 255, 0).astype("uint8")).filter(ImageFilter.GaussianBlur(0.8))
+    out = rgb.convert("RGBA")
+    out.putalpha(alpha)
+    return out
 
-    up(crop((16, 16, 232, 232)), (1024, 1024)).save(ROOT / "assets/branding/app_icon.png")
-    up(crop((225, 0, 520, 86)), (1180, 344)).save(ROOT / "assets/images/bg_mountains.jpg", quality=92)
-    up(crop((1040, 150, 1254, 288)), (856, 552)).save(ROOT / "assets/images/bg_summit.jpg", quality=92)
-    for name, box in FEATURES.items():
-        w, h = box[2] - box[0], box[3] - box[1]
-        up(crop(box), (w * 3, h * 3)).save(ROOT / f"assets/icons/feat_{name}.png")
+
+def radial_fade(rgb):
+    """Soft circular alpha so the 3D lock blends into any dark background."""
+    w, h = rgb.size
+    y, x = np.ogrid[:h, :w]
+    d = np.sqrt(((x - w / 2) / (w / 2)) ** 2 + ((y - h / 2) / (h / 2)) ** 2)
+    alpha = np.clip((1.0 - d) / 0.25, 0, 1) * 255
+    out = rgb.convert("RGBA")
+    out.putalpha(Image.fromarray(alpha.astype("uint8")))
+    return out
+
+
+def main():
+    (ROOT / "assets/icons").mkdir(parents=True, exist_ok=True)
+    (ROOT / "assets/images").mkdir(parents=True, exist_ok=True)
+    (ROOT / "assets/branding").mkdir(parents=True, exist_ok=True)
+
+    crop, f = loader("asset_sheet.png")
+    k = 1 / f  # normalise to the 1254 reference
+    icon = crop((22, 52, 360, 390))
+    up(icon, 1024 / icon.width).save(ROOT / "assets/branding/app_icon.png")
+    logo = remove_dark_background(crop((386, 50, 810, 448)))
+    up(logo, 2 * k).save(ROOT / "assets/branding/logo.png")
+    shield = logo.crop((0, 0, logo.width, round(logo.height * 0.66)))
+    up(shield, 2 * k).save(ROOT / "assets/branding/logo_mark.png")
+    lock = radial_fade(crop((935, 695, 1215, 1055)))
+    up(lock, 2 * k).save(ROOT / "assets/branding/lock_3d.png")
+    for name, box in SHEET_ICONS.items():
+        up(crop(box), 3 * k).save(ROOT / f"assets/icons/ic_{name}.png")
+    for name, box in SHEET_BACKGROUNDS.items():
+        img = crop(box)
+        up(img, max(1, 1600 / img.width)).save(ROOT / f"assets/images/{name}", quality=90)
+
+    crop, f = loader("design_board.png")
+    for name, box in BOARD_BACKGROUNDS.items():
+        img = crop(box)
+        up(img, max(1, 1600 / img.width)).save(ROOT / f"assets/images/{name}", quality=90)
     print("Design assets extracted.")
 
 

@@ -1,30 +1,35 @@
 import 'package:flutter/material.dart';
 
-/// Feature icons taken 1:1 from the design board (assets/icons).
+/// The 16 feature icons taken 1:1 from the asset sheet (assets/icons).
 enum FeatureIcon {
-  aes('feat_aes', 'AES-256', 'Verschlüsselung'),
-  biometric('feat_biometric', 'Biometrie', 'Fingerabdruck & Face ID'),
-  cloud('feat_cloud', 'Cloud-Sync', 'Optional'),
-  twofa('feat_twofa', '2FA', 'Zwei-Faktor-Authentifizierung'),
-  autolock('feat_autolock', 'Auto-Lock', 'Sperre bei Inaktivität'),
-  generator('feat_generator', 'Passwort-Generator', 'Starke Passwörter'),
-  autosave('feat_autosave', 'Automatisches Speichern', 'von Logins'),
-  securityCheck('feat_securitycheck', 'Sicherheits-Check', 'Schwache & doppelte Passwörter erkennen'),
-  cards('feat_cards', 'Kreditkarten', 'Sicher speichern'),
-  documents('feat_documents', 'Dokumente', '& Notizen');
+  passwords('ic_passwords', 'Passwörter'),
+  generator('ic_generator', 'Generator'),
+  security('ic_security', 'Sicherheit'),
+  cards('ic_cards', 'Kreditkarten'),
+  documents('ic_documents', 'Dokumente'),
+  notes('ic_notes', 'Notizen'),
+  cloud('ic_cloud', 'Cloud Sync'),
+  settings('ic_settings', 'Einstellungen'),
+  biometric('ic_biometric', 'Biometrie'),
+  search('ic_search', 'Suche'),
+  folder('ic_folder', 'Ordner'),
+  favorites('ic_favorites', 'Favoriten'),
+  tags('ic_tags', 'Tags'),
+  totp('ic_totp', '2FA / TOTP'),
+  importExport('ic_import_export', 'Import / Export'),
+  analysis('ic_analysis', 'Analyse');
 
-  const FeatureIcon(this.file, this.title, this.subtitle);
+  const FeatureIcon(this.file, this.label);
 
   final String file;
-  final String title;
-  final String subtitle;
+  final String label;
 
   String get asset => 'assets/icons/$file.png';
 }
 
 /// Renders a [FeatureIcon] image tile.
 class FeatureIconImage extends StatelessWidget {
-  const FeatureIconImage(this.icon, {super.key, this.size = 64});
+  const FeatureIconImage(this.icon, {super.key, this.size = 56});
 
   final FeatureIcon icon;
   final double size;
@@ -34,9 +39,9 @@ class FeatureIconImage extends StatelessWidget {
     return Image.asset(
       icon.asset,
       width: size,
-      height: size * 0.84,
+      height: size,
       fit: BoxFit.contain,
-      filterQuality: FilterQuality.high,
+      filterQuality: FilterQuality.medium,
     );
   }
 }
