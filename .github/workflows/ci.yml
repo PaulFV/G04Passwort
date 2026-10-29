@@ -42,6 +42,8 @@ jobs:
     name: Build Web
     runs-on: ubuntu-latest
     needs: analyze-and-test
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
@@ -51,7 +53,17 @@ jobs:
       - run: flutter pub get
       - name: Fetch drift web assets (sqlite3.wasm, drift_worker.js)
         run: bash tool/setup_web.sh
-      - run: bash tool/ci_annotate.sh "build web" flutter build web --release
+      - run: bash tool/ci_annotate.sh "build web" flutter build web --release --no-web-resources-cdn
+      - name: Publish web preview branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd build/web
+          git init -q -b web-preview
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "web preview ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" web-preview
       - uses: actions/upload-artifact@v5
         continue-on-error: true
         with:
