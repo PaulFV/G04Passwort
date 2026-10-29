@@ -16,7 +16,13 @@ enum _Sort { name, recent }
 /// Passwortliste – all items, optionally filtered by category, favourites,
 /// folder or tag.
 class PasswordListScreen extends ConsumerStatefulWidget {
-  const PasswordListScreen({super.key, this.category, this.favoritesOnly = false, this.folderId, this.tag});
+  const PasswordListScreen({
+    super.key,
+    this.category,
+    this.favoritesOnly = false,
+    this.folderId,
+    this.tag,
+  });
 
   final ItemCategory? category;
   final bool favoritesOnly;
@@ -45,8 +51,10 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
   List<VaultItem> _filter(List<VaultItem> items) {
     var list = items.where((i) {
       if (widget.favoritesOnly && !i.favorite) return false;
-      if (widget.category != null && i.category != widget.category) return false;
-      if (widget.folderId != null && i.folderId != widget.folderId) return false;
+      if (widget.category != null && i.category != widget.category)
+        return false;
+      if (widget.folderId != null && i.folderId != widget.folderId)
+        return false;
       if (widget.tag != null && !i.tags.contains(widget.tag)) return false;
       return true;
     }).toList();

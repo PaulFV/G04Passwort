@@ -60,16 +60,15 @@ class AuthState {
     bool clearLockout = false,
     BiometricKind? biometricKind,
     String? passwordHint,
-  }) =>
-      AuthState(
-        status: status ?? this.status,
-        busy: busy ?? this.busy,
-        error: clearError ? null : (error ?? this.error),
-        failedAttempts: failedAttempts ?? this.failedAttempts,
-        lockedUntil: clearLockout ? null : (lockedUntil ?? this.lockedUntil),
-        biometricKind: biometricKind ?? this.biometricKind,
-        passwordHint: passwordHint ?? this.passwordHint,
-      );
+  }) => AuthState(
+    status: status ?? this.status,
+    busy: busy ?? this.busy,
+    error: clearError ? null : (error ?? this.error),
+    failedAttempts: failedAttempts ?? this.failedAttempts,
+    lockedUntil: clearLockout ? null : (lockedUntil ?? this.lockedUntil),
+    biometricKind: biometricKind ?? this.biometricKind,
+    passwordHint: passwordHint ?? this.passwordHint,
+  );
 }
 
 /// Orchestrates onboarding, vault creation, unlock (password / biometrics),
@@ -97,16 +96,22 @@ class AuthController extends Notifier<AuthState> {
       status: !settings.onboardingDone
           ? AuthStatus.onboarding
           : initialized
-              ? AuthStatus.locked
-              : AuthStatus.setup,
+          ? AuthStatus.locked
+          : AuthStatus.setup,
     );
-    await ref.read(screenProtectionProvider).setEnabled(settings.screenshotProtection);
+    await ref
+        .read(screenProtectionProvider)
+        .setEnabled(settings.screenshotProtection);
   }
 
   Future<void> completeOnboarding() async {
     await ref.read(settingsControllerProvider.notifier).completeOnboarding();
-    final initialized = await ref.read(authRepositoryProvider).isVaultInitialized();
-    state = state.copyWith(status: initialized ? AuthStatus.locked : AuthStatus.setup);
+    final initialized = await ref
+        .read(authRepositoryProvider)
+        .isVaultInitialized();
+    state = state.copyWith(
+      status: initialized ? AuthStatus.locked : AuthStatus.setup,
+    );
   }
 
   /// Creates a new vault. Returns `true` on success.
@@ -115,10 +120,17 @@ class AuthController extends Notifier<AuthState> {
     try {
       await ref.read(authRepositoryProvider).createVault(password, hint: hint);
       await ref.read(vaultRepositoryProvider).load();
-      state = state.copyWith(status: AuthStatus.unlocked, busy: false, passwordHint: hint);
+      state = state.copyWith(
+        status: AuthStatus.unlocked,
+        busy: false,
+        passwordHint: hint,
+      );
       return true;
     } on Object catch (e) {
-      state = state.copyWith(busy: false, error: 'Tresor konnte nicht erstellt werden: $e');
+      state = state.copyWith(
+        busy: false,
+        error: 'Tresor konnte nicht erstellt werden: $e',
+      );
       return false;
     }
   }
@@ -135,7 +147,9 @@ class AuthController extends Notifier<AuthState> {
   Future<bool> unlock(String password) async {
     final wait = remainingLockout;
     if (wait != null) {
-      state = state.copyWith(error: 'Zu viele Fehlversuche. Bitte warte ${wait.inSeconds + 1} s.');
+      state = state.copyWith(
+        error: 'Zu viele Fehlversuche. Bitte warte ${wait.inSeconds + 1} s.',
+      );
       return false;
     }
     state = state.copyWith(busy: true, clearError: true);
@@ -153,7 +167,10 @@ class AuthController extends Notifier<AuthState> {
       final attempts = state.failedAttempts + 1;
       DateTime? until;
       if (attempts >= AppConstants.maxFailedAttempts) {
-        final factor = pow(2, attempts - AppConstants.maxFailedAttempts).toInt();
+        final factor = pow(
+          2,
+          attempts - AppConstants.maxFailedAttempts,
+        ).toInt();
         until = DateTime.now().add(Duration(seconds: min(30 * factor, 900)));
       }
       state = state.copyWith(
@@ -177,16 +194,23 @@ class AuthController extends Notifier<AuthState> {
     final ok = await ref.read(biometricServiceProvider).authenticate();
     if (!ok) return false;
     state = state.copyWith(busy: true, clearError: true);
-    final unlocked = await ref.read(authRepositoryProvider).unlockWithStoredKey();
+    final unlocked = await ref
+        .read(authRepositoryProvider)
+        .unlockWithStoredKey();
     if (!unlocked) {
       state = state.copyWith(
         busy: false,
-        error: 'Biometrie-Schlüssel nicht gefunden. Bitte Master-Passwort verwenden.',
+        error:
+            'Biometrie-Schlüssel nicht gefunden. Bitte Master-Passwort verwenden.',
       );
       return false;
     }
     await ref.read(vaultRepositoryProvider).load();
-    state = state.copyWith(status: AuthStatus.unlocked, busy: false, failedAttempts: 0);
+    state = state.copyWith(
+      status: AuthStatus.unlocked,
+      busy: false,
+      failedAttempts: 0,
+    );
     return true;
   }
 
@@ -200,7 +224,9 @@ class AuthController extends Notifier<AuthState> {
       await settings.setBiometricFlag(false);
       return true;
     }
-    final ok = await ref.read(biometricServiceProvider).authenticate(
+    final ok = await ref
+        .read(biometricServiceProvider)
+        .authenticate(
           reason: 'Biometrisches Entsperren für G04Passwort aktivieren',
         );
     if (!ok) return false;
@@ -210,10 +236,16 @@ class AuthController extends Notifier<AuthState> {
   }
 
   /// Changes the master password. Returns an error message or `null`.
-  Future<String?> changeMasterPassword(String current, String next, {String? hint}) async {
+  Future<String?> changeMasterPassword(
+    String current,
+    String next, {
+    String? hint,
+  }) async {
     state = state.copyWith(busy: true, clearError: true);
     try {
-      await ref.read(authRepositoryProvider).changeMasterPassword(current, next, hint: hint);
+      await ref
+          .read(authRepositoryProvider)
+          .changeMasterPassword(current, next, hint: hint);
       state = state.copyWith(busy: false, passwordHint: hint);
       return null;
     } on VaultException catch (e) {
@@ -227,7 +259,9 @@ class AuthController extends Notifier<AuthState> {
     if (state.status != AuthStatus.unlocked) return;
     ref.read(authRepositoryProvider).lock();
     ref.read(vaultRepositoryProvider).clear();
-    unawaited(ref.read(clipboardServiceProvider).clearNow().catchError((Object _) {}));
+    unawaited(
+      ref.read(clipboardServiceProvider).clearNow().catchError((Object _) {}),
+    );
     state = state.copyWith(status: AuthStatus.locked, clearError: true);
   }
 
@@ -240,4 +274,6 @@ class AuthController extends Notifier<AuthState> {
   }
 }
 
-final authControllerProvider = NotifierProvider<AuthController, AuthState>(AuthController.new);
+final authControllerProvider = NotifierProvider<AuthController, AuthState>(
+  AuthController.new,
+);

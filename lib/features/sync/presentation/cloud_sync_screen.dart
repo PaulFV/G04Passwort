@@ -44,11 +44,19 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
   }
 
   Future<void> _syncNow() async {
-    final enabled = ref.read(settingsControllerProvider).syncProviders.entries.where((e) => e.value).map((e) => e.key);
+    final enabled = ref
+        .read(settingsControllerProvider)
+        .syncProviders
+        .entries
+        .where((e) => e.value)
+        .map((e) => e.key);
     setState(() => _status = SyncStatus.syncing);
     try {
       final count = await ref.read(syncServiceProvider).syncNow(enabled);
-      setState(() => _status = count == 0 ? SyncStatus.unavailable : SyncStatus.success);
+      setState(
+        () =>
+            _status = count == 0 ? SyncStatus.unavailable : SyncStatus.success,
+      );
     } on Object {
       setState(() => _status = SyncStatus.error);
     }
@@ -57,7 +65,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
   @override
   Widget build(BuildContext context) {
     final providers = ref.watch(cloudSyncProvidersProvider);
-    final enabled = ref.watch(settingsControllerProvider.select((s) => s.syncProviders));
+    final enabled = ref.watch(
+      settingsControllerProvider.select((s) => s.syncProviders),
+    );
 
     return G04Scaffold(
       title: 'Cloud-Synchronisation',
@@ -69,13 +79,18 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               children: [
                 const FeatureIconImage(FeatureIcon.cloud, size: 84),
                 const SizedBox(height: 10),
-                Text('Automatisch synchronisieren', style: context.text.titleMedium),
+                Text(
+                  'Automatisch synchronisieren',
+                  style: context.text.titleMedium,
+                ),
                 const SizedBox(height: 4),
                 Text(
                   'Ihre Daten sicher in der Cloud – Ende-zu-Ende verschlüsselt. '
                   'Der Anbieter sieht nur verschlüsselte Daten.',
                   textAlign: TextAlign.center,
-                  style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary),
+                  style: context.text.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -108,7 +123,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 _ => '',
               },
               style: context.text.bodySmall?.copyWith(
-                color: _status == SyncStatus.success ? AppColors.success : AppColors.textMuted,
+                color: _status == SyncStatus.success
+                    ? AppColors.success
+                    : AppColors.textMuted,
               ),
             ),
           ),

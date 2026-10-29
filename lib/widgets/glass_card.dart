@@ -38,7 +38,8 @@ class GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final radius = BorderRadius.circular(borderRadius);
-    final border = borderColor ??
+    final border =
+        borderColor ??
         (isDark ? AppColors.glassBorder : const Color(0x332F8CFF));
 
     return Container(
@@ -93,5 +94,8 @@ class GlassCard extends StatelessWidget {
 
   Widget _maybeBlur(Widget child) => blur <= 0
       ? child
-      : BackdropFilter(filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur), child: child);
+      : BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: child,
+        );
 }

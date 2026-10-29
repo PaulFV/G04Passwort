@@ -29,7 +29,12 @@ import 'item_detail_screen.dart' show formatBytes;
 /// widget only maps form fields to a [VaultItem]; persistence and business
 /// rules (history, timestamps) live in [VaultActions] / the repository.
 class ItemEditorScreen extends ConsumerStatefulWidget {
-  const ItemEditorScreen({super.key, this.itemId, this.type = VaultItemType.login, this.category});
+  const ItemEditorScreen({
+    super.key,
+    this.itemId,
+    this.type = VaultItemType.login,
+    this.category,
+  });
 
   final String? itemId;
   final VaultItemType type;
@@ -79,9 +84,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   @override
   void initState() {
     super.initState();
-    final existing = widget.itemId == null ? null : ref.read(itemByIdProvider(widget.itemId!));
+    final existing = widget.itemId == null
+        ? null
+        : ref.read(itemByIdProvider(widget.itemId!));
     _load(existing ?? ref.read(vaultActionsProvider).newItem(widget.type));
-    if (existing == null && widget.category != null) _category = widget.category!;
+    if (existing == null && widget.category != null)
+      _category = widget.category!;
     _password.addListener(() => setState(() {}));
   }
 
@@ -127,8 +135,22 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   @override
   void dispose() {
     for (final c in [
-      _title, _notes, _tagInput, _username, _password, _url, _totp, _host,
-      _holder, _number, _expiry, _cvv, _pin, _docNumber, _docName, _docIssuer,
+      _title,
+      _notes,
+      _tagInput,
+      _username,
+      _password,
+      _url,
+      _totp,
+      _host,
+      _holder,
+      _number,
+      _expiry,
+      _cvv,
+      _pin,
+      _docNumber,
+      _docName,
+      _docIssuer,
     ]) {
       c.dispose();
     }
@@ -136,7 +158,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   }
 
   VaultItem _build() {
-    final exp = RegExp(r'^(\d{1,2})\s*/\s*(\d{2,4})$').firstMatch(_expiry.text.trim());
+    final exp = RegExp(
+      r'^(\d{1,2})\s*/\s*(\d{2,4})$',
+    ).firstMatch(_expiry.text.trim());
     return _item.copyWith(
       title: _title.text,
       notes: _notes.text,
@@ -150,7 +174,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
           ? (_item.login ?? const LoginData()).copyWith(
               username: _username.text.trim(),
               password: _password.text,
-              urls: _url.text.split(RegExp(r'[,\s]+')).where((u) => u.isNotEmpty).toList(),
+              urls: _url.text
+                  .split(RegExp(r'[,\s]+'))
+                  .where((u) => u.isNotEmpty)
+                  .toList(),
               totpSecret: _totp.text.trim().isEmpty ? null : _totp.text.trim(),
               clearTotp: _totp.text.trim().isEmpty,
               host: _host.text.trim(),
@@ -217,7 +244,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     if (file == null) return;
     try {
       final bytes = await file.readAsBytes();
-      final attachment = await ref.read(vaultActionsProvider).addAttachment(file.name, bytes);
+      final attachment = await ref
+          .read(vaultActionsProvider)
+          .addAttachment(file.name, bytes);
       setState(() => _attachments = [..._attachments, attachment]);
     } on Object catch (e) {
       if (mounted) context.showError('$e');
@@ -246,7 +275,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                 VaultItemType.note => 'z. B. WLAN-Passwort',
               },
               icon: Icons.title_rounded,
-              validator: (v) => (v ?? '').trim().isEmpty ? 'Bitte Titel eingeben' : null,
+              validator: (v) =>
+                  (v ?? '').trim().isEmpty ? 'Bitte Titel eingeben' : null,
             ),
             const SizedBox(height: 12),
             ...switch (_item.type) {
@@ -258,23 +288,38 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             const SizedBox(height: 12),
             DropdownButtonFormField<ItemCategory>(
               initialValue: _category,
-              decoration: const InputDecoration(labelText: 'Kategorie', prefixIcon: Icon(Icons.category_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'Kategorie',
+                prefixIcon: Icon(Icons.category_outlined),
+              ),
               items: [
                 for (final c in ItemCategory.values)
                   DropdownMenuItem(
                     value: c,
-                    child: Row(children: [Icon(c.icon, color: c.color, size: 20), const SizedBox(width: 10), Text(c.label)]),
+                    child: Row(
+                      children: [
+                        Icon(c.icon, color: c.color, size: 20),
+                        const SizedBox(width: 10),
+                        Text(c.label),
+                      ],
+                    ),
                   ),
               ],
               onChanged: (c) => setState(() => _category = c ?? _category),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String?>(
-              initialValue: folders.any((f) => f.id == _folderId) ? _folderId : null,
-              decoration: const InputDecoration(labelText: 'Ordner', prefixIcon: Icon(Icons.folder_outlined)),
+              initialValue: folders.any((f) => f.id == _folderId)
+                  ? _folderId
+                  : null,
+              decoration: const InputDecoration(
+                labelText: 'Ordner',
+                prefixIcon: Icon(Icons.folder_outlined),
+              ),
               items: [
                 const DropdownMenuItem<String?>(child: Text('Kein Ordner')),
-                for (final f in folders) DropdownMenuItem<String?>(value: f.id, child: Text(f.name)),
+                for (final f in folders)
+                  DropdownMenuItem<String?>(value: f.id, child: Text(f.name)),
               ],
               onChanged: (id) => setState(() => _folderId = id),
             ),
@@ -295,7 +340,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             const SizedBox(height: 12),
             ..._customFieldEditors(),
             TextButton.icon(
-              onPressed: () => setState(() => _fields = [..._fields, const CustomField(name: '', value: '')]),
+              onPressed: () => setState(
+                () => _fields = [
+                  ..._fields,
+                  const CustomField(name: '', value: ''),
+                ],
+              ),
               icon: const Icon(Icons.add_rounded),
               label: const Text('Eigenes Feld hinzufügen'),
             ),
@@ -303,11 +353,19 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               value: _favorite,
               onChanged: (v) => setState(() => _favorite = v),
               title: const Text('Favorit'),
-              secondary: const Icon(Icons.star_rounded, color: Color(0xFFFFC857)),
+              secondary: const Icon(
+                Icons.star_rounded,
+                color: Color(0xFFFFC857),
+              ),
               contentPadding: EdgeInsets.zero,
             ),
             const SizedBox(height: 16),
-            NeonButton(label: 'Speichern', icon: Icons.save_rounded, loading: _saving, onPressed: _save),
+            NeonButton(
+              label: 'Speichern',
+              icon: Icons.save_rounded,
+              loading: _saving,
+              onPressed: _save,
+            ),
           ],
         ),
       ),
@@ -360,7 +418,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         label: '2FA-Schlüssel (TOTP)',
         hint: 'Base32-Secret oder otpauth://-Link',
         icon: Icons.qr_code_2_rounded,
-        validator: (v) => (v ?? '').trim().isEmpty || ref.read(totpServiceProvider).parse(v!) != null
+        validator: (v) =>
+            (v ?? '').trim().isEmpty ||
+                ref.read(totpServiceProvider).parse(v!) != null
             ? null
             : 'Ungültiger TOTP-Schlüssel',
       ),
@@ -368,128 +428,187 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   }
 
   List<Widget> _cardFields() => [
-        AppTextField(controller: _holder, label: 'Karteninhaber', icon: Icons.person_outline_rounded),
-        const SizedBox(height: 12),
-        AppTextField(
-          controller: _number,
-          label: 'Kartennummer',
-          icon: Icons.credit_card_rounded,
-          keyboardType: TextInputType.number,
-          monospace: true,
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9 ]'))],
+    AppTextField(
+      controller: _holder,
+      label: 'Karteninhaber',
+      icon: Icons.person_outline_rounded,
+    ),
+    const SizedBox(height: 12),
+    AppTextField(
+      controller: _number,
+      label: 'Kartennummer',
+      icon: Icons.credit_card_rounded,
+      keyboardType: TextInputType.number,
+      monospace: true,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9 ]'))],
+    ),
+    const SizedBox(height: 12),
+    Row(
+      children: [
+        Expanded(
+          child: AppTextField(
+            controller: _expiry,
+            label: 'Gültig bis (MM/JJ)',
+            icon: Icons.event_rounded,
+            keyboardType: TextInputType.datetime,
+            validator: (v) =>
+                (v ?? '').isEmpty ||
+                    RegExp(r'^\d{1,2}\s*/\s*\d{2,4}$').hasMatch(v!.trim())
+                ? null
+                : 'Format MM/JJ',
+          ),
         ),
-        const SizedBox(height: 12),
-        Row(
+        const SizedBox(width: 12),
+        Expanded(
+          child: AppTextField(
+            controller: _cvv,
+            label: 'CVV',
+            isSecret: true,
+            keyboardType: TextInputType.number,
+          ),
+        ),
+      ],
+    ),
+    const SizedBox(height: 12),
+    AppTextField(
+      controller: _pin,
+      label: 'PIN',
+      icon: Icons.pin_outlined,
+      isSecret: true,
+    ),
+  ];
+
+  List<Widget> _documentFields() => [
+    DropdownButtonFormField<String>(
+      initialValue: _docType,
+      decoration: const InputDecoration(
+        labelText: 'Dokumenttyp',
+        prefixIcon: Icon(Icons.badge_outlined),
+      ),
+      items: [
+        for (final t in DocumentData.types)
+          DropdownMenuItem(value: t, child: Text(t)),
+      ],
+      onChanged: (t) => setState(() => _docType = t ?? _docType),
+    ),
+    const SizedBox(height: 12),
+    AppTextField(
+      controller: _docNumber,
+      label: 'Dokumentnummer',
+      icon: Icons.numbers_rounded,
+    ),
+    const SizedBox(height: 12),
+    AppTextField(
+      controller: _docName,
+      label: 'Name',
+      icon: Icons.person_outline_rounded,
+    ),
+    const SizedBox(height: 12),
+    AppTextField(
+      controller: _docIssuer,
+      label: 'Ausstellende Behörde',
+      icon: Icons.account_balance_outlined,
+    ),
+    const SizedBox(height: 12),
+    GlassTile(
+      icon: Icons.event_available_rounded,
+      title: 'Gültig bis',
+      value: _docExpiry == null
+          ? 'Nicht gesetzt'
+          : DateFormat.yMd('de_DE').format(_docExpiry!),
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: _docExpiry ?? DateTime.now(),
+          firstDate: DateTime(1950),
+          lastDate: DateTime(2100),
+        );
+        if (picked != null) setState(() => _docExpiry = picked);
+      },
+    ),
+    for (final a in _attachments)
+      GlassTile(
+        icon: Icons.insert_drive_file_rounded,
+        iconColor: AppColors.danger,
+        title: a.name,
+        subtitle: formatBytes(a.size),
+        trailing: IconButton(
+          tooltip: 'Entfernen',
+          icon: const Icon(Icons.close_rounded),
+          onPressed: () async {
+            await ref.read(vaultActionsProvider).deleteAttachment(a.id);
+            setState(
+              () => _attachments = _attachments
+                  .where((x) => x.id != a.id)
+                  .toList(),
+            );
+          },
+        ),
+      ),
+    TextButton.icon(
+      onPressed: _addAttachment,
+      icon: const Icon(Icons.attach_file_rounded),
+      label: const Text(
+        'Datei anhängen (PDF, Bild – verschlüsselt, max. 10 MB)',
+      ),
+    ),
+  ];
+
+  List<Widget> _customFieldEditors() => [
+    for (var i = 0; i < _fields.length; i++)
+      Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(
           children: [
             Expanded(
-              child: AppTextField(
-                controller: _expiry,
-                label: 'Gültig bis (MM/JJ)',
-                icon: Icons.event_rounded,
-                keyboardType: TextInputType.datetime,
-                validator: (v) => (v ?? '').isEmpty || RegExp(r'^\d{1,2}\s*/\s*\d{2,4}$').hasMatch(v!.trim())
-                    ? null
-                    : 'Format MM/JJ',
+              child: TextFormField(
+                initialValue: _fields[i].name,
+                decoration: const InputDecoration(labelText: 'Feldname'),
+                onChanged: (v) => _fields[i] = CustomField(
+                  name: v,
+                  value: _fields[i].value,
+                  secret: _fields[i].secret,
+                ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
-              child: AppTextField(controller: _cvv, label: 'CVV', isSecret: true, keyboardType: TextInputType.number),
+              child: TextFormField(
+                initialValue: _fields[i].value,
+                obscureText: _fields[i].secret,
+                decoration: const InputDecoration(labelText: 'Wert'),
+                onChanged: (v) => _fields[i] = CustomField(
+                  name: _fields[i].name,
+                  value: v,
+                  secret: _fields[i].secret,
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Geheim',
+              icon: Icon(
+                _fields[i].secret
+                    ? Icons.lock_rounded
+                    : Icons.lock_open_rounded,
+              ),
+              onPressed: () => setState(
+                () => _fields[i] = CustomField(
+                  name: _fields[i].name,
+                  value: _fields[i].value,
+                  secret: !_fields[i].secret,
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Entfernen',
+              icon: const Icon(Icons.remove_circle_outline_rounded),
+              onPressed: () =>
+                  setState(() => _fields = [..._fields]..removeAt(i)),
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        AppTextField(controller: _pin, label: 'PIN', icon: Icons.pin_outlined, isSecret: true),
-      ];
-
-  List<Widget> _documentFields() => [
-        DropdownButtonFormField<String>(
-          initialValue: _docType,
-          decoration: const InputDecoration(labelText: 'Dokumenttyp', prefixIcon: Icon(Icons.badge_outlined)),
-          items: [for (final t in DocumentData.types) DropdownMenuItem(value: t, child: Text(t))],
-          onChanged: (t) => setState(() => _docType = t ?? _docType),
-        ),
-        const SizedBox(height: 12),
-        AppTextField(controller: _docNumber, label: 'Dokumentnummer', icon: Icons.numbers_rounded),
-        const SizedBox(height: 12),
-        AppTextField(controller: _docName, label: 'Name', icon: Icons.person_outline_rounded),
-        const SizedBox(height: 12),
-        AppTextField(controller: _docIssuer, label: 'Ausstellende Behörde', icon: Icons.account_balance_outlined),
-        const SizedBox(height: 12),
-        GlassTile(
-          icon: Icons.event_available_rounded,
-          title: 'Gültig bis',
-          value: _docExpiry == null ? 'Nicht gesetzt' : DateFormat.yMd('de_DE').format(_docExpiry!),
-          onTap: () async {
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: _docExpiry ?? DateTime.now(),
-              firstDate: DateTime(1950),
-              lastDate: DateTime(2100),
-            );
-            if (picked != null) setState(() => _docExpiry = picked);
-          },
-        ),
-        for (final a in _attachments)
-          GlassTile(
-            icon: Icons.insert_drive_file_rounded,
-            iconColor: AppColors.danger,
-            title: a.name,
-            subtitle: formatBytes(a.size),
-            trailing: IconButton(
-              tooltip: 'Entfernen',
-              icon: const Icon(Icons.close_rounded),
-              onPressed: () async {
-                await ref.read(vaultActionsProvider).deleteAttachment(a.id);
-                setState(() => _attachments = _attachments.where((x) => x.id != a.id).toList());
-              },
-            ),
-          ),
-        TextButton.icon(
-          onPressed: _addAttachment,
-          icon: const Icon(Icons.attach_file_rounded),
-          label: const Text('Datei anhängen (PDF, Bild – verschlüsselt, max. 10 MB)'),
-        ),
-      ];
-
-  List<Widget> _customFieldEditors() => [
-        for (var i = 0; i < _fields.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: _fields[i].name,
-                    decoration: const InputDecoration(labelText: 'Feldname'),
-                    onChanged: (v) => _fields[i] = CustomField(name: v, value: _fields[i].value, secret: _fields[i].secret),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: _fields[i].value,
-                    obscureText: _fields[i].secret,
-                    decoration: const InputDecoration(labelText: 'Wert'),
-                    onChanged: (v) => _fields[i] = CustomField(name: _fields[i].name, value: v, secret: _fields[i].secret),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Geheim',
-                  icon: Icon(_fields[i].secret ? Icons.lock_rounded : Icons.lock_open_rounded),
-                  onPressed: () => setState(
-                    () => _fields[i] = CustomField(name: _fields[i].name, value: _fields[i].value, secret: !_fields[i].secret),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Entfernen',
-                  icon: const Icon(Icons.remove_circle_outline_rounded),
-                  onPressed: () => setState(() => _fields = [..._fields]..removeAt(i)),
-                ),
-              ],
-            ),
-          ),
-      ];
+      ),
+  ];
 }
 
 class _TypeTabs extends StatelessWidget {
@@ -514,7 +633,12 @@ class _TypeTabs extends StatelessWidget {
                 borderColor: t == selected ? AppColors.neonBlueLight : null,
                 child: Column(
                   children: [
-                    Icon(t.icon, color: t == selected ? AppColors.neonBlueLight : AppColors.textSecondary),
+                    Icon(
+                      t.icon,
+                      color: t == selected
+                          ? AppColors.neonBlueLight
+                          : AppColors.textSecondary,
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       t.label,
@@ -533,7 +657,11 @@ class _TypeTabs extends StatelessWidget {
 }
 
 class _TagEditor extends StatelessWidget {
-  const _TagEditor({required this.tags, required this.controller, required this.onChanged});
+  const _TagEditor({
+    required this.tags,
+    required this.controller,
+    required this.onChanged,
+  });
 
   final List<String> tags;
   final TextEditingController controller;
@@ -557,7 +685,10 @@ class _TagEditor extends StatelessWidget {
             labelText: 'Tags',
             hintText: 'Tag eingeben und Enter drücken',
             prefixIcon: const Icon(Icons.sell_outlined),
-            suffixIcon: IconButton(icon: const Icon(Icons.add_rounded), onPressed: _add),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.add_rounded),
+              onPressed: _add,
+            ),
           ),
           onSubmitted: (_) => _add(),
         ),
@@ -569,7 +700,11 @@ class _TagEditor extends StatelessWidget {
               runSpacing: 6,
               children: [
                 for (final t in tags)
-                  InputChip(label: Text(t), onDeleted: () => onChanged(tags.where((x) => x != t).toList())),
+                  InputChip(
+                    label: Text(t),
+                    onDeleted: () =>
+                        onChanged(tags.where((x) => x != t).toList()),
+                  ),
               ],
             ),
           ),

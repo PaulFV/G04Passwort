@@ -19,7 +19,9 @@ class AutoSaveScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(settingsControllerProvider.select((s) => s.autoSaveEnabled));
+    final enabled = ref.watch(
+      settingsControllerProvider.select((s) => s.autoSaveEnabled),
+    );
     return G04Scaffold(
       title: 'Auto-Save',
       body: ListView(
@@ -27,13 +29,19 @@ class AutoSaveScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Center(child: Image.asset(kLock3dAsset, height: 180)),
           const SizedBox(height: 16),
-          Text('Logins automatisch speichern', textAlign: TextAlign.center, style: context.text.titleLarge),
+          Text(
+            'Logins automatisch speichern',
+            textAlign: TextAlign.center,
+            style: context.text.titleLarge,
+          ),
           const SizedBox(height: 8),
           Text(
             'Bei der Anmeldung auf Websites und in Apps werden neue Zugangsdaten '
             'erkannt und sicher in deinem Tresor gespeichert.',
             textAlign: TextAlign.center,
-            style: context.text.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            style: context.text.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 22),
           GlassTile(
@@ -41,7 +49,9 @@ class AutoSaveScreen extends ConsumerWidget {
             title: 'Auto-Save aktiv',
             trailing: Switch(
               value: enabled,
-              onChanged: ref.read(settingsControllerProvider.notifier).setAutoSave,
+              onChanged: ref
+                  .read(settingsControllerProvider.notifier)
+                  .setAutoSave,
             ),
           ),
           const SizedBox(height: 8),

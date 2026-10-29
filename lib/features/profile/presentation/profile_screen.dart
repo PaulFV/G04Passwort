@@ -35,16 +35,32 @@ class ProfileAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(colors: [AppColors.neonBlueLight, AppColors.neonBlue, Color(0xFF0A2A6E)]),
+        gradient: const LinearGradient(
+          colors: [
+            AppColors.neonBlueLight,
+            AppColors.neonBlue,
+            Color(0xFF0A2A6E),
+          ],
+        ),
         border: Border.all(color: AppColors.cyan, width: 2),
-        boxShadow: const [BoxShadow(color: AppColors.neonBlue, blurRadius: 16, spreadRadius: -4)],
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.neonBlue,
+            blurRadius: 16,
+            spreadRadius: -4,
+          ),
+        ],
       ),
       alignment: Alignment.center,
       child: initials.isEmpty
           ? Icon(Icons.person_rounded, color: Colors.white, size: size * 0.55)
           : Text(
               initials,
-              style: TextStyle(color: Colors.white, fontSize: size * 0.36, fontWeight: FontWeight.w800),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: size * 0.36,
+                fontWeight: FontWeight.w800,
+              ),
             ),
     );
   }
@@ -60,8 +76,12 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  late final _name = TextEditingController(text: ref.read(settingsControllerProvider).displayName);
-  late final _email = TextEditingController(text: ref.read(settingsControllerProvider).email);
+  late final _name = TextEditingController(
+    text: ref.read(settingsControllerProvider).displayName,
+  );
+  late final _email = TextEditingController(
+    text: ref.read(settingsControllerProvider).email,
+  );
 
   @override
   void dispose() {
@@ -71,7 +91,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _save() async {
-    await ref.read(settingsControllerProvider.notifier).setProfile(name: _name.text, email: _email.text);
+    await ref
+        .read(settingsControllerProvider.notifier)
+        .setProfile(name: _name.text, email: _email.text);
     if (mounted) context.showSnack('Profil gespeichert');
   }
 
@@ -109,7 +131,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Diese Angaben bleiben lokal auf deinem Gerät.',
-                  style: context.text.bodySmall?.copyWith(color: AppColors.textMuted),
+                  style: context.text.bodySmall?.copyWith(
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -117,12 +141,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 14),
           NeonButton(label: 'Speichern', onPressed: _save),
           const SectionHeader('Statistik'),
-          GlassTile(icon: Icons.key_rounded, title: 'Einträge', value: '${items.length}'),
-          GlassTile(icon: Icons.shield_rounded, iconColor: AppColors.success, title: 'Sicherheits-Score', value: '${report.score}%'),
+          GlassTile(
+            icon: Icons.key_rounded,
+            title: 'Einträge',
+            value: '${items.length}',
+          ),
+          GlassTile(
+            icon: Icons.shield_rounded,
+            iconColor: AppColors.success,
+            title: 'Sicherheits-Score',
+            value: '${report.score}%',
+          ),
           GlassTile(
             icon: Icons.backup_rounded,
             title: 'Letztes Backup',
-            value: settings.lastBackupAt == null ? 'Nie' : fmt.format(settings.lastBackupAt!),
+            value: settings.lastBackupAt == null
+                ? 'Nie'
+                : fmt.format(settings.lastBackupAt!),
             onTap: () => context.push(Routes.backup),
           ),
           GlassTile(

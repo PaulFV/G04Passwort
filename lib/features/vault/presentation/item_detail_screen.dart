@@ -33,7 +33,10 @@ class ItemDetailScreen extends ConsumerWidget {
     if (item == null) {
       return const G04Scaffold(
         title: 'Eintrag',
-        body: EmptyState(icon: Icons.search_off_rounded, title: 'Eintrag nicht gefunden'),
+        body: EmptyState(
+          icon: Icons.search_off_rounded,
+          title: 'Eintrag nicht gefunden',
+        ),
       );
     }
     final actions = ref.read(vaultActionsProvider);
@@ -67,7 +70,9 @@ class ItemDetailScreen extends ConsumerWidget {
                       Text(item.title, style: context.text.titleLarge),
                       Text(
                         item.login?.primaryUrl ?? item.category.label,
-                        style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary),
+                        style: context.text.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -90,7 +95,10 @@ class ItemDetailScreen extends ConsumerWidget {
             value: [
               item.category.label,
               if (item.folderId != null)
-                ...ref.watch(foldersProvider).where((f) => f.id == item.folderId).map((f) => 'Ordner: ${f.name}'),
+                ...ref
+                    .watch(foldersProvider)
+                    .where((f) => f.id == item.folderId)
+                    .map((f) => 'Ordner: ${f.name}'),
             ].join(' · '),
             copyable: false,
           ),
@@ -105,7 +113,9 @@ class ItemDetailScreen extends ConsumerWidget {
                     ActionChip(
                       avatar: const Icon(Icons.sell_outlined, size: 16),
                       label: Text(t),
-                      onPressed: () => context.push('${Routes.vault}?tag=${Uri.encodeComponent(t)}'),
+                      onPressed: () => context.push(
+                        '${Routes.vault}?tag=${Uri.encodeComponent(t)}',
+                      ),
                     ),
                 ],
               ),
@@ -116,13 +126,16 @@ class ItemDetailScreen extends ConsumerWidget {
             copyable: item.notes.isNotEmpty,
             maxLines: 12,
           ),
-          if (item.login?.passwordHistory.isNotEmpty ?? false) _PasswordHistory(item: item),
+          if (item.login?.passwordHistory.isNotEmpty ?? false)
+            _PasswordHistory(item: item),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               'Erstellt ${date.format(item.createdAt)} · Geändert ${date.format(item.updatedAt)}',
               textAlign: TextAlign.center,
-              style: context.text.bodySmall?.copyWith(color: AppColors.textMuted),
+              style: context.text.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -151,11 +164,16 @@ class ItemDetailScreen extends ConsumerWidget {
     );
   }
 
-  List<Widget> _loginFields(BuildContext context, WidgetRef ref, VaultItem item) {
+  List<Widget> _loginFields(
+    BuildContext context,
+    WidgetRef ref,
+    VaultItem item,
+  ) {
     final l = item.login!;
     final strength = ref.watch(passwordStrengthProvider(l.password));
     return [
-      if (l.username.isNotEmpty) FieldRow(label: 'Benutzername', value: l.username),
+      if (l.username.isNotEmpty)
+        FieldRow(label: 'Benutzername', value: l.username),
       FieldRow(
         label: 'Passwort',
         value: l.password,
@@ -172,8 +190,16 @@ class ItemDetailScreen extends ConsumerWidget {
   List<Widget> _cardFields(VaultItem item) {
     final c = item.card!;
     return [
-      Padding(padding: const EdgeInsets.only(bottom: 14), child: PaymentCardView(item: item)),
-      FieldRow(label: 'Kartennummer', value: c.number, secret: true, monospace: true),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: PaymentCardView(item: item),
+      ),
+      FieldRow(
+        label: 'Kartennummer',
+        value: c.number,
+        secret: true,
+        monospace: true,
+      ),
       FieldRow(label: 'Karteninhaber', value: c.holder),
       FieldRow(label: 'Gültig bis', value: c.expiryLabel, copyable: false),
       if (c.cvv.isNotEmpty) FieldRow(label: 'CVV', value: c.cvv, secret: true),
@@ -181,16 +207,26 @@ class ItemDetailScreen extends ConsumerWidget {
     ];
   }
 
-  List<Widget> _documentFields(BuildContext context, WidgetRef ref, VaultItem item) {
+  List<Widget> _documentFields(
+    BuildContext context,
+    WidgetRef ref,
+    VaultItem item,
+  ) {
     final d = item.document!;
     final date = DateFormat.yMd('de_DE');
     return [
       FieldRow(label: 'Dokumenttyp', value: d.documentType, copyable: false),
-      if (d.number.isNotEmpty) FieldRow(label: 'Nummer', value: d.number, secret: true),
+      if (d.number.isNotEmpty)
+        FieldRow(label: 'Nummer', value: d.number, secret: true),
       if (d.fullName.isNotEmpty) FieldRow(label: 'Name', value: d.fullName),
-      if (d.issuer.isNotEmpty) FieldRow(label: 'Ausstellende Behörde', value: d.issuer),
+      if (d.issuer.isNotEmpty)
+        FieldRow(label: 'Ausstellende Behörde', value: d.issuer),
       if (d.expiryDate != null)
-        FieldRow(label: 'Gültig bis', value: date.format(d.expiryDate!), copyable: false),
+        FieldRow(
+          label: 'Gültig bis',
+          value: date.format(d.expiryDate!),
+          copyable: false,
+        ),
       for (final a in d.attachments)
         GlassTile(
           icon: Icons.picture_as_pdf_rounded,
@@ -203,16 +239,29 @@ class ItemDetailScreen extends ConsumerWidget {
     ];
   }
 
-  Future<void> _exportAttachment(BuildContext context, WidgetRef ref, AttachmentRef a) async {
+  Future<void> _exportAttachment(
+    BuildContext context,
+    WidgetRef ref,
+    AttachmentRef a,
+  ) async {
     try {
       final bytes = await ref.read(vaultActionsProvider).readAttachment(a.id);
-      await FilePicker.saveFile(fileName: a.name, bytes: bytes, mimeType: a.mimeType);
+      await FilePicker.saveFile(
+        fileName: a.name,
+        bytes: bytes,
+        mimeType: a.mimeType,
+      );
     } on Object catch (e) {
-      if (context.mounted) context.showError('Datei konnte nicht gespeichert werden: $e');
+      if (context.mounted)
+        context.showError('Datei konnte nicht gespeichert werden: $e');
     }
   }
 
-  Future<void> _delete(BuildContext context, WidgetRef ref, VaultItem item) async {
+  Future<void> _delete(
+    BuildContext context,
+    WidgetRef ref,
+    VaultItem item,
+  ) async {
     final ok = await context.confirm(
       title: 'Eintrag löschen?',
       message: '„${item.title}“ wird endgültig gelöscht.',
@@ -238,7 +287,11 @@ class _TotpRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final code = ref.watch(totpCodeProvider(itemId)).value;
     if (code == null) {
-      return const FieldRow(label: '2FA-Code', value: 'Ungültiger TOTP-Schlüssel', copyable: false);
+      return const FieldRow(
+        label: '2FA-Code',
+        value: 'Ungültiger TOTP-Schlüssel',
+        copyable: false,
+      );
     }
     return FieldRow(
       label: '2FA-Code (TOTP)',
@@ -281,7 +334,11 @@ class _PasswordHistory extends StatelessWidget {
           for (final h in item.login!.passwordHistory)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-              child: FieldRow(label: 'Bis ${date.format(h.changedAt)}', value: h.password, secret: true),
+              child: FieldRow(
+                label: 'Bis ${date.format(h.changedAt)}',
+                value: h.password,
+                secret: true,
+              ),
             ),
         ],
       ),

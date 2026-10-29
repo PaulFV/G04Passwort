@@ -28,7 +28,8 @@ class NotesScreen extends ConsumerWidget {
                 ? const EmptyState(
                     icon: Icons.sticky_note_2_rounded,
                     title: 'Keine Notizen',
-                    message: 'WLAN-Zugänge, PINs, Wiederherstellungscodes – alles sicher verschlüsselt.',
+                    message:
+                        'WLAN-Zugänge, PINs, Wiederherstellungscodes – alles sicher verschlüsselt.',
                   )
                 : ListView(
                     children: [
@@ -45,13 +46,20 @@ class NotesScreen extends ConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(n.title, style: context.text.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                                    Text(
+                                      n.title,
+                                      style: context.text.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                     const SizedBox(height: 4),
                                     Text(
                                       n.notes,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary),
+                                      style: context.text.bodySmall?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                     ),
                                   ],
                                 ),

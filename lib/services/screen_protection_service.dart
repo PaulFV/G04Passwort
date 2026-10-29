@@ -13,7 +13,9 @@ class ScreenProtectionService {
   Future<void> setEnabled(bool enabled) async {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
     try {
-      await _channel.invokeMethod<bool>('setSecureScreen', {'enabled': enabled});
+      await _channel.invokeMethod<bool>('setSecureScreen', {
+        'enabled': enabled,
+      });
     } on MissingPluginException {
       // Running in a test or an unsupported embedder.
     } on PlatformException catch (e) {

@@ -19,9 +19,9 @@ class PasswordHistoryEntry {
   const PasswordHistoryEntry({required this.password, required this.changedAt});
 
   factory PasswordHistoryEntry.fromJson(Json j) => PasswordHistoryEntry(
-        password: j['p'] as String,
-        changedAt: _date(j['t'])!,
-      );
+    password: j['p'] as String,
+    changedAt: _date(j['t'])!,
+  );
 
   final String password;
   final DateTime changedAt;
@@ -32,13 +32,17 @@ class PasswordHistoryEntry {
 /// User defined extra field (e.g. "PIN", "Seriennummer", "IP-Adresse").
 @immutable
 class CustomField {
-  const CustomField({required this.name, required this.value, this.secret = false});
+  const CustomField({
+    required this.name,
+    required this.value,
+    this.secret = false,
+  });
 
   factory CustomField.fromJson(Json j) => CustomField(
-        name: j['n'] as String? ?? '',
-        value: j['v'] as String? ?? '',
-        secret: j['s'] as bool? ?? false,
-      );
+    name: j['n'] as String? ?? '',
+    value: j['v'] as String? ?? '',
+    secret: j['s'] as bool? ?? false,
+  );
 
   final String name;
   final String value;
@@ -58,11 +62,11 @@ class AttachmentRef {
   });
 
   factory AttachmentRef.fromJson(Json j) => AttachmentRef(
-        id: j['id'] as String,
-        name: j['name'] as String? ?? 'Datei',
-        size: j['size'] as int? ?? 0,
-        mimeType: j['mime'] as String? ?? 'application/octet-stream',
-      );
+    id: j['id'] as String,
+    name: j['name'] as String? ?? 'Datei',
+    size: j['size'] as int? ?? 0,
+    mimeType: j['mime'] as String? ?? 'application/octet-stream',
+  );
 
   final String id;
   final String name;
@@ -91,14 +95,14 @@ class LoginData {
   });
 
   factory LoginData.fromJson(Json j) => LoginData(
-        username: j['user'] as String? ?? '',
-        password: j['pass'] as String? ?? '',
-        urls: (j['urls'] as List<dynamic>? ?? const []).cast<String>(),
-        totpSecret: j['totp'] as String?,
-        host: j['host'] as String?,
-        passwordChangedAt: _date(j['pwAt']),
-        passwordHistory: _list(j['hist'], PasswordHistoryEntry.fromJson),
-      );
+    username: j['user'] as String? ?? '',
+    password: j['pass'] as String? ?? '',
+    urls: (j['urls'] as List<dynamic>? ?? const []).cast<String>(),
+    totpSecret: j['totp'] as String?,
+    host: j['host'] as String?,
+    passwordChangedAt: _date(j['pwAt']),
+    passwordHistory: _list(j['hist'], PasswordHistoryEntry.fromJson),
+  );
 
   final String username;
   final String password;
@@ -124,26 +128,26 @@ class LoginData {
     String? host,
     DateTime? passwordChangedAt,
     List<PasswordHistoryEntry>? passwordHistory,
-  }) =>
-      LoginData(
-        username: username ?? this.username,
-        password: password ?? this.password,
-        urls: urls ?? this.urls,
-        totpSecret: clearTotp ? null : (totpSecret ?? this.totpSecret),
-        host: host ?? this.host,
-        passwordChangedAt: passwordChangedAt ?? this.passwordChangedAt,
-        passwordHistory: passwordHistory ?? this.passwordHistory,
-      );
+  }) => LoginData(
+    username: username ?? this.username,
+    password: password ?? this.password,
+    urls: urls ?? this.urls,
+    totpSecret: clearTotp ? null : (totpSecret ?? this.totpSecret),
+    host: host ?? this.host,
+    passwordChangedAt: passwordChangedAt ?? this.passwordChangedAt,
+    passwordHistory: passwordHistory ?? this.passwordHistory,
+  );
 
   Json toJson() => {
-        'user': username,
-        'pass': password,
-        'urls': urls,
-        if (totpSecret != null) 'totp': totpSecret,
-        if (host != null) 'host': host,
-        if (passwordChangedAt != null) 'pwAt': passwordChangedAt!.millisecondsSinceEpoch,
-        'hist': passwordHistory.map((e) => e.toJson()).toList(),
-      };
+    'user': username,
+    'pass': password,
+    'urls': urls,
+    if (totpSecret != null) 'totp': totpSecret,
+    if (host != null) 'host': host,
+    if (passwordChangedAt != null)
+      'pwAt': passwordChangedAt!.millisecondsSinceEpoch,
+    'hist': passwordHistory.map((e) => e.toJson()).toList(),
+  };
 }
 
 /// Fields of a payment card.
@@ -159,13 +163,13 @@ class CardData {
   });
 
   factory CardData.fromJson(Json j) => CardData(
-        holder: j['holder'] as String? ?? '',
-        number: j['number'] as String? ?? '',
-        expiryMonth: j['expM'] as int?,
-        expiryYear: j['expY'] as int?,
-        cvv: j['cvv'] as String? ?? '',
-        pin: j['pin'] as String? ?? '',
-      );
+    holder: j['holder'] as String? ?? '',
+    number: j['number'] as String? ?? '',
+    expiryMonth: j['expM'] as int?,
+    expiryYear: j['expY'] as int?,
+    cvv: j['cvv'] as String? ?? '',
+    pin: j['pin'] as String? ?? '',
+  );
 
   final String holder;
   final String number;
@@ -176,7 +180,8 @@ class CardData {
 
   String get digits => number.replaceAll(RegExp(r'\D'), '');
 
-  String get last4 => digits.length >= 4 ? digits.substring(digits.length - 4) : digits;
+  String get last4 =>
+      digits.length >= 4 ? digits.substring(digits.length - 4) : digits;
 
   /// Masked number like "•••• 4242".
   String get masked => digits.isEmpty ? '' : '•••• $last4';
@@ -205,13 +210,13 @@ class CardData {
   }
 
   Json toJson() => {
-        'holder': holder,
-        'number': number,
-        if (expiryMonth != null) 'expM': expiryMonth,
-        if (expiryYear != null) 'expY': expiryYear,
-        'cvv': cvv,
-        'pin': pin,
-      };
+    'holder': holder,
+    'number': number,
+    if (expiryMonth != null) 'expM': expiryMonth,
+    if (expiryYear != null) 'expY': expiryYear,
+    'cvv': cvv,
+    'pin': pin,
+  };
 }
 
 /// Fields of an identity / contract document with optional encrypted files.
@@ -228,14 +233,14 @@ class DocumentData {
   });
 
   factory DocumentData.fromJson(Json j) => DocumentData(
-        documentType: j['type'] as String? ?? 'Sonstige',
-        number: j['number'] as String? ?? '',
-        fullName: j['name'] as String? ?? '',
-        issuer: j['issuer'] as String? ?? '',
-        issueDate: _date(j['issued']),
-        expiryDate: _date(j['expires']),
-        attachments: _list(j['files'], AttachmentRef.fromJson),
-      );
+    documentType: j['type'] as String? ?? 'Sonstige',
+    number: j['number'] as String? ?? '',
+    fullName: j['name'] as String? ?? '',
+    issuer: j['issuer'] as String? ?? '',
+    issueDate: _date(j['issued']),
+    expiryDate: _date(j['expires']),
+    attachments: _list(j['files'], AttachmentRef.fromJson),
+  );
 
   static const types = [
     'Reisepass',
@@ -258,24 +263,24 @@ class DocumentData {
   int get totalSize => attachments.fold(0, (s, a) => s + a.size);
 
   DocumentData copyWith({List<AttachmentRef>? attachments}) => DocumentData(
-        documentType: documentType,
-        number: number,
-        fullName: fullName,
-        issuer: issuer,
-        issueDate: issueDate,
-        expiryDate: expiryDate,
-        attachments: attachments ?? this.attachments,
-      );
+    documentType: documentType,
+    number: number,
+    fullName: fullName,
+    issuer: issuer,
+    issueDate: issueDate,
+    expiryDate: expiryDate,
+    attachments: attachments ?? this.attachments,
+  );
 
   Json toJson() => {
-        'type': documentType,
-        'number': number,
-        'name': fullName,
-        'issuer': issuer,
-        if (issueDate != null) 'issued': issueDate!.millisecondsSinceEpoch,
-        if (expiryDate != null) 'expires': expiryDate!.millisecondsSinceEpoch,
-        'files': attachments.map((a) => a.toJson()).toList(),
-      };
+    'type': documentType,
+    'number': number,
+    'name': fullName,
+    'issuer': issuer,
+    if (issueDate != null) 'issued': issueDate!.millisecondsSinceEpoch,
+    if (expiryDate != null) 'expires': expiryDate!.millisecondsSinceEpoch,
+    'files': attachments.map((a) => a.toJson()).toList(),
+  };
 }
 
 /// A single vault entry. The complete object is serialised to JSON and
@@ -312,7 +317,9 @@ class VaultItem {
       notes: j['notes'] as String? ?? '',
       login: j['login'] == null ? null : LoginData.fromJson(j['login'] as Json),
       card: j['card'] == null ? null : CardData.fromJson(j['card'] as Json),
-      document: j['doc'] == null ? null : DocumentData.fromJson(j['doc'] as Json),
+      document: j['doc'] == null
+          ? null
+          : DocumentData.fromJson(j['doc'] as Json),
       customFields: _list(j['fields'], CustomField.fromJson),
       createdAt: _date(j['created'])!,
       updatedAt: _date(j['updated'])!,
@@ -336,31 +343,33 @@ class VaultItem {
 
   /// Short secondary text for list tiles.
   String get subtitle => switch (type) {
-        VaultItemType.login => login?.username.isNotEmpty == true
-            ? login!.username
-            : (login?.host ?? login?.primaryUrl ?? ''),
-        VaultItemType.card => card?.masked ?? '',
-        VaultItemType.document => document?.attachments.isNotEmpty == true
-            ? '${document!.attachments.length} Datei(en)'
-            : (document?.documentType ?? ''),
-        VaultItemType.note => notes.split('\n').first,
-      };
+    VaultItemType.login =>
+      login?.username.isNotEmpty == true
+          ? login!.username
+          : (login?.host ?? login?.primaryUrl ?? ''),
+    VaultItemType.card => card?.masked ?? '',
+    VaultItemType.document =>
+      document?.attachments.isNotEmpty == true
+          ? '${document!.attachments.length} Datei(en)'
+          : (document?.documentType ?? ''),
+    VaultItemType.note => notes.split('\n').first,
+  };
 
   /// Lower-cased text used by the in-memory search.
   String get searchText => [
-        title,
-        notes,
-        category.label,
-        ...tags,
-        login?.username,
-        login?.host,
-        ...?login?.urls,
-        card?.holder,
-        card?.brand,
-        document?.documentType,
-        document?.number,
-        ...customFields.where((f) => !f.secret).map((f) => '${f.name} ${f.value}'),
-      ].whereType<String>().join(' ').toLowerCase();
+    title,
+    notes,
+    category.label,
+    ...tags,
+    login?.username,
+    login?.host,
+    ...?login?.urls,
+    card?.holder,
+    card?.brand,
+    document?.documentType,
+    document?.number,
+    ...customFields.where((f) => !f.secret).map((f) => '${f.name} ${f.value}'),
+  ].whereType<String>().join(' ').toLowerCase();
 
   VaultItem copyWith({
     String? title,
@@ -375,56 +384,63 @@ class VaultItem {
     DocumentData? document,
     List<CustomField>? customFields,
     DateTime? updatedAt,
-  }) =>
-      VaultItem(
-        id: id,
-        type: type,
-        title: title ?? this.title,
-        category: category ?? this.category,
-        folderId: clearFolder ? null : (folderId ?? this.folderId),
-        tags: tags ?? this.tags,
-        favorite: favorite ?? this.favorite,
-        notes: notes ?? this.notes,
-        login: login ?? this.login,
-        card: card ?? this.card,
-        document: document ?? this.document,
-        customFields: customFields ?? this.customFields,
-        createdAt: createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => VaultItem(
+    id: id,
+    type: type,
+    title: title ?? this.title,
+    category: category ?? this.category,
+    folderId: clearFolder ? null : (folderId ?? this.folderId),
+    tags: tags ?? this.tags,
+    favorite: favorite ?? this.favorite,
+    notes: notes ?? this.notes,
+    login: login ?? this.login,
+    card: card ?? this.card,
+    document: document ?? this.document,
+    customFields: customFields ?? this.customFields,
+    createdAt: createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   Json toJson() => {
-        'id': id,
-        'type': type.name,
-        'title': title,
-        'cat': category.name,
-        if (folderId != null) 'folder': folderId,
-        'tags': tags,
-        'fav': favorite,
-        'notes': notes,
-        if (login != null) 'login': login!.toJson(),
-        if (card != null) 'card': card!.toJson(),
-        if (document != null) 'doc': document!.toJson(),
-        'fields': customFields.map((f) => f.toJson()).toList(),
-        'created': createdAt.millisecondsSinceEpoch,
-        'updated': updatedAt.millisecondsSinceEpoch,
-      };
+    'id': id,
+    'type': type.name,
+    'title': title,
+    'cat': category.name,
+    if (folderId != null) 'folder': folderId,
+    'tags': tags,
+    'fav': favorite,
+    'notes': notes,
+    if (login != null) 'login': login!.toJson(),
+    if (card != null) 'card': card!.toJson(),
+    if (document != null) 'doc': document!.toJson(),
+    'fields': customFields.map((f) => f.toJson()).toList(),
+    'created': createdAt.millisecondsSinceEpoch,
+    'updated': updatedAt.millisecondsSinceEpoch,
+  };
 }
 
 /// A user-created folder ("Ordner").
 @immutable
 class VaultFolder {
-  const VaultFolder({required this.id, required this.name, required this.updatedAt});
+  const VaultFolder({
+    required this.id,
+    required this.name,
+    required this.updatedAt,
+  });
 
   factory VaultFolder.fromJson(Json j) => VaultFolder(
-        id: j['id'] as String,
-        name: j['name'] as String? ?? '',
-        updatedAt: _date(j['updated']) ?? DateTime.now(),
-      );
+    id: j['id'] as String,
+    name: j['name'] as String? ?? '',
+    updatedAt: _date(j['updated']) ?? DateTime.now(),
+  );
 
   final String id;
   final String name;
   final DateTime updatedAt;
 
-  Json toJson() => {'id': id, 'name': name, 'updated': updatedAt.millisecondsSinceEpoch};
+  Json toJson() => {
+    'id': id,
+    'name': name,
+    'updated': updatedAt.millisecondsSinceEpoch,
+  };
 }

@@ -11,7 +11,11 @@ extension ContextX on BuildContext {
   bool get isWide => MediaQuery.sizeOf(this).width >= 840;
 
   /// Shows a themed snackbar.
-  void showSnack(String message, {IconData icon = Icons.check_circle_rounded, Color? color}) {
+  void showSnack(
+    String message, {
+    IconData icon = Icons.check_circle_rounded,
+    Color? color,
+  }) {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -27,8 +31,11 @@ extension ContextX on BuildContext {
       );
   }
 
-  void showError(String message) =>
-      showSnack(message, icon: Icons.error_outline_rounded, color: AppColors.danger);
+  void showError(String message) => showSnack(
+    message,
+    icon: Icons.error_outline_rounded,
+    color: AppColors.danger,
+  );
 
   /// Simple confirmation dialog. Returns `true` if confirmed.
   Future<bool> confirm({
@@ -49,7 +56,10 @@ extension ContextX on BuildContext {
           ),
           FilledButton(
             style: destructive
-                ? FilledButton.styleFrom(backgroundColor: AppColors.danger, minimumSize: const Size(0, 44))
+                ? FilledButton.styleFrom(
+                    backgroundColor: AppColors.danger,
+                    minimumSize: const Size(0, 44),
+                  )
                 : FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(confirmLabel),

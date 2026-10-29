@@ -17,8 +17,9 @@ class SearchScreen extends ConsumerStatefulWidget {
 }
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
-  late final TextEditingController _controller =
-      TextEditingController(text: ref.read(searchQueryProvider));
+  late final TextEditingController _controller = TextEditingController(
+    text: ref.read(searchQueryProvider),
+  );
 
   @override
   void dispose() {
@@ -38,7 +39,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       title: 'Suche',
       body: Column(
         children: [
-          VaultSearchBar(controller: _controller, autofocus: true, onChanged: _set),
+          VaultSearchBar(
+            controller: _controller,
+            autofocus: true,
+            onChanged: _set,
+          ),
           if (tags.isNotEmpty)
             SizedBox(
               height: 48,
@@ -65,14 +70,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                query.isEmpty ? '${results.length} Einträge' : '${results.length} Treffer',
-                style: context.text.labelMedium?.copyWith(color: context.colors.onSurfaceVariant),
+                query.isEmpty
+                    ? '${results.length} Einträge'
+                    : '${results.length} Treffer',
+                style: context.text.labelMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
             ),
           ),
           Expanded(
             child: results.isEmpty
-                ? const EmptyState(icon: Icons.search_off_rounded, title: 'Keine Treffer')
+                ? const EmptyState(
+                    icon: Icons.search_off_rounded,
+                    title: 'Keine Treffer',
+                  )
                 : ListView.builder(
                     padding: const EdgeInsets.only(bottom: 32),
                     itemCount: results.length,

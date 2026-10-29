@@ -47,10 +47,15 @@ class DashboardScreen extends ConsumerWidget {
                           style: context.text.titleLarge?.copyWith(
                             color: AppColors.neonBlueLight,
                             fontWeight: FontWeight.w900,
-                            shadows: const [Shadow(color: AppColors.neonBlue, blurRadius: 12)],
+                            shadows: const [
+                              Shadow(color: AppColors.neonBlue, blurRadius: 12),
+                            ],
                           ),
                         ),
-                        TextSpan(text: 'Passwort', style: context.text.titleLarge),
+                        TextSpan(
+                          text: 'Passwort',
+                          style: context.text.titleLarge,
+                        ),
                       ],
                     ),
                   ),
@@ -95,7 +100,8 @@ class DashboardScreen extends ConsumerWidget {
                       iconColor: const Color(0xFFFFC857),
                       label: 'Favoriten',
                       value: '${favorites.length}',
-                      onTap: () => context.push('${Routes.vault}?filter=favorites'),
+                      onTap: () =>
+                          context.push('${Routes.vault}?filter=favorites'),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -117,18 +123,23 @@ class DashboardScreen extends ConsumerWidget {
                 child: EmptyState(
                   icon: Icons.lock_open_rounded,
                   title: 'Dein Tresor ist bereit',
-                  message: 'Lege deinen ersten Eintrag an oder importiere Passwörter aus einem anderen Manager.',
+                  message:
+                      'Lege deinen ersten Eintrag an oder importiere Passwörter aus einem anderen Manager.',
                   action: Wrap(
                     spacing: 10,
                     children: [
                       FilledButton.icon(
-                        style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(0, 44),
+                        ),
                         onPressed: () => context.push(Routes.newItem),
                         icon: const Icon(Icons.add_rounded),
                         label: const Text('Neuer Eintrag'),
                       ),
                       OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(minimumSize: const Size(0, 44)),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 44),
+                        ),
                         onPressed: () => context.push(Routes.backup),
                         icon: const Icon(Icons.file_download_outlined),
                         label: const Text('Importieren'),
@@ -143,13 +154,17 @@ class DashboardScreen extends ConsumerWidget {
               child: SectionHeader(
                 'Favoriten',
                 actionLabel: favorites.length > 5 ? 'Alle' : null,
-                onAction: () => context.push('${Routes.vault}?filter=favorites'),
+                onAction: () =>
+                    context.push('${Routes.vault}?filter=favorites'),
               ),
             ),
             SliverList.list(
               children: [
                 for (final (i, item) in favorites.take(5).indexed)
-                  AnimatedEntrance(index: i, child: VaultItemTile(item: item)),
+                  AnimatedEntrance(
+                    index: i,
+                    child: VaultItemTile(item: item),
+                  ),
               ],
             ),
           ],
@@ -211,11 +226,20 @@ class _QuickTile extends StatelessWidget {
       borderColor: AppColors.neonBlue.withValues(alpha: 0.6),
       child: Column(
         children: [
-          Icon(icon, color: iconColor, shadows: [Shadow(color: iconColor, blurRadius: 12)]),
+          Icon(
+            icon,
+            color: iconColor,
+            shadows: [Shadow(color: iconColor, blurRadius: 12)],
+          ),
           const SizedBox(height: 6),
           Text(label, style: context.text.labelLarge?.copyWith(fontSize: 13)),
           if (value != null)
-            Text(value!, style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary)),
+            Text(
+              value!,
+              style: context.text.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
         ],
       ),
     );

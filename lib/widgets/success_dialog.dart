@@ -46,20 +46,20 @@ Future<void> showSuccessDialog(
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                Text(title, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 6),
                 Text(
                   message,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 22),
-                NeonButton(label: 'OK', onPressed: () => Navigator.of(context).pop()),
+                NeonButton(
+                  label: 'OK',
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ],
             ),
           ),

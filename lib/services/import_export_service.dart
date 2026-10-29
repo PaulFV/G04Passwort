@@ -29,10 +29,10 @@ class ImportExportService {
     required CryptoService crypto,
     required AuthRepository auth,
     required VaultRepository vault,
-  })  : _db = database,
-        _crypto = crypto,
-        _auth = auth,
-        _vault = vault;
+  }) : _db = database,
+       _crypto = crypto,
+       _auth = auth,
+       _vault = vault;
 
   static const String backupFormat = 'g04passwort-backup';
   static const int backupVersion = 1;
@@ -54,9 +54,13 @@ class ImportExportService {
     final header = await _auth.readHeader();
     if (header == null) throw const VaultLockedException();
     List<Map<String, Object>> rows(List<EncryptedRow> r) => [
-          for (final row in r)
-            {'id': row.id, 'payload': row.payload, 'updated': row.updatedAt.millisecondsSinceEpoch},
-        ];
+      for (final row in r)
+        {
+          'id': row.id,
+          'payload': row.payload,
+          'updated': row.updatedAt.millisecondsSinceEpoch,
+        },
+    ];
     final json = {
       'format': backupFormat,
       'version': backupVersion,
@@ -72,7 +76,10 @@ class ImportExportService {
   /// Restores an encrypted backup created with [password] (the master
   /// password that was active when the backup was made). Items are merged:
   /// for equal ids the newer version wins.
-  Future<ImportResult> restoreEncryptedBackup(Uint8List bytes, String password) async {
+  Future<ImportResult> restoreEncryptedBackup(
+    Uint8List bytes,
+    String password,
+  ) async {
     final json = _decodeBackup(bytes);
     final header = VaultHeader.fromJson(json['header'] as Map<String, dynamic>);
     final backupKey = await _auth.unwrapKey(header, password);
@@ -99,7 +106,10 @@ class ImportExportService {
     return json;
   }
 
-  Future<ImportResult> _restore(Map<String, dynamic> json, Uint8List backupKey) async {
+  Future<ImportResult> _restore(
+    Map<String, dynamic> json,
+    Uint8List backupKey,
+  ) async {
     var imported = 0;
     var skipped = 0;
     {
@@ -108,7 +118,11 @@ class ImportExportService {
         final row = raw as Map<String, dynamic>;
         try {
           final item = VaultItem.fromJson(
-            await _crypto.decryptJson(row['payload'] as String, backupKey, aad: 'item:${row['id']}'),
+            await _crypto.decryptJson(
+              row['payload'] as String,
+              backupKey,
+              aad: 'item:${row['id']}',
+            ),
           );
           final existing = _vault.byId(item.id);
           if (existing != null && !item.updatedAt.isAfter(existing.updatedAt)) {
@@ -138,7 +152,11 @@ class ImportExportService {
         final row = raw as Map<String, dynamic>;
         try {
           final folder = VaultFolder.fromJson(
-            await _crypto.decryptJson(row['payload'] as String, backupKey, aad: 'folder:${row['id']}'),
+            await _crypto.decryptJson(
+              row['payload'] as String,
+              backupKey,
+              aad: 'folder:${row['id']}',
+            ),
           );
           await _vault.saveFolder(folder.name, id: folder.id);
         } on VaultException {
@@ -160,23 +178,34 @@ class ImportExportService {
   /// KeePass/KeePassXC, LastPass).
   Future<ImportResult> importCsv(String content) async {
     final rows = parseCsv(content);
-    if (rows.length < 2) throw const InvalidBackupException('Die CSV-Datei ist leer.');
+    if (rows.length < 2)
+      throw const InvalidBackupException('Die CSV-Datei ist leer.');
     final header = rows.first.map((h) => h.trim().toLowerCase()).toList();
 
     int col(List<String> names) => header.indexWhere(names.contains);
     final iTitle = col(['name', 'title', 'titel', 'account']);
     final iUrl = col(['url', 'login_uri', 'website', 'web site', 'origin']);
-    final iUser = col(['username', 'login_username', 'login name', 'user name', 'benutzername', 'email']);
+    final iUser = col([
+      'username',
+      'login_username',
+      'login name',
+      'user name',
+      'benutzername',
+      'email',
+    ]);
     final iPass = col(['password', 'login_password', 'passwort', 'kennwort']);
     final iNotes = col(['notes', 'note', 'extra', 'comments', 'notizen']);
     final iTotp = col(['totp', 'login_totp', 'otpauth', 'one-time password']);
     final iFolder = col(['folder', 'grouping', 'group', 'ordner']);
     final iFav = col(['favorite', 'fav']);
     if (iPass < 0 && iUser < 0) {
-      throw const InvalidBackupException('Spalten „username“/„password“ nicht gefunden.');
+      throw const InvalidBackupException(
+        'Spalten „username“/„password“ nicht gefunden.',
+      );
     }
 
-    String cell(List<String> row, int i) => i >= 0 && i < row.length ? row[i].trim() : '';
+    String cell(List<String> row, int i) =>
+        i >= 0 && i < row.length ? row[i].trim() : '';
 
     final folderIds = <String, String>{};
     final items = <VaultItem>[];
@@ -193,8 +222,9 @@ class ImportExportService {
       final folderName = cell(row, iFolder);
       String? folderId;
       if (folderName.isNotEmpty) {
-        folderId = folderIds[folderName] ??=
-            (await _vault.saveFolder(folderName)).id;
+        folderId = folderIds[folderName] ??= (await _vault.saveFolder(
+          folderName,
+        )).id;
       }
       final now = DateTime.now();
       var title = cell(row, iTitle);
@@ -207,7 +237,8 @@ class ImportExportService {
           title: title,
           category: ItemCategory.login,
           folderId: folderId,
-          favorite: cell(row, iFav) == '1' || cell(row, iFav).toLowerCase() == 'true',
+          favorite:
+              cell(row, iFav) == '1' || cell(row, iFav).toLowerCase() == 'true',
           notes: cell(row, iNotes),
           login: LoginData(
             username: user,
@@ -227,20 +258,24 @@ class ImportExportService {
 
   /// Exports all logins as **unencrypted** CSV (Bitwarden compatible).
   String exportCsv(List<VaultItem> items) {
-    final buffer = StringBuffer('folder,favorite,type,name,notes,login_uri,login_username,login_password,login_totp\n');
+    final buffer = StringBuffer(
+      'folder,favorite,type,name,notes,login_uri,login_username,login_password,login_totp\n',
+    );
     for (final i in items.where((i) => i.type == VaultItemType.login)) {
       final l = i.login!;
-      buffer.writeln([
-        '',
-        i.favorite ? '1' : '',
-        'login',
-        i.title,
-        i.notes,
-        l.urls.join(' '),
-        l.username,
-        l.password,
-        l.totpSecret ?? '',
-      ].map(_escape).join(','));
+      buffer.writeln(
+        [
+          '',
+          i.favorite ? '1' : '',
+          'login',
+          i.title,
+          i.notes,
+          l.urls.join(' '),
+          l.username,
+          l.password,
+          l.totpSecret ?? '',
+        ].map(_escape).join(','),
+      );
     }
     return buffer.toString();
   }

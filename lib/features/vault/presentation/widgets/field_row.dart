@@ -36,7 +36,9 @@ class _FieldRowState extends ConsumerState<FieldRow> {
   @override
   Widget build(BuildContext context) {
     final hidden = widget.secret && !_revealed;
-    final shown = hidden ? '•' * widget.value.length.clamp(8, 16) : widget.value;
+    final shown = hidden
+        ? '•' * widget.value.length.clamp(8, 16)
+        : widget.value;
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.fromLTRB(16, 10, 6, 10),
@@ -52,14 +54,19 @@ class _FieldRowState extends ConsumerState<FieldRow> {
                   children: [
                     Text(
                       widget.label,
-                      style: context.text.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
+                      style: context.text.labelSmall?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     SelectableText(
                       shown.isEmpty ? '—' : shown,
                       maxLines: _revealed ? null : widget.maxLines,
                       style: context.text.bodyLarge?.copyWith(
-                        fontFamily: widget.monospace || (widget.secret && _revealed) ? 'monospace' : null,
+                        fontFamily:
+                            widget.monospace || (widget.secret && _revealed)
+                            ? 'monospace'
+                            : null,
                         letterSpacing: hidden ? 2 : null,
                       ),
                     ),
@@ -69,7 +76,11 @@ class _FieldRowState extends ConsumerState<FieldRow> {
               if (widget.secret && widget.value.isNotEmpty)
                 IconButton(
                   tooltip: _revealed ? 'Verbergen' : 'Anzeigen',
-                  icon: Icon(_revealed ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                  icon: Icon(
+                    _revealed
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                  ),
                   onPressed: () => setState(() => _revealed = !_revealed),
                 ),
               if (widget.copyable && widget.value.isNotEmpty)
@@ -77,7 +88,9 @@ class _FieldRowState extends ConsumerState<FieldRow> {
                   tooltip: 'Kopieren',
                   icon: const Icon(Icons.copy_rounded, size: 20),
                   onPressed: () async {
-                    await ref.read(vaultActionsProvider).copy(widget.value, secret: widget.secret);
+                    await ref
+                        .read(vaultActionsProvider)
+                        .copy(widget.value, secret: widget.secret);
                     if (context.mounted) {
                       context.showSnack(
                         widget.secret
@@ -90,7 +103,10 @@ class _FieldRowState extends ConsumerState<FieldRow> {
             ],
           ),
           if (widget.footer != null)
-            Padding(padding: const EdgeInsets.only(top: 8, right: 10), child: widget.footer!),
+            Padding(
+              padding: const EdgeInsets.only(top: 8, right: 10),
+              child: widget.footer!,
+            ),
         ],
       ),
     );

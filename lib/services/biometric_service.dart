@@ -6,7 +6,8 @@ enum BiometricKind { none, fingerprint, face, generic }
 
 /// Wraps `local_auth` (Fingerprint, Face ID, Windows Hello).
 class BiometricService {
-  BiometricService([LocalAuthentication? auth]) : _auth = auth ?? LocalAuthentication();
+  BiometricService([LocalAuthentication? auth])
+    : _auth = auth ?? LocalAuthentication();
 
   final LocalAuthentication _auth;
 
@@ -28,7 +29,8 @@ class BiometricService {
     try {
       final types = await _auth.getAvailableBiometrics();
       if (types.contains(BiometricType.face)) return BiometricKind.face;
-      if (types.contains(BiometricType.fingerprint)) return BiometricKind.fingerprint;
+      if (types.contains(BiometricType.fingerprint))
+        return BiometricKind.fingerprint;
       return BiometricKind.generic;
     } on Object {
       return BiometricKind.generic;

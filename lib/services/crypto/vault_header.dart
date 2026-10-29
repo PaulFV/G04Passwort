@@ -25,12 +25,12 @@ class VaultHeader {
   });
 
   factory VaultHeader.fromJson(Map<String, dynamic> j) => VaultHeader(
-        version: j['v'] as int,
-        kdf: KdfParams.fromJson(j['kdf'] as Map<String, dynamic>),
-        wrappedVaultKey: j['wrapped'] as String,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(j['created'] as int),
-        passwordHint: j['hint'] as String?,
-      );
+    version: j['v'] as int,
+    kdf: KdfParams.fromJson(j['kdf'] as Map<String, dynamic>),
+    wrappedVaultKey: j['wrapped'] as String,
+    createdAt: DateTime.fromMillisecondsSinceEpoch(j['created'] as int),
+    passwordHint: j['hint'] as String?,
+  );
 
   factory VaultHeader.decode(String raw) =>
       VaultHeader.fromJson(jsonDecode(raw) as Map<String, dynamic>);
@@ -48,22 +48,25 @@ class VaultHeader {
   final DateTime createdAt;
   final String? passwordHint;
 
-  VaultHeader copyWith({KdfParams? kdf, String? wrappedVaultKey, String? passwordHint}) =>
-      VaultHeader(
-        version: version,
-        kdf: kdf ?? this.kdf,
-        wrappedVaultKey: wrappedVaultKey ?? this.wrappedVaultKey,
-        createdAt: createdAt,
-        passwordHint: passwordHint ?? this.passwordHint,
-      );
+  VaultHeader copyWith({
+    KdfParams? kdf,
+    String? wrappedVaultKey,
+    String? passwordHint,
+  }) => VaultHeader(
+    version: version,
+    kdf: kdf ?? this.kdf,
+    wrappedVaultKey: wrappedVaultKey ?? this.wrappedVaultKey,
+    createdAt: createdAt,
+    passwordHint: passwordHint ?? this.passwordHint,
+  );
 
   Map<String, dynamic> toJson() => {
-        'v': version,
-        'kdf': kdf.toJson(),
-        'wrapped': wrappedVaultKey,
-        'created': createdAt.millisecondsSinceEpoch,
-        if (passwordHint != null && passwordHint!.isNotEmpty) 'hint': passwordHint,
-      };
+    'v': version,
+    'kdf': kdf.toJson(),
+    'wrapped': wrappedVaultKey,
+    'created': createdAt.millisecondsSinceEpoch,
+    if (passwordHint != null && passwordHint!.isNotEmpty) 'hint': passwordHint,
+  };
 
   String encode() => jsonEncode(toJson());
 }

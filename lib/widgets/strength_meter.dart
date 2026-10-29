@@ -4,7 +4,11 @@ import '../models/password_strength.dart';
 
 /// Animated, glowing bar visualising a [PasswordStrength].
 class StrengthMeter extends StatelessWidget {
-  const StrengthMeter({super.key, required this.strength, this.showLabel = true});
+  const StrengthMeter({
+    super.key,
+    required this.strength,
+    this.showLabel = true,
+  });
 
   final PasswordStrength strength;
   final bool showLabel;
@@ -22,17 +26,14 @@ class StrengthMeter extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 6),
             child: Row(
               children: [
-                Text(
-                  'Stärke',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text('Stärke', style: Theme.of(context).textTheme.bodySmall),
                 const Spacer(),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 250),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        color: color,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
                   child: Text(strength.isEmpty ? '–' : strength.level.label),
                 ),
               ],
@@ -59,7 +60,10 @@ class StrengthMeter extends StatelessWidget {
                     colors: [color.withValues(alpha: 0.7), color],
                   ),
                   boxShadow: [
-                    BoxShadow(color: color.withValues(alpha: 0.6), blurRadius: 10),
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.6),
+                      blurRadius: 10,
+                    ),
                   ],
                 ),
               ),

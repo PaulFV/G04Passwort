@@ -57,18 +57,17 @@ class GeneratorOptions {
     String? separator,
     bool? capitalizeWords,
     bool? includeNumber,
-  }) =>
-      GeneratorOptions(
-        mode: mode ?? this.mode,
-        length: length ?? this.length,
-        uppercase: uppercase ?? this.uppercase,
-        lowercase: lowercase ?? this.lowercase,
-        digits: digits ?? this.digits,
-        symbols: symbols ?? this.symbols,
-        excludeAmbiguous: excludeAmbiguous ?? this.excludeAmbiguous,
-        wordCount: wordCount ?? this.wordCount,
-        separator: separator ?? this.separator,
-        capitalizeWords: capitalizeWords ?? this.capitalizeWords,
-        includeNumber: includeNumber ?? this.includeNumber,
-      );
+  }) => GeneratorOptions(
+    mode: mode ?? this.mode,
+    length: length ?? this.length,
+    uppercase: uppercase ?? this.uppercase,
+    lowercase: lowercase ?? this.lowercase,
+    digits: digits ?? this.digits,
+    symbols: symbols ?? this.symbols,
+    excludeAmbiguous: excludeAmbiguous ?? this.excludeAmbiguous,
+    wordCount: wordCount ?? this.wordCount,
+    separator: separator ?? this.separator,
+    capitalizeWords: capitalizeWords ?? this.capitalizeWords,
+    includeNumber: includeNumber ?? this.includeNumber,
+  );
 }

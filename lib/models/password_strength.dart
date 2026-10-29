@@ -28,7 +28,11 @@ class PasswordStrength {
     this.isEmpty = false,
   });
 
-  static const empty = PasswordStrength(score: 0, entropyBits: 0, isEmpty: true);
+  static const empty = PasswordStrength(
+    score: 0,
+    entropyBits: 0,
+    isEmpty: true,
+  );
 
   /// 0 (very weak) … 4 (very strong).
   final int score;
@@ -40,7 +44,8 @@ class PasswordStrength {
   final List<String> feedback;
   final bool isEmpty;
 
-  PasswordStrengthLevel get level => PasswordStrengthLevel.values[score.clamp(0, 4)];
+  PasswordStrengthLevel get level =>
+      PasswordStrengthLevel.values[score.clamp(0, 4)];
 
   bool get isWeak => !isEmpty && score <= 1;
   bool get isStrong => score >= 3;
@@ -48,7 +53,9 @@ class PasswordStrength {
   /// Rough offline-attack crack time estimate (10^10 guesses/s).
   String get crackTimeLabel {
     if (isEmpty) return '–';
-    final seconds = (entropyBits >= 1000) ? double.infinity : _pow2(entropyBits) / 2 / 1e10;
+    final seconds = (entropyBits >= 1000)
+        ? double.infinity
+        : _pow2(entropyBits) / 2 / 1e10;
     if (seconds < 1) return 'sofort';
     if (seconds < 60) return '${seconds.round()} Sekunden';
     if (seconds < 3600) return '${(seconds / 60).round()} Minuten';

@@ -17,13 +17,13 @@ final class VaultLockedException extends VaultException {
 /// The supplied master password could not decrypt the vault key.
 final class InvalidMasterPasswordException extends VaultException {
   const InvalidMasterPasswordException()
-      : super('Das Master-Passwort ist falsch.');
+    : super('Das Master-Passwort ist falsch.');
 }
 
 /// Too many failed attempts – the user has to wait.
 final class TooManyAttemptsException extends VaultException {
   const TooManyAttemptsException(this.retryAfter)
-      : super('Zu viele Fehlversuche. Bitte warte kurz.');
+    : super('Zu viele Fehlversuche. Bitte warte kurz.');
 
   final Duration retryAfter;
 }
@@ -31,17 +31,17 @@ final class TooManyAttemptsException extends VaultException {
 /// Encrypted data was modified or is corrupt (GCM tag mismatch).
 final class DataIntegrityException extends VaultException {
   const DataIntegrityException()
-      : super('Daten sind beschädigt oder wurden manipuliert.');
+    : super('Daten sind beschädigt oder wurden manipuliert.');
 }
 
 /// Import / backup file could not be parsed.
 final class InvalidBackupException extends VaultException {
   const InvalidBackupException([String? details])
-      : super(details ?? 'Die Datei ist kein gültiges Backup.');
+    : super(details ?? 'Die Datei ist kein gültiges Backup.');
 }
 
 /// A feature that is architecturally prepared but not yet available.
 final class FeatureNotAvailableException extends VaultException {
   const FeatureNotAvailableException(String feature)
-      : super('$feature ist in Vorbereitung und bald verfügbar.');
+    : super('$feature ist in Vorbereitung und bald verfügbar.');
 }

@@ -28,7 +28,8 @@ class AutoLockController extends Notifier<bool> {
     return false;
   }
 
-  bool get _unlocked => ref.read(authControllerProvider).status == AuthStatus.unlocked;
+  bool get _unlocked =>
+      ref.read(authControllerProvider).status == AuthStatus.unlocked;
 
   /// Called on every pointer/keyboard interaction – restarts the timer.
   void onUserActivity() {
@@ -47,14 +48,19 @@ class AutoLockController extends Notifier<bool> {
       case AppLifecycleState.paused:
         state = settings.screenshotProtection && _unlocked;
         _backgroundSince ??= DateTime.now();
-        if (_unlocked && settings.lockOnBackground && settings.autoLockSeconds == 0) {
+        if (_unlocked &&
+            settings.lockOnBackground &&
+            settings.autoLockSeconds == 0) {
           _lock();
         }
       case AppLifecycleState.resumed:
         state = false;
         final since = _backgroundSince;
         _backgroundSince = null;
-        if (since != null && _unlocked && settings.lockOnBackground && settings.autoLockSeconds >= 0) {
+        if (since != null &&
+            _unlocked &&
+            settings.lockOnBackground &&
+            settings.autoLockSeconds >= 0) {
           final away = DateTime.now().difference(since).inSeconds;
           if (away >= settings.autoLockSeconds) {
             _lock();
@@ -73,5 +79,6 @@ class AutoLockController extends Notifier<bool> {
   }
 }
 
-final autoLockControllerProvider =
-    NotifierProvider<AutoLockController, bool>(AutoLockController.new);
+final autoLockControllerProvider = NotifierProvider<AutoLockController, bool>(
+  AutoLockController.new,
+);

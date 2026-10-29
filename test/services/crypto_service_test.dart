@@ -11,9 +11,16 @@ void main() {
   group('CryptoService (AES-256-GCM)', () {
     test('encrypt/decrypt round trip', () async {
       final key = crypto.generateKey();
-      final cipher = await crypto.encryptString('geheim 🔐', key, aad: 'item:1');
+      final cipher = await crypto.encryptString(
+        'geheim 🔐',
+        key,
+        aad: 'item:1',
+      );
       expect(cipher, isNot(contains('geheim')));
-      expect(await crypto.decryptString(cipher, key, aad: 'item:1'), 'geheim 🔐');
+      expect(
+        await crypto.decryptString(cipher, key, aad: 'item:1'),
+        'geheim 🔐',
+      );
     });
 
     test('uses a fresh nonce for every encryption', () async {
@@ -61,7 +68,12 @@ void main() {
     const kdf = KeyDerivationService();
     final salt = crypto.randomBytes(16);
     // Small parameters keep the unit test fast.
-    final params = KdfParams(algorithm: KdfAlgorithm.argon2id, salt: salt, memoryKiB: 256, iterations: 1);
+    final params = KdfParams(
+      algorithm: KdfAlgorithm.argon2id,
+      salt: salt,
+      memoryKiB: 256,
+      iterations: 1,
+    );
 
     test('Argon2id is deterministic for the same salt', () async {
       final a = await kdf.deriveKey('master', params);
@@ -77,7 +89,11 @@ void main() {
     });
 
     test('PBKDF2 fallback derives 256-bit keys', () async {
-      final p = KdfParams(algorithm: KdfAlgorithm.pbkdf2Sha256, salt: salt, iterations: 1000);
+      final p = KdfParams(
+        algorithm: KdfAlgorithm.pbkdf2Sha256,
+        salt: salt,
+        iterations: 1000,
+      );
       expect(await kdf.deriveKey('master', p), hasLength(32));
     });
 

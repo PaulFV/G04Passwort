@@ -28,15 +28,29 @@ class PaymentCardView extends StatelessWidget {
               const Color(0xFF050A1A),
             ],
           ),
-          border: Border.all(color: AppColors.neonBlueLight.withValues(alpha: 0.7)),
-          boxShadow: [BoxShadow(color: AppColors.neonBlue.withValues(alpha: 0.45), blurRadius: 26, spreadRadius: -6)],
+          border: Border.all(
+            color: AppColors.neonBlueLight.withValues(alpha: 0.7),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.neonBlue.withValues(alpha: 0.45),
+              blurRadius: 26,
+              spreadRadius: -6,
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text(item.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                Text(
+                  item.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 const Spacer(),
                 Text(
                   card.brand,
@@ -50,10 +64,16 @@ class PaymentCardView extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            const Icon(Icons.memory_rounded, color: Color(0xFFFFD27A), size: 34),
+            const Icon(
+              Icons.memory_rounded,
+              color: Color(0xFFFFD27A),
+              size: 34,
+            ),
             const SizedBox(height: 10),
             Text(
-              card.digits.isEmpty ? '•••• •••• •••• ••••' : '•••• •••• •••• ${card.last4}',
+              card.digits.isEmpty
+                  ? '•••• •••• •••• ••••'
+                  : '•••• •••• •••• ${card.last4}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -69,10 +89,16 @@ class PaymentCardView extends StatelessWidget {
                     card.holder.toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white70, letterSpacing: 1),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
-                Text(card.expiryLabel, style: const TextStyle(color: Colors.white70)),
+                Text(
+                  card.expiryLabel,
+                  style: const TextStyle(color: Colors.white70),
+                ),
               ],
             ),
           ],

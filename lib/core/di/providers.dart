@@ -33,13 +33,19 @@ final databaseProvider = Provider<AppDatabase>((ref) {
   return db;
 });
 
-final secureStorageProvider = Provider<SecureStorageService>((ref) => SecureStorageService());
+final secureStorageProvider = Provider<SecureStorageService>(
+  (ref) => SecureStorageService(),
+);
 
 final cryptoServiceProvider = Provider<CryptoService>((ref) => CryptoService());
 
-final keyDerivationProvider = Provider<KeyDerivationService>((ref) => const KeyDerivationService());
+final keyDerivationProvider = Provider<KeyDerivationService>(
+  (ref) => const KeyDerivationService(),
+);
 
-final biometricServiceProvider = Provider<BiometricService>((ref) => BiometricService());
+final biometricServiceProvider = Provider<BiometricService>(
+  (ref) => BiometricService(),
+);
 
 final clipboardServiceProvider = Provider<ClipboardService>((ref) {
   final service = ClipboardService();
@@ -47,13 +53,19 @@ final clipboardServiceProvider = Provider<ClipboardService>((ref) {
   return service;
 });
 
-final screenProtectionProvider = Provider<ScreenProtectionService>((ref) => ScreenProtectionService());
+final screenProtectionProvider = Provider<ScreenProtectionService>(
+  (ref) => ScreenProtectionService(),
+);
 
 final totpServiceProvider = Provider<TotpService>((ref) => const TotpService());
 
-final passwordGeneratorProvider = Provider<PasswordGeneratorService>((ref) => PasswordGeneratorService());
+final passwordGeneratorProvider = Provider<PasswordGeneratorService>(
+  (ref) => PasswordGeneratorService(),
+);
 
-final passwordAnalyzerProvider = Provider<PasswordAnalyzerService>((ref) => const PasswordAnalyzerService());
+final passwordAnalyzerProvider = Provider<PasswordAnalyzerService>(
+  (ref) => const PasswordAnalyzerService(),
+);
 
 final securityAuditServiceProvider = Provider<SecurityAuditService>(
   (ref) => SecurityAuditService(ref.watch(passwordAnalyzerProvider)),
@@ -68,7 +80,9 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
 );
 
 /// Settings loaded in `main()` before the first frame (overridden there).
-final initialSettingsProvider = Provider<AppSettings>((ref) => const AppSettings());
+final initialSettingsProvider = Provider<AppSettings>(
+  (ref) => const AppSettings(),
+);
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepositoryImpl(

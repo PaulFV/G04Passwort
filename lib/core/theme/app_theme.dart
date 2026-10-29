@@ -27,27 +27,30 @@ abstract final class AppTheme {
 
   static ThemeData _build(Brightness brightness, Color accent) {
     final isDark = brightness == Brightness.dark;
-    final scheme = ColorScheme.fromSeed(
-      seedColor: accent,
-      brightness: brightness,
-    ).copyWith(
-      primary: accent,
-      secondary: AppColors.cyan,
-      tertiary: AppColors.success,
-      error: AppColors.danger,
-      surface: isDark ? AppColors.surface : const Color(0xFFF3F7FF),
-      onSurface: isDark ? AppColors.textPrimary : const Color(0xFF0A1630),
-      onSurfaceVariant:
-          isDark ? AppColors.textSecondary : const Color(0xFF4A5A7A),
-      outline: isDark ? AppColors.glassBorder : const Color(0x332F8CFF),
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: accent,
+          brightness: brightness,
+        ).copyWith(
+          primary: accent,
+          secondary: AppColors.cyan,
+          tertiary: AppColors.success,
+          error: AppColors.danger,
+          surface: isDark ? AppColors.surface : const Color(0xFFF3F7FF),
+          onSurface: isDark ? AppColors.textPrimary : const Color(0xFF0A1630),
+          onSurfaceVariant: isDark
+              ? AppColors.textSecondary
+              : const Color(0xFF4A5A7A),
+          outline: isDark ? AppColors.glassBorder : const Color(0x332F8CFF),
+        );
 
     final base = ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: scheme,
-      scaffoldBackgroundColor:
-          isDark ? AppColors.background : const Color(0xFFEAF1FF),
+      scaffoldBackgroundColor: isDark
+          ? AppColors.background
+          : const Color(0xFFEAF1FF),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       splashFactory: InkSparkle.splashFactory,
     );
@@ -67,7 +70,9 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w800,
           letterSpacing: -0.4,
         ),
-        headlineSmall: text.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+        headlineSmall: text.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
         titleLarge: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         titleMedium: text.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         labelLarge: text.labelLarge?.copyWith(
@@ -82,8 +87,9 @@ abstract final class AppTheme {
         centerTitle: false,
         foregroundColor: scheme.onSurface,
         titleTextStyle: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-        systemOverlayStyle:
-            isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        systemOverlayStyle: isDark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
       ),
       cardTheme: CardThemeData(
         color: isDark ? AppColors.glass : Colors.white.withValues(alpha: 0.8),
@@ -98,10 +104,14 @@ abstract final class AppTheme {
         fillColor: isDark
             ? const Color(0x800A1838)
             : Colors.white.withValues(alpha: 0.9),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
         labelStyle: TextStyle(color: scheme.onSurfaceVariant),
-        hintStyle: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: .7)),
+        hintStyle: TextStyle(
+          color: scheme.onSurfaceVariant.withValues(alpha: .7),
+        ),
         prefixIconColor: scheme.onSurfaceVariant,
         suffixIconColor: scheme.onSurfaceVariant,
         border: OutlineInputBorder(

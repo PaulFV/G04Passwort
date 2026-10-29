@@ -42,12 +42,12 @@ abstract final class AppColors {
 
   /// Gradient for primary call-to-action buttons.
   static LinearGradient primaryGradient(Color accent) => LinearGradient(
-        colors: [
-          Color.lerp(accent, Colors.white, 0.18)!,
-          accent,
-          Color.lerp(accent, Colors.black, 0.25)!,
-        ],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      );
+    colors: [
+      Color.lerp(accent, Colors.white, 0.18)!,
+      accent,
+      Color.lerp(accent, Colors.black, 0.25)!,
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 }

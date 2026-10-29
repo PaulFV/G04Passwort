@@ -33,7 +33,11 @@ abstract interface class AuthRepository {
   Future<void> storeBiometricKey();
   Future<void> removeBiometricKey();
 
-  Future<void> changeMasterPassword(String current, String next, {String? hint});
+  Future<void> changeMasterPassword(
+    String current,
+    String next, {
+    String? hint,
+  });
 
   /// Unwraps a vault key of a foreign header (used for backup import).
   Future<Uint8List> unwrapKey(VaultHeader header, String password);
@@ -56,10 +60,10 @@ class AuthRepositoryImpl implements AuthRepository {
     required CryptoService crypto,
     required KeyDerivationService kdf,
     required SecureStorageService storage,
-  })  : _db = database,
-        _crypto = crypto,
-        _kdf = kdf,
-        _storage = storage;
+  }) : _db = database,
+       _crypto = crypto,
+       _kdf = kdf,
+       _storage = storage;
 
   static const _headerKey = 'vault_header';
 
@@ -77,7 +81,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Uint8List requireKey() => _vaultKey ?? (throw const VaultLockedException());
 
   @override
-  Future<bool> isVaultInitialized() async => (await _db.readMeta(_headerKey)) != null;
+  Future<bool> isVaultInitialized() async =>
+      (await _db.readMeta(_headerKey)) != null;
 
   @override
   Future<VaultHeader?> readHeader() async {
@@ -87,7 +92,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> createVault(String masterPassword, {String? hint}) async {
-    final params = KdfParams.recommended(_crypto.randomBytes(KeyDerivationService.saltLength));
+    final params = KdfParams.recommended(
+      _crypto.randomBytes(KeyDerivationService.saltLength),
+    );
     final kek = await _kdf.deriveKey(masterPassword, params);
     final vaultKey = _crypto.generateKey();
     final wrapped = await _crypto.encrypt(
@@ -126,7 +133,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> unlock(String masterPassword) async {
     final header = await readHeader();
-    if (header == null) throw const InvalidBackupException('Kein Tresor vorhanden.');
+    if (header == null)
+      throw const InvalidBackupException('Kein Tresor vorhanden.');
     _vaultKey = await unwrapKey(header, masterPassword);
   }
 
@@ -152,7 +160,8 @@ class AuthRepositoryImpl implements AuthRepository {
       _storage.write(StorageKeys.biometricVaultKey, base64Encode(requireKey()));
 
   @override
-  Future<void> removeBiometricKey() => _storage.delete(StorageKeys.biometricVaultKey);
+  Future<void> removeBiometricKey() =>
+      _storage.delete(StorageKeys.biometricVaultKey);
 
   @override
   Future<bool> unlockWithStoredKey() async {
@@ -166,18 +175,32 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> changeMasterPassword(String current, String next, {String? hint}) async {
+  Future<void> changeMasterPassword(
+    String current,
+    String next, {
+    String? hint,
+  }) async {
     final header = await readHeader();
     if (header == null) throw const VaultLockedException();
     final vaultKey = await unwrapKey(header, current);
-    final params = KdfParams.recommended(_crypto.randomBytes(KeyDerivationService.saltLength));
+    final params = KdfParams.recommended(
+      _crypto.randomBytes(KeyDerivationService.saltLength),
+    );
     final kek = await _kdf.deriveKey(next, params);
-    final wrapped = await _crypto.encrypt(vaultKey, kek, aad: utf8.encode(VaultHeader.wrapAad));
+    final wrapped = await _crypto.encrypt(
+      vaultKey,
+      kek,
+      aad: utf8.encode(VaultHeader.wrapAad),
+    );
     CryptoService.wipe(kek);
     await _db.writeMeta(
       _headerKey,
       header
-          .copyWith(kdf: params, wrappedVaultKey: base64Encode(wrapped), passwordHint: hint)
+          .copyWith(
+            kdf: params,
+            wrappedVaultKey: base64Encode(wrapped),
+            passwordHint: hint,
+          )
           .encode(),
     );
     _vaultKey = vaultKey;

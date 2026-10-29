@@ -19,21 +19,33 @@ void main() {
 
   test('only digits when only digits are selected', () {
     final p = generator.generate(
-      const GeneratorOptions(length: 20, uppercase: false, lowercase: false, symbols: false),
+      const GeneratorOptions(
+        length: 20,
+        uppercase: false,
+        lowercase: false,
+        symbols: false,
+      ),
     );
     expect(p, matches(RegExp(r'^\d{20}$')));
   });
 
   test('excludes ambiguous characters', () {
     for (var i = 0; i < 100; i++) {
-      final p = generator.generate(const GeneratorOptions(length: 64, excludeAmbiguous: true));
+      final p = generator.generate(
+        const GeneratorOptions(length: 64, excludeAmbiguous: true),
+      );
       expect(p, isNot(matches(RegExp(r'[Il1O0o|]'))));
     }
   });
 
   test('passphrase uses words from the list', () {
     final p = generator.generate(
-      const GeneratorOptions(mode: GeneratorMode.passphrase, wordCount: 4, capitalizeWords: false, includeNumber: false),
+      const GeneratorOptions(
+        mode: GeneratorMode.passphrase,
+        wordCount: 4,
+        capitalizeWords: false,
+        includeNumber: false,
+      ),
     );
     final words = p.split('-');
     expect(words, hasLength(4));
@@ -43,11 +55,19 @@ void main() {
   });
 
   test('PIN mode', () {
-    expect(generator.generate(const GeneratorOptions(mode: GeneratorMode.pin, length: 6)), matches(RegExp(r'^\d{6}$')));
+    expect(
+      generator.generate(
+        const GeneratorOptions(mode: GeneratorMode.pin, length: 6),
+      ),
+      matches(RegExp(r'^\d{6}$')),
+    );
   });
 
   test('passwords are not repeated', () {
-    final set = {for (var i = 0; i < 500; i++) generator.generate(const GeneratorOptions())};
+    final set = {
+      for (var i = 0; i < 500; i++)
+        generator.generate(const GeneratorOptions()),
+    };
     expect(set, hasLength(500));
   });
 }

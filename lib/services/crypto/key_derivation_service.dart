@@ -19,12 +19,12 @@ class KdfParams {
   });
 
   factory KdfParams.fromJson(Map<String, dynamic> j) => KdfParams(
-        algorithm: KdfAlgorithm.values.byName(j['alg'] as String),
-        salt: base64Decode(j['salt'] as String),
-        memoryKiB: j['m'] as int? ?? 19456,
-        iterations: j['t'] as int,
-        parallelism: j['p'] as int? ?? 1,
-      );
+    algorithm: KdfAlgorithm.values.byName(j['alg'] as String),
+    salt: base64Decode(j['salt'] as String),
+    memoryKiB: j['m'] as int? ?? 19456,
+    iterations: j['t'] as int,
+    parallelism: j['p'] as int? ?? 1,
+  );
 
   /// Argon2id with OWASP recommended parameters (19 MiB, t=2, p=1).
   /// On the web (single-threaded JS) the memory cost is reduced a little
@@ -39,8 +39,11 @@ class KdfParams {
       : KdfParams(algorithm: KdfAlgorithm.argon2id, salt: salt);
 
   /// PBKDF2-HMAC-SHA256 fallback (OWASP 2023: 600 000 iterations).
-  factory KdfParams.pbkdf2(Uint8List salt) =>
-      KdfParams(algorithm: KdfAlgorithm.pbkdf2Sha256, salt: salt, iterations: 600000);
+  factory KdfParams.pbkdf2(Uint8List salt) => KdfParams(
+    algorithm: KdfAlgorithm.pbkdf2Sha256,
+    salt: salt,
+    iterations: 600000,
+  );
 
   final KdfAlgorithm algorithm;
   final Uint8List salt;
@@ -49,18 +52,18 @@ class KdfParams {
   final int parallelism;
 
   String get description => switch (algorithm) {
-        KdfAlgorithm.argon2id =>
-          'Argon2id · ${memoryKiB ~/ 1024} MiB · $iterations Iterationen',
-        KdfAlgorithm.pbkdf2Sha256 => 'PBKDF2-SHA256 · $iterations Iterationen',
-      };
+    KdfAlgorithm.argon2id =>
+      'Argon2id · ${memoryKiB ~/ 1024} MiB · $iterations Iterationen',
+    KdfAlgorithm.pbkdf2Sha256 => 'PBKDF2-SHA256 · $iterations Iterationen',
+  };
 
   Map<String, dynamic> toJson() => {
-        'alg': algorithm.name,
-        'salt': base64Encode(salt),
-        'm': memoryKiB,
-        't': iterations,
-        'p': parallelism,
-      };
+    'alg': algorithm.name,
+    'salt': base64Encode(salt),
+    'm': memoryKiB,
+    't': iterations,
+    'p': parallelism,
+  };
 }
 
 /// Derives the 256-bit key-encryption-key (KEK) from the master password.
@@ -87,16 +90,16 @@ Future<Uint8List> _derive(Map<String, Object> message) async {
   final KdfAlgorithm algorithm = params.algorithm;
   final SecretKey key = switch (algorithm) {
     KdfAlgorithm.argon2id => await Argon2id(
-        parallelism: params.parallelism,
-        memory: params.memoryKiB,
-        iterations: params.iterations,
-        hashLength: 32,
-      ).deriveKey(secretKey: SecretKeyData(password), nonce: params.salt),
+      parallelism: params.parallelism,
+      memory: params.memoryKiB,
+      iterations: params.iterations,
+      hashLength: 32,
+    ).deriveKey(secretKey: SecretKeyData(password), nonce: params.salt),
     KdfAlgorithm.pbkdf2Sha256 => await Pbkdf2(
-        macAlgorithm: Hmac.sha256(),
-        iterations: params.iterations,
-        bits: 256,
-      ).deriveKey(secretKey: SecretKeyData(password), nonce: params.salt),
+      macAlgorithm: Hmac.sha256(),
+      iterations: params.iterations,
+      bits: 256,
+    ).deriveKey(secretKey: SecretKeyData(password), nonce: params.salt),
   };
   return Uint8List.fromList(await key.extractBytes());
 }

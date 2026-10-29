@@ -36,22 +36,27 @@ class DocumentsScreen extends ConsumerWidget {
                 ? const EmptyState(
                     icon: Icons.description_rounded,
                     title: 'Keine Dokumente',
-                    message: 'Reisepass, Führerschein, Verträge – Daten und PDFs verschlüsselt ablegen.',
+                    message:
+                        'Reisepass, Führerschein, Verträge – Daten und PDFs verschlüsselt ablegen.',
                   )
                 : ListView(
                     children: [
                       for (final d in docs)
                         GlassTile(
                           icon: Icons.picture_as_pdf_rounded,
-                          iconColor: _colors[d.document!.documentType] ?? const Color(0xFFFFC857),
+                          iconColor:
+                              _colors[d.document!.documentType] ??
+                              const Color(0xFFFFC857),
                           title: d.title,
                           subtitle: [
                             if (d.document!.attachments.isNotEmpty)
                               d.document!.attachments.first.extension.isEmpty
                                   ? 'Datei'
                                   : d.document!.attachments.first.extension,
-                            if (d.document!.totalSize > 0) formatBytes(d.document!.totalSize),
-                            if (d.document!.attachments.isEmpty) d.document!.documentType,
+                            if (d.document!.totalSize > 0)
+                              formatBytes(d.document!.totalSize),
+                            if (d.document!.attachments.isEmpty)
+                              d.document!.documentType,
                           ].join(' · '),
                           onTap: () => context.push(Routes.item(d.id)),
                         ),

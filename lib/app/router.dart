@@ -37,7 +37,8 @@ import 'shell/app_shell.dart';
 final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// Builds a fade-through page for a smooth, premium feel.
-CustomTransitionPage<void> _fade(GoRouterState state, Widget child) => CustomTransitionPage<void>(
+CustomTransitionPage<void> _fade(GoRouterState state, Widget child) =>
+    CustomTransitionPage<void>(
       key: state.pageKey,
       child: child,
       transitionDuration: const Duration(milliseconds: 320),
@@ -54,10 +55,14 @@ CustomTransitionPage<void> _fade(GoRouterState state, Widget child) => CustomTra
 /// vault screens are only reachable while the vault is unlocked.
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
-  ref.listen(authControllerProvider.select((s) => s.status), (_, _) => refresh.value++);
+  ref.listen(
+    authControllerProvider.select((s) => s.status),
+    (_, _) => refresh.value++,
+  );
   ref.onDispose(refresh.dispose);
 
-  GoRoute page(String path, Widget Function(GoRouterState s) builder) => GoRoute(
+  GoRoute page(String path, Widget Function(GoRouterState s) builder) =>
+      GoRoute(
         path: path,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) => _fade(state, builder(state)),
@@ -92,18 +97,35 @@ final routerProvider = Provider<GoRouter>((ref) {
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(shell: shell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(path: Routes.dashboard, builder: (_, _) => const DashboardScreen()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: Routes.categories, builder: (_, _) => const CategoriesScreen()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: Routes.generator, builder: (_, _) => const GeneratorScreen()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: Routes.more, builder: (_, _) => const MoreScreen()),
-          ]),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.dashboard,
+                builder: (_, _) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.categories,
+                builder: (_, _) => const CategoriesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.generator,
+                builder: (_, _) => const GeneratorScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: Routes.more, builder: (_, _) => const MoreScreen()),
+            ],
+          ),
         ],
       ),
       page(
@@ -126,8 +148,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               : ItemCategory.fromName(s.uri.queryParameters['category']),
         ),
       ),
-      page('/vault/item/:id', (s) => ItemDetailScreen(itemId: s.pathParameters['id']!)),
-      page('/vault/edit/:id', (s) => ItemEditorScreen(itemId: s.pathParameters['id'])),
+      page(
+        '/vault/item/:id',
+        (s) => ItemDetailScreen(itemId: s.pathParameters['id']!),
+      ),
+      page(
+        '/vault/edit/:id',
+        (s) => ItemEditorScreen(itemId: s.pathParameters['id']),
+      ),
       page(Routes.history, (_) => const HistoryScreen()),
       page(Routes.security, (_) => const SecurityCenterScreen()),
       page(Routes.analysis, (_) => const PasswordAnalysisScreen()),
@@ -140,7 +168,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       page(Routes.design, (_) => const DesignScreen()),
       page(Routes.autoSave, (_) => const AutoSaveScreen()),
       page(Routes.profile, (_) => const ProfileScreen()),
-      page(Routes.changeMasterPassword, (_) => const MasterPasswordScreen(changeMode: true)),
+      page(
+        Routes.changeMasterPassword,
+        (_) => const MasterPasswordScreen(changeMode: true),
+      ),
       page(Routes.backup, (_) => const BackupScreen()),
       page(Routes.sync, (_) => const CloudSyncScreen()),
       page(Routes.about, (_) => const AboutScreen()),

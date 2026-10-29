@@ -118,7 +118,9 @@ class G04Scaffold extends ConsumerWidget {
             child: Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: AppSpacing.maxContentWidth,
+                ),
                 child: Padding(padding: padding, child: body),
               ),
             ),

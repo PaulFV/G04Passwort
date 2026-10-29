@@ -20,7 +20,9 @@ class ItemAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = item.category.color;
-    final letter = item.title.trim().isEmpty ? '?' : item.title.trim()[0].toUpperCase();
+    final letter = item.title.trim().isEmpty
+        ? '?'
+        : item.title.trim()[0].toUpperCase();
     final showIcon = item.type != VaultItemType.login;
     return Container(
       width: size,
@@ -30,10 +32,21 @@ class ItemAvatar extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color.lerp(color, Colors.white, 0.15)!, Color.lerp(color, Colors.black, 0.45)!],
+          colors: [
+            Color.lerp(color, Colors.white, 0.15)!,
+            Color.lerp(color, Colors.black, 0.45)!,
+          ],
         ),
-        border: Border.all(color: Color.lerp(color, Colors.white, 0.5)!.withValues(alpha: 0.7)),
-        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 12, spreadRadius: -3)],
+        border: Border.all(
+          color: Color.lerp(color, Colors.white, 0.5)!.withValues(alpha: 0.7),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.4),
+            blurRadius: 12,
+            spreadRadius: -3,
+          ),
+        ],
       ),
       alignment: Alignment.center,
       child: showIcon
@@ -80,12 +93,18 @@ class VaultItemTile extends ConsumerWidget {
                         item.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: context.text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                        style: context.text.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     if (item.favorite) ...[
                       const SizedBox(width: 6),
-                      const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFC857)),
+                      const Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: Color(0xFFFFC857),
+                      ),
                     ],
                   ],
                 ),
@@ -94,7 +113,9 @@ class VaultItemTile extends ConsumerWidget {
                     item.subtitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.text.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
               ],
             ),
@@ -111,7 +132,10 @@ class VaultItemTile extends ConsumerWidget {
               },
             )
           else
-            Icon(Icons.chevron_right_rounded, color: context.colors.onSurfaceVariant),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: context.colors.onSurfaceVariant,
+            ),
         ],
       ),
     );
@@ -120,7 +144,14 @@ class VaultItemTile extends ConsumerWidget {
 
 /// Search field with "+" button as on the design board.
 class VaultSearchBar extends StatelessWidget {
-  const VaultSearchBar({super.key, this.onTap, this.onAdd, this.onChanged, this.autofocus = false, this.controller});
+  const VaultSearchBar({
+    super.key,
+    this.onTap,
+    this.onAdd,
+    this.onChanged,
+    this.autofocus = false,
+    this.controller,
+  });
 
   final VoidCallback? onTap;
   final VoidCallback? onAdd;
@@ -152,7 +183,10 @@ class VaultSearchBar extends StatelessWidget {
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 14,
+                ),
               ),
             ),
           ),

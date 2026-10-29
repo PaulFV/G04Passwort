@@ -34,7 +34,10 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
             RadioGroup<int>(
               groupValue: current,
@@ -42,7 +45,10 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   for (final o in options)
-                    RadioListTile<int>(value: o, title: Text(AppSettings.durationLabel(o))),
+                    RadioListTile<int>(
+                      value: o,
+                      title: Text(AppSettings.durationLabel(o)),
+                    ),
                 ],
               ),
             ),
@@ -81,9 +87,17 @@ class SettingsScreen extends ConsumerWidget {
                         style: context.text.titleMedium,
                       ),
                       if (s.email.isNotEmpty)
-                        Text(s.email, style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                        Text(
+                          s.email,
+                          style: context.text.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                       const SizedBox(height: 4),
-                      const StatusBadge('Premium', color: AppColors.neonBlueLight),
+                      const StatusBadge(
+                        'Premium',
+                        color: AppColors.neonBlueLight,
+                      ),
                     ],
                   ),
                 ),
@@ -130,21 +144,31 @@ class SettingsScreen extends ConsumerWidget {
           GlassTile(
             icon: Icons.phonelink_lock_rounded,
             title: 'Beim Verlassen der App sperren',
-            trailing: Switch(value: s.lockOnBackground, onChanged: settings.setLockOnBackground),
+            trailing: Switch(
+              value: s.lockOnBackground,
+              onChanged: settings.setLockOnBackground,
+            ),
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.biometric, size: 38),
             title: 'App-Sperre (Biometrie)',
             subtitle: auth.biometricHardware
                 ? 'Fingerabdruck / Face ID'
-                : (kIsWeb ? 'Im Browser nicht verfügbar' : 'Keine Biometrie auf diesem Gerät'),
+                : (kIsWeb
+                      ? 'Im Browser nicht verfügbar'
+                      : 'Keine Biometrie auf diesem Gerät'),
             trailing: Switch(
               value: s.biometricEnabled,
               onChanged: !auth.biometricHardware
                   ? null
                   : (v) async {
-                      final ok = await ref.read(authControllerProvider.notifier).setBiometricEnabled(v);
-                      if (!ok && context.mounted) context.showError('Biometrische Bestätigung fehlgeschlagen');
+                      final ok = await ref
+                          .read(authControllerProvider.notifier)
+                          .setBiometricEnabled(v);
+                      if (!ok && context.mounted)
+                        context.showError(
+                          'Biometrische Bestätigung fehlgeschlagen',
+                        );
                     },
             ),
           ),
@@ -152,7 +176,10 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.screenshot_monitor_rounded,
             title: 'Screenshots blockieren',
             subtitle: 'Verbirgt Inhalte in Screenshots und App-Übersicht',
-            trailing: Switch(value: s.screenshotProtection, onChanged: settings.setScreenshotProtection),
+            trailing: Switch(
+              value: s.screenshotProtection,
+              onChanged: settings.setScreenshotProtection,
+            ),
           ),
           GlassTile(
             icon: Icons.content_paste_off_rounded,
@@ -196,12 +223,14 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () async {
               final ok = await context.confirm(
                 title: 'Tresor zurücksetzen?',
-                message: 'Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht. '
+                message:
+                    'Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht. '
                     'Erstelle vorher ein Backup!',
                 confirmLabel: 'Alles löschen',
                 destructive: true,
               );
-              if (ok) await ref.read(authControllerProvider.notifier).resetVault();
+              if (ok)
+                await ref.read(authControllerProvider.notifier).resetVault();
             },
           ),
         ],

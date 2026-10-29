@@ -15,7 +15,11 @@ class SecurityAuditService {
 
   SecurityReport audit(List<VaultItem> items, {DateTime? now}) {
     final logins = items
-        .where((i) => i.type == VaultItemType.login && (i.login?.password.isNotEmpty ?? false))
+        .where(
+          (i) =>
+              i.type == VaultItemType.login &&
+              (i.login?.password.isNotEmpty ?? false),
+        )
         .toList();
     if (logins.isEmpty) return SecurityReport.empty;
 
@@ -24,7 +28,9 @@ class SecurityAuditService {
     for (final item in logins) {
       byPassword.putIfAbsent(item.login!.password, () => []).add(item.id);
     }
-    final reusedGroups = byPassword.values.where((ids) => ids.length > 1).toList();
+    final reusedGroups = byPassword.values
+        .where((ids) => ids.length > 1)
+        .toList();
     final reusedIds = reusedGroups.expand((g) => g).toSet();
 
     final audits = [
@@ -33,7 +39,8 @@ class SecurityAuditService {
           itemId: item.id,
           strength: _analyzer.analyze(item.login!.password),
           reused: reusedIds.contains(item.id),
-          old: reference
+          old:
+              reference
                   .difference(item.login!.passwordChangedAt ?? item.createdAt)
                   .compareTo(maxPasswordAge) >
               0,
@@ -46,14 +53,19 @@ class SecurityAuditService {
     final mediumRatio = audits.where((a) => a.strength.score == 2).length / n;
     final reusedRatio = reusedIds.length / n;
     final oldRatio = audits.where((a) => a.old).length / n;
-    final score = (100 -
-            weakRatio * 45 -
-            mediumRatio * 15 -
-            reusedRatio * 30 -
-            oldRatio * 10)
-        .round()
-        .clamp(0, 100);
+    final score =
+        (100 -
+                weakRatio * 45 -
+                mediumRatio * 15 -
+                reusedRatio * 30 -
+                oldRatio * 10)
+            .round()
+            .clamp(0, 100);
 
-    return SecurityReport(audits: audits, reusedGroups: reusedGroups, score: score);
+    return SecurityReport(
+      audits: audits,
+      reusedGroups: reusedGroups,
+      score: score,
+    );
   }
 }

@@ -75,7 +75,10 @@ class CryptoService {
       throw const DataIntegrityException();
     }
     final nonce = envelope.sublist(1, 1 + nonceLength);
-    final cipher = envelope.sublist(1 + nonceLength, envelope.length - macLength);
+    final cipher = envelope.sublist(
+      1 + nonceLength,
+      envelope.length - macLength,
+    );
     final mac = envelope.sublist(envelope.length - macLength);
     try {
       final plain = await _aes.decrypt(
@@ -90,28 +93,46 @@ class CryptoService {
   }
 
   /// Encrypts a UTF-8 string and returns base64 text.
-  Future<String> encryptString(String plain, List<int> key, {String? aad}) async =>
-      base64Encode(
-        await encrypt(utf8.encode(plain), key, aad: aad == null ? const [] : utf8.encode(aad)),
-      );
+  Future<String> encryptString(
+    String plain,
+    List<int> key, {
+    String? aad,
+  }) async => base64Encode(
+    await encrypt(
+      utf8.encode(plain),
+      key,
+      aad: aad == null ? const [] : utf8.encode(aad),
+    ),
+  );
 
   /// Decrypts base64 text produced by [encryptString].
-  Future<String> decryptString(String cipher, List<int> key, {String? aad}) async =>
-      utf8.decode(
-        await decrypt(
-          base64Decode(cipher),
-          key,
-          aad: aad == null ? const [] : utf8.encode(aad),
-        ),
-      );
+  Future<String> decryptString(
+    String cipher,
+    List<int> key, {
+    String? aad,
+  }) async => utf8.decode(
+    await decrypt(
+      base64Decode(cipher),
+      key,
+      aad: aad == null ? const [] : utf8.encode(aad),
+    ),
+  );
 
   /// Encrypts a JSON-serialisable map.
-  Future<String> encryptJson(Map<String, dynamic> json, List<int> key, {String? aad}) =>
-      encryptString(jsonEncode(json), key, aad: aad);
+  Future<String> encryptJson(
+    Map<String, dynamic> json,
+    List<int> key, {
+    String? aad,
+  }) => encryptString(jsonEncode(json), key, aad: aad);
 
   /// Decrypts a JSON map produced by [encryptJson].
-  Future<Map<String, dynamic>> decryptJson(String cipher, List<int> key, {String? aad}) async =>
-      jsonDecode(await decryptString(cipher, key, aad: aad)) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> decryptJson(
+    String cipher,
+    List<int> key, {
+    String? aad,
+  }) async =>
+      jsonDecode(await decryptString(cipher, key, aad: aad))
+          as Map<String, dynamic>;
 
   /// Constant-time comparison to avoid timing side channels.
   static bool constantTimeEquals(List<int> a, List<int> b) {

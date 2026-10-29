@@ -17,8 +17,15 @@ void main() {
   test('never disables all character classes', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);
-    container.read(generatorControllerProvider.notifier).update(
-          (o) => o.copyWith(uppercase: false, lowercase: false, digits: false, symbols: false),
+    container
+        .read(generatorControllerProvider.notifier)
+        .update(
+          (o) => o.copyWith(
+            uppercase: false,
+            lowercase: false,
+            digits: false,
+            symbols: false,
+          ),
         );
     final o = container.read(generatorControllerProvider).options;
     expect(o.lowercase, isTrue);

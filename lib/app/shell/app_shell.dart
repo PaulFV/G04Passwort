@@ -20,7 +20,8 @@ class AppShell extends StatelessWidget {
 
   final StatefulNavigationShell shell;
 
-  void _go(int index) => shell.goBranch(index, initialLocation: index == shell.currentIndex);
+  void _go(int index) =>
+      shell.goBranch(index, initialLocation: index == shell.currentIndex);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,10 @@ class AppShell extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       body: shell,
-      bottomNavigationBar: _GlassBottomBar(index: shell.currentIndex, onSelect: _go),
+      bottomNavigationBar: _GlassBottomBar(
+        index: shell.currentIndex,
+        onSelect: _go,
+      ),
     );
   }
 }
@@ -59,7 +63,9 @@ class _GlassBottomBar extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.backgroundDeep.withValues(alpha: 0.78),
-            border: Border(top: BorderSide(color: accent.withValues(alpha: 0.35))),
+            border: Border(
+              top: BorderSide(color: accent.withValues(alpha: 0.35)),
+            ),
           ),
           child: SafeArea(
             top: false,
@@ -118,24 +124,32 @@ class _NavItem extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                color: selected ? accent.withValues(alpha: 0.18) : Colors.transparent,
+                color: selected
+                    ? accent.withValues(alpha: 0.18)
+                    : Colors.transparent,
                 boxShadow: [
-                  if (selected) BoxShadow(color: accent.withValues(alpha: 0.35), blurRadius: 14),
+                  if (selected)
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                    ),
                 ],
               ),
               child: Icon(
                 icon,
                 color: color,
-                shadows: selected ? [Shadow(color: accent, blurRadius: 12)] : null,
+                shadows: selected
+                    ? [Shadow(color: accent, blurRadius: 12)]
+                    : null,
               ),
             ),
             const SizedBox(height: 3),
             Text(
               label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: color,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
+                color: color,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
             ),
           ],
         ),

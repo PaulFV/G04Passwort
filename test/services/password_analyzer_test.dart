@@ -19,6 +19,9 @@ void main() {
 
   test('long random passwords are very strong', () {
     expect(analyzer.analyze(r'G7f#k9!Qp2@Z8&Lm').score, 4);
-    expect(analyzer.analyze('Tanne-Komet-Zebra-Lava-Rubin7').score, greaterThanOrEqualTo(3));
+    expect(
+      analyzer.analyze('Tanne-Komet-Zebra-Lava-Rubin7').score,
+      greaterThanOrEqualTo(3),
+    );
   });
 }

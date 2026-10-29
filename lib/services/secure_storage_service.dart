@@ -5,18 +5,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// WebCrypto on the web) with hardened options.
 class SecureStorageService {
   SecureStorageService([FlutterSecureStorage? storage])
-      : _storage = storage ??
-            const FlutterSecureStorage(
-              aOptions: AndroidOptions(storageNamespace: 'g04passwort'),
-              iOptions: IOSOptions(
-                accessibility: KeychainAccessibility.unlocked_this_device,
-                synchronizable: false,
-              ),
-              mOptions: MacOsOptions(
-                accessibility: KeychainAccessibility.unlocked_this_device,
-                synchronizable: false,
-              ),
-            );
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(storageNamespace: 'g04passwort'),
+            iOptions: IOSOptions(
+              accessibility: KeychainAccessibility.unlocked_this_device,
+              synchronizable: false,
+            ),
+            mOptions: MacOsOptions(
+              accessibility: KeychainAccessibility.unlocked_this_device,
+              synchronizable: false,
+            ),
+          );
 
   final FlutterSecureStorage _storage;
 
@@ -28,7 +29,8 @@ class SecureStorageService {
     }
   }
 
-  Future<void> write(String key, String value) => _storage.write(key: key, value: value);
+  Future<void> write(String key, String value) =>
+      _storage.write(key: key, value: value);
 
   Future<void> delete(String key) => _storage.delete(key: key);
 

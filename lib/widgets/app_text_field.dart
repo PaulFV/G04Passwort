@@ -57,7 +57,9 @@ class _AppTextFieldState extends State<AppTextField> {
         ? IconButton(
             tooltip: _obscured ? 'Anzeigen' : 'Verbergen',
             icon: Icon(
-              _obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+              _obscured
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
             ),
             onPressed: () => setState(() => _obscured = !_obscured),
           )
@@ -65,7 +67,10 @@ class _AppTextFieldState extends State<AppTextField> {
 
     Widget? suffix;
     if (toggle != null && widget.suffix != null) {
-      suffix = Row(mainAxisSize: MainAxisSize.min, children: [toggle, widget.suffix!]);
+      suffix = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [toggle, widget.suffix!],
+      );
     } else {
       suffix = toggle ?? widget.suffix;
     }

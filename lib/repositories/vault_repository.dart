@@ -39,7 +39,11 @@ abstract interface class VaultRepository {
   Future<VaultFolder> saveFolder(String name, {String? id});
   Future<void> deleteFolder(String id);
 
-  Future<AttachmentRef> addAttachment(String name, Uint8List bytes, {String? mimeType});
+  Future<AttachmentRef> addAttachment(
+    String name,
+    Uint8List bytes, {
+    String? mimeType,
+  });
   Future<Uint8List> readAttachment(String id);
   Future<void> putAttachment(String id, Uint8List bytes);
   Future<void> deleteAttachment(String id);
@@ -56,9 +60,9 @@ class VaultRepositoryImpl implements VaultRepository {
     required AppDatabase database,
     required CryptoService crypto,
     required AuthRepository auth,
-  })  : _db = database,
-        _crypto = crypto,
-        _auth = auth;
+  }) : _db = database,
+       _crypto = crypto,
+       _auth = auth;
 
   final AppDatabase _db;
   final CryptoService _crypto;
@@ -98,7 +102,11 @@ class VaultRepositoryImpl implements VaultRepository {
     _folders.clear();
     for (final row in await _db.readAll(AppDatabase.tableItems)) {
       try {
-        final json = await _crypto.decryptJson(row.payload, key, aad: _itemAad(row.id));
+        final json = await _crypto.decryptJson(
+          row.payload,
+          key,
+          aad: _itemAad(row.id),
+        );
         _items[row.id] = VaultItem.fromJson(json);
       } on VaultException {
         // Skip corrupted rows instead of failing the whole vault.
@@ -106,7 +114,11 @@ class VaultRepositoryImpl implements VaultRepository {
     }
     for (final row in await _db.readAll(AppDatabase.tableFolders)) {
       try {
-        final json = await _crypto.decryptJson(row.payload, key, aad: _folderAad(row.id));
+        final json = await _crypto.decryptJson(
+          row.payload,
+          key,
+          aad: _folderAad(row.id),
+        );
         _folders[row.id] = VaultFolder.fromJson(json);
       } on VaultException {
         // ignore corrupted folder
@@ -137,7 +149,9 @@ class VaultRepositoryImpl implements VaultRepository {
       category: ItemCategory.forType(type),
       createdAt: now,
       updatedAt: now,
-      login: type == VaultItemType.login ? LoginData(passwordChangedAt: now) : null,
+      login: type == VaultItemType.login
+          ? LoginData(passwordChangedAt: now)
+          : null,
       card: type == VaultItemType.card ? const CardData() : null,
       document: type == VaultItemType.document ? const DocumentData() : null,
     );
@@ -177,7 +191,10 @@ class VaultRepositoryImpl implements VaultRepository {
           PasswordHistoryEntry(password: oldPw, changedAt: now),
           ...login.passwordHistory,
         ].take(AppConstants.passwordHistoryLength).toList();
-        login = login.copyWith(passwordHistory: history, passwordChangedAt: now);
+        login = login.copyWith(
+          passwordHistory: history,
+          passwordChangedAt: now,
+        );
       }
     }
     return item.copyWith(
@@ -188,14 +205,14 @@ class VaultRepositoryImpl implements VaultRepository {
   }
 
   Future<EncryptedRow> _encryptItem(VaultItem item) async => EncryptedRow(
-        id: item.id,
-        payload: await _crypto.encryptJson(
-          item.toJson(),
-          _auth.requireKey(),
-          aad: _itemAad(item.id),
-        ),
-        updatedAt: item.updatedAt,
-      );
+    id: item.id,
+    payload: await _crypto.encryptJson(
+      item.toJson(),
+      _auth.requireKey(),
+      aad: _itemAad(item.id),
+    ),
+    updatedAt: item.updatedAt,
+  );
 
   @override
   Future<void> delete(String id) async {
@@ -220,7 +237,11 @@ class VaultRepositoryImpl implements VaultRepository {
 
   @override
   Future<VaultFolder> saveFolder(String name, {String? id}) async {
-    final folder = VaultFolder(id: id ?? _uuid.v4(), name: name.trim(), updatedAt: DateTime.now());
+    final folder = VaultFolder(
+      id: id ?? _uuid.v4(),
+      name: name.trim(),
+      updatedAt: DateTime.now(),
+    );
     await _db.upsert(
       AppDatabase.tableFolders,
       EncryptedRow(
@@ -249,7 +270,11 @@ class VaultRepositoryImpl implements VaultRepository {
   }
 
   @override
-  Future<AttachmentRef> addAttachment(String name, Uint8List bytes, {String? mimeType}) async {
+  Future<AttachmentRef> addAttachment(
+    String name,
+    Uint8List bytes, {
+    String? mimeType,
+  }) async {
     if (bytes.length > AppConstants.maxAttachmentBytes) {
       throw const InvalidBackupException('Die Datei ist größer als 10 MB.');
     }
@@ -265,10 +290,18 @@ class VaultRepositoryImpl implements VaultRepository {
 
   @override
   Future<void> putAttachment(String id, Uint8List bytes) async {
-    final envelope = await _crypto.encrypt(bytes, _auth.requireKey(), aad: utf8.encode(_fileAad(id)));
+    final envelope = await _crypto.encrypt(
+      bytes,
+      _auth.requireKey(),
+      aad: utf8.encode(_fileAad(id)),
+    );
     await _db.upsert(
       AppDatabase.tableAttachments,
-      EncryptedRow(id: id, payload: base64Encode(envelope), updatedAt: DateTime.now()),
+      EncryptedRow(
+        id: id,
+        payload: base64Encode(envelope),
+        updatedAt: DateTime.now(),
+      ),
     );
   }
 
@@ -276,11 +309,16 @@ class VaultRepositoryImpl implements VaultRepository {
   Future<Uint8List> readAttachment(String id) async {
     final row = await _db.readOne(AppDatabase.tableAttachments, id);
     if (row == null) throw const DataIntegrityException();
-    return _crypto.decrypt(base64Decode(row.payload), _auth.requireKey(), aad: utf8.encode(_fileAad(id)));
+    return _crypto.decrypt(
+      base64Decode(row.payload),
+      _auth.requireKey(),
+      aad: utf8.encode(_fileAad(id)),
+    );
   }
 
   @override
-  Future<void> deleteAttachment(String id) => _db.deleteRow(AppDatabase.tableAttachments, id);
+  Future<void> deleteAttachment(String id) =>
+      _db.deleteRow(AppDatabase.tableAttachments, id);
 
   @override
   void clear() {

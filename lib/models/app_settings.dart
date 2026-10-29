@@ -45,28 +45,28 @@ class AppSettings {
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> j) => AppSettings(
-        onboardingDone: j['onboardingDone'] as bool? ?? false,
-        darkMode: j['darkMode'] as bool? ?? true,
-        accentIndex: j['accentIndex'] as int? ?? 0,
-        background: AppBackgroundStyle.values.firstWhere(
-          (b) => b.name == j['background'],
-          orElse: () => AppBackgroundStyle.dashboard,
-        ),
-        autoLockSeconds: j['autoLockSeconds'] as int? ?? 30,
-        lockOnBackground: j['lockOnBackground'] as bool? ?? true,
-        clipboardClearSeconds: j['clipboardClearSeconds'] as int? ?? 30,
-        biometricEnabled: j['biometricEnabled'] as bool? ?? false,
-        screenshotProtection: j['screenshotProtection'] as bool? ?? true,
-        autoSaveEnabled: j['autoSaveEnabled'] as bool? ?? false,
-        languageCode: j['languageCode'] as String? ?? 'de',
-        displayName: j['displayName'] as String? ?? '',
-        email: j['email'] as String? ?? '',
-        syncProviders: (j['syncProviders'] as Map<String, dynamic>? ?? const {})
-            .map((k, v) => MapEntry(k, v as bool)),
-        lastBackupAt: j['lastBackupAt'] == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(j['lastBackupAt'] as int),
-      );
+    onboardingDone: j['onboardingDone'] as bool? ?? false,
+    darkMode: j['darkMode'] as bool? ?? true,
+    accentIndex: j['accentIndex'] as int? ?? 0,
+    background: AppBackgroundStyle.values.firstWhere(
+      (b) => b.name == j['background'],
+      orElse: () => AppBackgroundStyle.dashboard,
+    ),
+    autoLockSeconds: j['autoLockSeconds'] as int? ?? 30,
+    lockOnBackground: j['lockOnBackground'] as bool? ?? true,
+    clipboardClearSeconds: j['clipboardClearSeconds'] as int? ?? 30,
+    biometricEnabled: j['biometricEnabled'] as bool? ?? false,
+    screenshotProtection: j['screenshotProtection'] as bool? ?? true,
+    autoSaveEnabled: j['autoSaveEnabled'] as bool? ?? false,
+    languageCode: j['languageCode'] as String? ?? 'de',
+    displayName: j['displayName'] as String? ?? '',
+    email: j['email'] as String? ?? '',
+    syncProviders: (j['syncProviders'] as Map<String, dynamic>? ?? const {})
+        .map((k, v) => MapEntry(k, v as bool)),
+    lastBackupAt: j['lastBackupAt'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(j['lastBackupAt'] as int),
+  );
 
   /// Selectable auto-lock delays in seconds (0 = immediately, -1 = never).
   static const autoLockOptions = [0, 30, 60, 300, 900, -1];
@@ -116,40 +116,40 @@ class AppSettings {
     String? email,
     Map<String, bool>? syncProviders,
     DateTime? lastBackupAt,
-  }) =>
-      AppSettings(
-        onboardingDone: onboardingDone ?? this.onboardingDone,
-        darkMode: darkMode ?? this.darkMode,
-        accentIndex: accentIndex ?? this.accentIndex,
-        background: background ?? this.background,
-        autoLockSeconds: autoLockSeconds ?? this.autoLockSeconds,
-        lockOnBackground: lockOnBackground ?? this.lockOnBackground,
-        clipboardClearSeconds: clipboardClearSeconds ?? this.clipboardClearSeconds,
-        biometricEnabled: biometricEnabled ?? this.biometricEnabled,
-        screenshotProtection: screenshotProtection ?? this.screenshotProtection,
-        autoSaveEnabled: autoSaveEnabled ?? this.autoSaveEnabled,
-        languageCode: languageCode ?? this.languageCode,
-        displayName: displayName ?? this.displayName,
-        email: email ?? this.email,
-        syncProviders: syncProviders ?? this.syncProviders,
-        lastBackupAt: lastBackupAt ?? this.lastBackupAt,
-      );
+  }) => AppSettings(
+    onboardingDone: onboardingDone ?? this.onboardingDone,
+    darkMode: darkMode ?? this.darkMode,
+    accentIndex: accentIndex ?? this.accentIndex,
+    background: background ?? this.background,
+    autoLockSeconds: autoLockSeconds ?? this.autoLockSeconds,
+    lockOnBackground: lockOnBackground ?? this.lockOnBackground,
+    clipboardClearSeconds: clipboardClearSeconds ?? this.clipboardClearSeconds,
+    biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+    screenshotProtection: screenshotProtection ?? this.screenshotProtection,
+    autoSaveEnabled: autoSaveEnabled ?? this.autoSaveEnabled,
+    languageCode: languageCode ?? this.languageCode,
+    displayName: displayName ?? this.displayName,
+    email: email ?? this.email,
+    syncProviders: syncProviders ?? this.syncProviders,
+    lastBackupAt: lastBackupAt ?? this.lastBackupAt,
+  );
 
   Map<String, dynamic> toJson() => {
-        'onboardingDone': onboardingDone,
-        'darkMode': darkMode,
-        'accentIndex': accentIndex,
-        'background': background.name,
-        'autoLockSeconds': autoLockSeconds,
-        'lockOnBackground': lockOnBackground,
-        'clipboardClearSeconds': clipboardClearSeconds,
-        'biometricEnabled': biometricEnabled,
-        'screenshotProtection': screenshotProtection,
-        'autoSaveEnabled': autoSaveEnabled,
-        'languageCode': languageCode,
-        'displayName': displayName,
-        'email': email,
-        'syncProviders': syncProviders,
-        if (lastBackupAt != null) 'lastBackupAt': lastBackupAt!.millisecondsSinceEpoch,
-      };
+    'onboardingDone': onboardingDone,
+    'darkMode': darkMode,
+    'accentIndex': accentIndex,
+    'background': background.name,
+    'autoLockSeconds': autoLockSeconds,
+    'lockOnBackground': lockOnBackground,
+    'clipboardClearSeconds': clipboardClearSeconds,
+    'biometricEnabled': biometricEnabled,
+    'screenshotProtection': screenshotProtection,
+    'autoSaveEnabled': autoSaveEnabled,
+    'languageCode': languageCode,
+    'displayName': displayName,
+    'email': email,
+    'syncProviders': syncProviders,
+    if (lastBackupAt != null)
+      'lastBackupAt': lastBackupAt!.millisecondsSinceEpoch,
+  };
 }

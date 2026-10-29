@@ -19,7 +19,10 @@ class HistoryScreen extends ConsumerWidget {
     return G04Scaffold(
       title: 'Passwort-Verlauf',
       body: items.isEmpty
-          ? const EmptyState(icon: Icons.history_rounded, title: 'Noch keine Änderungen')
+          ? const EmptyState(
+              icon: Icons.history_rounded,
+              title: 'Noch keine Änderungen',
+            )
           : ListView.builder(
               padding: const EdgeInsets.only(bottom: 32),
               itemCount: items.length,
@@ -31,9 +34,15 @@ class HistoryScreen extends ConsumerWidget {
                   trailing: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(fmt.format(item.updatedAt), style: Theme.of(context).textTheme.labelSmall),
+                      Text(
+                        fmt.format(item.updatedAt),
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
                       if (changes > 0)
-                        Text('$changes frühere', style: Theme.of(context).textTheme.labelSmall),
+                        Text(
+                          '$changes frühere',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
                     ],
                   ),
                 );

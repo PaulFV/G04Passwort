@@ -38,12 +38,19 @@ class DesignScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(24),
-                          color: s.darkMode == dark ? context.colors.primary : Colors.transparent,
+                          color: s.darkMode == dark
+                              ? context.colors.primary
+                              : Colors.transparent,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(dark ? Icons.dark_mode_rounded : Icons.light_mode_rounded, size: 18),
+                            Icon(
+                              dark
+                                  ? Icons.dark_mode_rounded
+                                  : Icons.light_mode_rounded,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             Text(dark ? 'Dunkel' : 'Hell'),
                           ],
@@ -64,7 +71,11 @@ class DesignScreen extends ConsumerWidget {
             childAspectRatio: 0.8,
             children: [
               for (final bg in AppBackgroundStyle.values)
-                _BackgroundTile(style: bg, selected: s.background == bg, onTap: () => c.setBackground(bg)),
+                _BackgroundTile(
+                  style: bg,
+                  selected: s.background == bg,
+                  onTap: () => c.setBackground(bg),
+                ),
             ],
           ),
           const SectionHeader('Akzentfarbe'),
@@ -92,12 +103,16 @@ class DesignScreen extends ConsumerWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.accents[i].withValues(alpha: s.accentIndex == i ? 0.8 : 0.35),
+                            color: AppColors.accents[i].withValues(
+                              alpha: s.accentIndex == i ? 0.8 : 0.35,
+                            ),
                             blurRadius: s.accentIndex == i ? 18 : 8,
                           ),
                         ],
                       ),
-                      child: s.accentIndex == i ? const Icon(Icons.check_rounded, color: Colors.white) : null,
+                      child: s.accentIndex == i
+                          ? const Icon(Icons.check_rounded, color: Colors.white)
+                          : null,
                     ),
                   ),
                 ),
@@ -110,7 +125,11 @@ class DesignScreen extends ConsumerWidget {
 }
 
 class _BackgroundTile extends StatelessWidget {
-  const _BackgroundTile({required this.style, required this.selected, required this.onTap});
+  const _BackgroundTile({
+    required this.style,
+    required this.selected,
+    required this.onTap,
+  });
 
   final AppBackgroundStyle style;
   final bool selected;
@@ -125,8 +144,14 @@ class _BackgroundTile extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: selected ? accent : AppColors.glassBorder, width: selected ? 2.5 : 1),
-          boxShadow: [if (selected) BoxShadow(color: accent.withValues(alpha: 0.5), blurRadius: 16)],
+          border: Border.all(
+            color: selected ? accent : AppColors.glassBorder,
+            width: selected ? 2.5 : 1,
+          ),
+          boxShadow: [
+            if (selected)
+              BoxShadow(color: accent.withValues(alpha: 0.5), blurRadius: 16),
+          ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
@@ -140,7 +165,11 @@ class _BackgroundTile extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   color: Colors.black54,
-                  child: Text(style.label, textAlign: TextAlign.center, style: context.text.labelSmall),
+                  child: Text(
+                    style.label,
+                    textAlign: TextAlign.center,
+                    style: context.text.labelSmall,
+                  ),
                 ),
               ),
               if (selected)
@@ -148,7 +177,11 @@ class _BackgroundTile extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: Padding(
                     padding: EdgeInsets.all(4),
-                    child: Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                    child: Icon(
+                      Icons.check_circle_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
             ],

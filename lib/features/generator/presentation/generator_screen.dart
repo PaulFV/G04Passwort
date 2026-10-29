@@ -42,7 +42,8 @@ class GeneratorScreen extends ConsumerWidget {
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
-                    transitionBuilder: (c, a) => FadeTransition(opacity: a, child: c),
+                    transitionBuilder: (c, a) =>
+                        FadeTransition(opacity: a, child: c),
                     child: SelectableText(
                       state.password,
                       key: ValueKey(state.password),
@@ -70,7 +71,9 @@ class GeneratorScreen extends ConsumerWidget {
                 const SizedBox(height: 6),
                 Text(
                   'Knackzeit (offline): ${strength.crackTimeLabel} · ${strength.entropyBits.round()} Bit',
-                  style: context.text.bodySmall?.copyWith(color: AppColors.textMuted),
+                  style: context.text.bodySmall?.copyWith(
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -78,10 +81,12 @@ class GeneratorScreen extends ConsumerWidget {
           const SizedBox(height: 14),
           SegmentedButton<GeneratorMode>(
             segments: [
-              for (final m in GeneratorMode.values) ButtonSegment(value: m, label: Text(m.label)),
+              for (final m in GeneratorMode.values)
+                ButtonSegment(value: m, label: Text(m.label)),
             ],
             selected: {o.mode},
-            onSelectionChanged: (s) => controller.update((o) => o.copyWith(mode: s.first)),
+            onSelectionChanged: (s) =>
+                controller.update((o) => o.copyWith(mode: s.first)),
           ),
           const SizedBox(height: 14),
           GlassCard(
@@ -93,23 +98,30 @@ class GeneratorScreen extends ConsumerWidget {
                     value: o.wordCount,
                     min: 3,
                     max: 10,
-                    onChanged: (v) => controller.update((o) => o.copyWith(wordCount: v)),
+                    onChanged: (v) =>
+                        controller.update((o) => o.copyWith(wordCount: v)),
                   ),
                   _Toggle(
                     icon: Icons.text_fields_rounded,
                     label: 'Wörter großschreiben',
                     value: o.capitalizeWords,
-                    onChanged: (v) => controller.update((o) => o.copyWith(capitalizeWords: v)),
+                    onChanged: (v) => controller.update(
+                      (o) => o.copyWith(capitalizeWords: v),
+                    ),
                   ),
                   _Toggle(
                     icon: Icons.pin_outlined,
                     label: 'Zahl einfügen',
                     value: o.includeNumber,
-                    onChanged: (v) => controller.update((o) => o.copyWith(includeNumber: v)),
+                    onChanged: (v) =>
+                        controller.update((o) => o.copyWith(includeNumber: v)),
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.horizontal_rule_rounded, color: AppColors.neonBlueLight),
+                      const Icon(
+                        Icons.horizontal_rule_rounded,
+                        color: AppColors.neonBlueLight,
+                      ),
                       const SizedBox(width: 12),
                       const Expanded(child: Text('Trennzeichen')),
                       for (final sep in const ['-', '.', '_', ' '])
@@ -118,7 +130,9 @@ class GeneratorScreen extends ConsumerWidget {
                           child: ChoiceChip(
                             label: Text(sep == ' ' ? '␣' : sep),
                             selected: o.separator == sep,
-                            onSelected: (_) => controller.update((o) => o.copyWith(separator: sep)),
+                            onSelected: (_) => controller.update(
+                              (o) => o.copyWith(separator: sep),
+                            ),
                           ),
                         ),
                     ],
@@ -127,40 +141,51 @@ class GeneratorScreen extends ConsumerWidget {
                   _SliderRow(
                     label: 'Länge',
                     value: o.length,
-                    min: o.mode == GeneratorMode.pin ? 4 : GeneratorOptions.minLength,
-                    max: o.mode == GeneratorMode.pin ? 12 : GeneratorOptions.maxLength,
-                    onChanged: (v) => controller.update((o) => o.copyWith(length: v)),
+                    min: o.mode == GeneratorMode.pin
+                        ? 4
+                        : GeneratorOptions.minLength,
+                    max: o.mode == GeneratorMode.pin
+                        ? 12
+                        : GeneratorOptions.maxLength,
+                    onChanged: (v) =>
+                        controller.update((o) => o.copyWith(length: v)),
                   ),
                   if (o.mode == GeneratorMode.password) ...[
                     _Toggle(
                       icon: Icons.keyboard_capslock_rounded,
                       label: 'Großbuchstaben (A-Z)',
                       value: o.uppercase,
-                      onChanged: (v) => controller.update((o) => o.copyWith(uppercase: v)),
+                      onChanged: (v) =>
+                          controller.update((o) => o.copyWith(uppercase: v)),
                     ),
                     _Toggle(
                       icon: Icons.text_fields_rounded,
                       label: 'Kleinbuchstaben (a-z)',
                       value: o.lowercase,
-                      onChanged: (v) => controller.update((o) => o.copyWith(lowercase: v)),
+                      onChanged: (v) =>
+                          controller.update((o) => o.copyWith(lowercase: v)),
                     ),
                     _Toggle(
                       icon: Icons.looks_one_outlined,
                       label: 'Zahlen (0-9)',
                       value: o.digits,
-                      onChanged: (v) => controller.update((o) => o.copyWith(digits: v)),
+                      onChanged: (v) =>
+                          controller.update((o) => o.copyWith(digits: v)),
                     ),
                     _Toggle(
                       icon: Icons.tag_rounded,
                       label: 'Sonderzeichen (!@#…)',
                       value: o.symbols,
-                      onChanged: (v) => controller.update((o) => o.copyWith(symbols: v)),
+                      onChanged: (v) =>
+                          controller.update((o) => o.copyWith(symbols: v)),
                     ),
                     _Toggle(
                       icon: Icons.visibility_off_outlined,
                       label: 'Ähnliche Zeichen vermeiden (l, 1, O, 0)',
                       value: o.excludeAmbiguous,
-                      onChanged: (v) => controller.update((o) => o.copyWith(excludeAmbiguous: v)),
+                      onChanged: (v) => controller.update(
+                        (o) => o.copyWith(excludeAmbiguous: v),
+                      ),
                     ),
                   ],
                 ],
@@ -215,7 +240,12 @@ class _SliderRow extends StatelessWidget {
           children: [
             Text(label, style: context.text.titleSmall),
             const Spacer(),
-            Text('$value', style: context.text.titleMedium?.copyWith(color: AppColors.neonBlueLight)),
+            Text(
+              '$value',
+              style: context.text.titleMedium?.copyWith(
+                color: AppColors.neonBlueLight,
+              ),
+            ),
           ],
         ),
         Slider(
@@ -232,7 +262,12 @@ class _SliderRow extends StatelessWidget {
 }
 
 class _Toggle extends StatelessWidget {
-  const _Toggle({required this.icon, required this.label, required this.value, required this.onChanged});
+  const _Toggle({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
 
   final IconData icon;
   final String label;

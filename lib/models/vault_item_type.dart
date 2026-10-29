@@ -12,8 +12,6 @@ enum VaultItemType {
   final String label;
   final IconData icon;
 
-  static VaultItemType fromName(String? name) => VaultItemType.values.firstWhere(
-        (t) => t.name == name,
-        orElse: () => VaultItemType.login,
-      );
+  static VaultItemType fromName(String? name) => VaultItemType.values
+      .firstWhere((t) => t.name == name, orElse: () => VaultItemType.login);
 }

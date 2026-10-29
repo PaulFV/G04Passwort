@@ -12,7 +12,11 @@ final passwordStrengthProvider = Provider.family<PasswordStrength, String>(
 
 @immutable
 class GeneratorState {
-  const GeneratorState({required this.options, required this.password, required this.history});
+  const GeneratorState({
+    required this.options,
+    required this.password,
+    required this.history,
+  });
 
   final GeneratorOptions options;
   final String password;
@@ -20,12 +24,15 @@ class GeneratorState {
   /// Recently generated passwords of this session (not persisted).
   final List<String> history;
 
-  GeneratorState copyWith({GeneratorOptions? options, String? password, List<String>? history}) =>
-      GeneratorState(
-        options: options ?? this.options,
-        password: password ?? this.password,
-        history: history ?? this.history,
-      );
+  GeneratorState copyWith({
+    GeneratorOptions? options,
+    String? password,
+    List<String>? history,
+  }) => GeneratorState(
+    options: options ?? this.options,
+    password: password ?? this.password,
+    history: history ?? this.history,
+  );
 }
 
 /// State of the password generator screen.
@@ -66,4 +73,6 @@ class GeneratorController extends Notifier<GeneratorState> {
 }
 
 final generatorControllerProvider =
-    NotifierProvider<GeneratorController, GeneratorState>(GeneratorController.new);
+    NotifierProvider<GeneratorController, GeneratorState>(
+      GeneratorController.new,
+    );

@@ -17,8 +17,15 @@ void main() {
     });
 
     test('RFC 6238 TOTP test vectors (8 digits)', () async {
-      final config = TotpConfig(secret: utf8.encode('12345678901234567890'), digits: 8);
-      final vectors = {59: '94287082', 1111111109: '07081804', 1234567890: '89005924'};
+      final config = TotpConfig(
+        secret: utf8.encode('12345678901234567890'),
+        digits: 8,
+      );
+      final vectors = {
+        59: '94287082',
+        1111111109: '07081804',
+        1234567890: '89005924',
+      };
       for (final e in vectors.entries) {
         final code = await totp.generate(
           config,
@@ -37,7 +44,18 @@ void main() {
 
   group('parsing', () {
     test('base32 decoding', () {
-      expect(TotpService.base32Decode('JBSWY3DPEHPK3PXP'), [72, 101, 108, 108, 111, 33, 0xDE, 0xAD, 0xBE, 0xEF]);
+      expect(TotpService.base32Decode('JBSWY3DPEHPK3PXP'), [
+        72,
+        101,
+        108,
+        108,
+        111,
+        33,
+        0xDE,
+        0xAD,
+        0xBE,
+        0xEF,
+      ]);
       expect(TotpService.base32Decode('not valid!'), isNull);
     });
 

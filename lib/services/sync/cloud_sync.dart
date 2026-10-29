@@ -8,7 +8,11 @@ import '../../core/errors/vault_exceptions.dart';
 /// an encrypted backup – providers never see plaintext (zero knowledge).
 @immutable
 class SyncSnapshot {
-  const SyncSnapshot({required this.bytes, required this.modifiedAt, this.revision});
+  const SyncSnapshot({
+    required this.bytes,
+    required this.modifiedAt,
+    this.revision,
+  });
 
   final Uint8List bytes;
   final DateTime modifiedAt;
@@ -129,8 +133,8 @@ class SyncService {
     required this.providers,
     required Future<Uint8List> Function() createSnapshot,
     required Future<void> Function(Uint8List bytes) mergeSnapshot,
-  })  : _createSnapshot = createSnapshot,
-        _mergeSnapshot = mergeSnapshot;
+  }) : _createSnapshot = createSnapshot,
+       _mergeSnapshot = mergeSnapshot;
 
   final List<CloudSyncProvider> providers;
   final Future<Uint8List> Function() _createSnapshot;

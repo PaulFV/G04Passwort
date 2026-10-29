@@ -45,8 +45,13 @@ class BackupController {
   }
 
   /// Lets the user pick a file. Returns `null` when cancelled.
-  Future<({String name, Uint8List bytes})?> pickFile(List<String> extensions) async {
-    final file = await FilePicker.pickFile(type: FileType.custom, allowedExtensions: extensions);
+  Future<({String name, Uint8List bytes})?> pickFile(
+    List<String> extensions,
+  ) async {
+    final file = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: extensions,
+    );
     if (file == null) return null;
     return (name: file.name, bytes: await file.readAsBytes());
   }
@@ -54,7 +59,10 @@ class BackupController {
   Future<ImportResult> restoreBackup(Uint8List bytes, String password) =>
       _io.restoreEncryptedBackup(bytes, password);
 
-  Future<ImportResult> importCsv(Uint8List bytes) => _io.importCsv(utf8.decode(bytes, allowMalformed: true));
+  Future<ImportResult> importCsv(Uint8List bytes) =>
+      _io.importCsv(utf8.decode(bytes, allowMalformed: true));
 }
 
-final backupControllerProvider = Provider<BackupController>(BackupController.new);
+final backupControllerProvider = Provider<BackupController>(
+  BackupController.new,
+);

@@ -48,9 +48,9 @@ class SecurityReport {
   int get withTotp => audits.where((a) => a.hasTotp).length;
 
   String get scoreLabel => switch (score) {
-        >= 90 => 'Sehr sicher',
-        >= 75 => 'Sicher',
-        >= 50 => 'Verbesserungswürdig',
-        _ => 'Gefährdet',
-      };
+    >= 90 => 'Sehr sicher',
+    >= 75 => 'Sicher',
+    >= 50 => 'Verbesserungswürdig',
+    _ => 'Gefährdet',
+  };
 }

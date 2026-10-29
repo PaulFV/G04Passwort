@@ -9,7 +9,8 @@ import 'wordlist.dart';
 /// character of every selected class is guaranteed; the result is then
 /// shuffled (Fisher–Yates) so the guaranteed characters are not predictable.
 class PasswordGeneratorService {
-  PasswordGeneratorService({Random? random}) : _random = random ?? Random.secure();
+  PasswordGeneratorService({Random? random})
+    : _random = random ?? Random.secure();
 
   final Random _random;
 
@@ -20,10 +21,10 @@ class PasswordGeneratorService {
   static const String ambiguous = 'Il1O0o|`\'"';
 
   String generate(GeneratorOptions o) => switch (o.mode) {
-        GeneratorMode.password => _password(o),
-        GeneratorMode.passphrase => _passphrase(o),
-        GeneratorMode.pin => _pin(o.length.clamp(4, 12)),
-      };
+    GeneratorMode.password => _password(o),
+    GeneratorMode.passphrase => _passphrase(o),
+    GeneratorMode.pin => _pin(o.length.clamp(4, 12)),
+  };
 
   String _password(GeneratorOptions o) {
     String filter(String chars) => o.excludeAmbiguous
@@ -38,7 +39,10 @@ class PasswordGeneratorService {
     ];
     if (classes.isEmpty) classes.add(filter(lower));
 
-    final length = o.length.clamp(GeneratorOptions.minLength, GeneratorOptions.maxLength);
+    final length = o.length.clamp(
+      GeneratorOptions.minLength,
+      GeneratorOptions.maxLength,
+    );
     final all = classes.join();
     final chars = <String>[
       for (final c in classes) _pick(c),

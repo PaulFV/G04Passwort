@@ -14,7 +14,9 @@ import '../../settings/application/settings_controller.dart';
 
 /// Live, decrypted vault items (empty while locked).
 final vaultItemsProvider = StreamProvider<List<VaultItem>>((ref) {
-  final unlocked = ref.watch(authControllerProvider.select((s) => s.status == AuthStatus.unlocked));
+  final unlocked = ref.watch(
+    authControllerProvider.select((s) => s.status == AuthStatus.unlocked),
+  );
   if (!unlocked) return Stream.value(const []);
   return ref.watch(vaultRepositoryProvider).watchItems();
 });
@@ -25,7 +27,9 @@ final itemsProvider = Provider<List<VaultItem>>(
 );
 
 final foldersStreamProvider = StreamProvider<List<VaultFolder>>((ref) {
-  final unlocked = ref.watch(authControllerProvider.select((s) => s.status == AuthStatus.unlocked));
+  final unlocked = ref.watch(
+    authControllerProvider.select((s) => s.status == AuthStatus.unlocked),
+  );
   if (!unlocked) return Stream.value(const []);
   return ref.watch(vaultRepositoryProvider).watchFolders();
 });
@@ -68,18 +72,21 @@ final allTagsProvider = Provider<List<String>>((ref) {
 
 /// Items with a TOTP secret (2FA Authenticator).
 final totpItemsProvider = Provider<List<VaultItem>>(
-  (ref) => ref.watch(itemsProvider).where((i) => i.login?.hasTotp ?? false).toList(),
+  (ref) =>
+      ref.watch(itemsProvider).where((i) => i.login?.hasTotp ?? false).toList(),
 );
 
 /// Most recently changed items (Passwort-Verlauf / letzte Änderungen).
 final recentItemsProvider = Provider<List<VaultItem>>((ref) {
-  final list = [...ref.watch(itemsProvider)]..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  final list = [...ref.watch(itemsProvider)]
+    ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   return list;
 });
 
 /// Security center report, recomputed whenever items change.
 final securityReportProvider = Provider<SecurityReport>(
-  (ref) => ref.watch(securityAuditServiceProvider).audit(ref.watch(itemsProvider)),
+  (ref) =>
+      ref.watch(securityAuditServiceProvider).audit(ref.watch(itemsProvider)),
 );
 
 // ---------------------------------------------------------------------------
@@ -93,7 +100,9 @@ class SearchQueryController extends Notifier<String> {
   void set(String value) => state = value;
 }
 
-final searchQueryProvider = NotifierProvider<SearchQueryController, String>(SearchQueryController.new);
+final searchQueryProvider = NotifierProvider<SearchQueryController, String>(
+  SearchQueryController.new,
+);
 
 final searchResultsProvider = Provider<List<VaultItem>>((ref) {
   final q = ref.watch(searchQueryProvider).trim().toLowerCase();
@@ -116,7 +125,10 @@ final clockProvider = StreamProvider<DateTime>(
 );
 
 /// Current TOTP code of an item (null if no / invalid secret).
-final totpCodeProvider = FutureProvider.family<TotpCode?, String>((ref, itemId) async {
+final totpCodeProvider = FutureProvider.family<TotpCode?, String>((
+  ref,
+  itemId,
+) async {
   ref.watch(clockProvider);
   final secret = ref.watch(itemByIdProvider(itemId))?.login?.totpSecret;
   if (secret == null) return null;
@@ -135,30 +147,45 @@ class VaultActions {
 
   final Ref _ref;
 
-  VaultItem newItem(VaultItemType type) => _ref.read(vaultRepositoryProvider).newItem(type);
+  VaultItem newItem(VaultItemType type) =>
+      _ref.read(vaultRepositoryProvider).newItem(type);
 
-  Future<VaultItem> save(VaultItem item) => _ref.read(vaultRepositoryProvider).save(item);
+  Future<VaultItem> save(VaultItem item) =>
+      _ref.read(vaultRepositoryProvider).save(item);
 
-  Future<void> delete(String id) => _ref.read(vaultRepositoryProvider).delete(id);
+  Future<void> delete(String id) =>
+      _ref.read(vaultRepositoryProvider).delete(id);
 
-  Future<void> toggleFavorite(String id) => _ref.read(vaultRepositoryProvider).toggleFavorite(id);
+  Future<void> toggleFavorite(String id) =>
+      _ref.read(vaultRepositoryProvider).toggleFavorite(id);
 
-  Future<VaultFolder> createFolder(String name) => _ref.read(vaultRepositoryProvider).saveFolder(name);
+  Future<VaultFolder> createFolder(String name) =>
+      _ref.read(vaultRepositoryProvider).saveFolder(name);
 
   Future<void> renameFolder(String id, String name) =>
       _ref.read(vaultRepositoryProvider).saveFolder(name, id: id);
 
-  Future<void> deleteFolder(String id) => _ref.read(vaultRepositoryProvider).deleteFolder(id);
+  Future<void> deleteFolder(String id) =>
+      _ref.read(vaultRepositoryProvider).deleteFolder(id);
 
-  Future<AttachmentRef> addAttachment(String name, Uint8List bytes, {String? mimeType}) =>
-      _ref.read(vaultRepositoryProvider).addAttachment(name, bytes, mimeType: mimeType);
+  Future<AttachmentRef> addAttachment(
+    String name,
+    Uint8List bytes, {
+    String? mimeType,
+  }) => _ref
+      .read(vaultRepositoryProvider)
+      .addAttachment(name, bytes, mimeType: mimeType);
 
-  Future<Uint8List> readAttachment(String id) => _ref.read(vaultRepositoryProvider).readAttachment(id);
+  Future<Uint8List> readAttachment(String id) =>
+      _ref.read(vaultRepositoryProvider).readAttachment(id);
 
-  Future<void> deleteAttachment(String id) => _ref.read(vaultRepositoryProvider).deleteAttachment(id);
+  Future<void> deleteAttachment(String id) =>
+      _ref.read(vaultRepositoryProvider).deleteAttachment(id);
 
   /// Copies a value; secrets are wiped after the configured delay.
-  Future<void> copy(String value, {bool secret = true}) => _ref.read(clipboardServiceProvider).copy(
+  Future<void> copy(String value, {bool secret = true}) => _ref
+      .read(clipboardServiceProvider)
+      .copy(
         value,
         clearAfter: secret ? _ref.read(clipboardClearDurationProvider) : null,
       );

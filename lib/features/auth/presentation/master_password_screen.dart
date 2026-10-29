@@ -23,7 +23,8 @@ class MasterPasswordScreen extends ConsumerStatefulWidget {
   final bool changeMode;
 
   @override
-  ConsumerState<MasterPasswordScreen> createState() => _MasterPasswordScreenState();
+  ConsumerState<MasterPasswordScreen> createState() =>
+      _MasterPasswordScreenState();
 }
 
 class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
@@ -78,7 +79,10 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
         context.showError(error);
         return;
       }
-      await showSuccessDialog(context, message: 'Dein Master-Passwort wurde geändert.');
+      await showSuccessDialog(
+        context,
+        message: 'Dein Master-Passwort wurde geändert.',
+      );
       if (mounted) context.pop();
     } else {
       await controller.createVault(_password.text, hint: _hint.text.trim());
@@ -116,7 +120,9 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                     Text(
                       'Das einzige Passwort, das du dir merken musst. Es verschlüsselt deinen gesamten Tresor.',
                       textAlign: TextAlign.center,
-                      style: context.text.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                      style: context.text.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -131,13 +137,16 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                             label: 'Aktuelles Master-Passwort',
                             icon: Icons.lock_clock_outlined,
                             isSecret: true,
-                            validator: (v) => (v ?? '').isEmpty ? 'Bitte eingeben' : null,
+                            validator: (v) =>
+                                (v ?? '').isEmpty ? 'Bitte eingeben' : null,
                           ),
                           const SizedBox(height: 14),
                         ],
                         AppTextField(
                           controller: _password,
-                          label: widget.changeMode ? 'Neues Master-Passwort' : 'Master-Passwort',
+                          label: widget.changeMode
+                              ? 'Neues Master-Passwort'
+                              : 'Master-Passwort',
                           icon: Icons.lock_outline_rounded,
                           isSecret: true,
                           validator: _validatePassword,
@@ -145,12 +154,15 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                         ),
                         const SizedBox(height: 12),
                         StrengthMeter(strength: strength),
-                        if (strength.feedback.isNotEmpty && _password.text.isNotEmpty)
+                        if (strength.feedback.isNotEmpty &&
+                            _password.text.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
                               strength.feedback.first,
-                              style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary),
+                              style: context.text.bodySmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ),
                         const SizedBox(height: 14),
@@ -159,14 +171,18 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                           label: 'Passwort bestätigen',
                           icon: Icons.verified_user_outlined,
                           isSecret: true,
-                          validator: (v) => v != _password.text ? 'Passwörter stimmen nicht überein' : null,
+                          validator: (v) => v != _password.text
+                              ? 'Passwörter stimmen nicht überein'
+                              : null,
                         ),
                         const SizedBox(height: 14),
                         AppTextField(
                           controller: _hint,
                           label: 'Hinweis (optional, unverschlüsselt)',
                           icon: Icons.lightbulb_outline_rounded,
-                          validator: (v) => (v ?? '').isNotEmpty && _password.text.contains(v!)
+                          validator: (v) =>
+                              (v ?? '').isNotEmpty &&
+                                  _password.text.contains(v!)
                               ? 'Der Hinweis darf das Passwort nicht enthalten'
                               : null,
                         ),
@@ -177,7 +193,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                     const SizedBox(height: 14),
                     CheckboxListTile(
                       value: _understood,
-                      onChanged: (v) => setState(() => _understood = v ?? false),
+                      onChanged: (v) =>
+                          setState(() => _understood = v ?? false),
                       controlAffinity: ListTileControlAffinity.leading,
                       contentPadding: EdgeInsets.zero,
                       title: Text(
@@ -188,7 +205,9 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                   ],
                   const SizedBox(height: 18),
                   NeonButton(
-                    label: widget.changeMode ? 'Passwort ändern' : 'Tresor erstellen',
+                    label: widget.changeMode
+                        ? 'Passwort ändern'
+                        : 'Tresor erstellen',
                     icon: Icons.shield_rounded,
                     loading: auth.busy,
                     onPressed: _submit,
@@ -199,13 +218,18 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                       child: Text(
                         'Schlüssel wird mit Argon2id abgeleitet …',
                         textAlign: TextAlign.center,
-                        style: context.text.bodySmall?.copyWith(color: AppColors.textMuted),
+                        style: context.text.bodySmall?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
                       ),
                     ),
                   if (auth.error != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text(auth.error!, style: const TextStyle(color: AppColors.danger)),
+                      child: Text(
+                        auth.error!,
+                        style: const TextStyle(color: AppColors.danger),
+                      ),
                     ),
                 ],
               ),

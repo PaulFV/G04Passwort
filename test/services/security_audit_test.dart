@@ -14,7 +14,11 @@ VaultItem login(String id, String password, {DateTime? changed, String? totp}) {
     category: ItemCategory.login,
     createdAt: now,
     updatedAt: now,
-    login: LoginData(password: password, passwordChangedAt: changed ?? now, totpSecret: totp),
+    login: LoginData(
+      password: password,
+      passwordChangedAt: changed ?? now,
+      totpSecret: totp,
+    ),
   );
 }
 
@@ -26,15 +30,12 @@ void main() {
   });
 
   test('detects duplicates, weak, old and 2FA', () {
-    final report = audit.audit(
-      [
-        login('a', r'G7f#k9!Qp2@Z8&Lm', totp: 'JBSWY3DPEHPK3PXP'),
-        login('b', '123456'),
-        login('c', '123456'),
-        login('d', r'X!9vB$e2#Lq7^Wm4', changed: DateTime(2024, 1, 1)),
-      ],
-      now: DateTime(2026, 10, 2),
-    );
+    final report = audit.audit([
+      login('a', r'G7f#k9!Qp2@Z8&Lm', totp: 'JBSWY3DPEHPK3PXP'),
+      login('b', '123456'),
+      login('c', '123456'),
+      login('d', r'X!9vB$e2#Lq7^Wm4', changed: DateTime(2024, 1, 1)),
+    ], now: DateTime(2026, 10, 2));
     expect(report.total, 4);
     expect(report.reused, 2);
     expect(report.reusedGroups.single, containsAll(['b', 'c']));

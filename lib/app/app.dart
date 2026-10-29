@@ -20,7 +20,9 @@ class G04PasswortApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final accent = ref.watch(accentColorProvider);
-    final dark = ref.watch(settingsControllerProvider.select((s) => s.darkMode));
+    final dark = ref.watch(
+      settingsControllerProvider.select((s) => s.darkMode),
+    );
 
     return MaterialApp.router(
       title: AppConstants.appName,
@@ -32,7 +34,8 @@ class G04PasswortApp extends ConsumerWidget {
       locale: const Locale('de'),
       supportedLocales: const [Locale('de'), Locale('en')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      builder: (context, child) => _SecurityLayer(child: child ?? const SizedBox()),
+      builder: (context, child) =>
+          _SecurityLayer(child: child ?? const SizedBox()),
     );
   }
 }
@@ -49,7 +52,8 @@ class _SecurityLayer extends ConsumerStatefulWidget {
   ConsumerState<_SecurityLayer> createState() => _SecurityLayerState();
 }
 
-class _SecurityLayerState extends ConsumerState<_SecurityLayer> with WidgetsBindingObserver {
+class _SecurityLayerState extends ConsumerState<_SecurityLayer>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();

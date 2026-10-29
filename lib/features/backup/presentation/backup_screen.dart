@@ -54,7 +54,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Abbrechen')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Abbrechen'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.pop(context, controller.text),
@@ -69,7 +72,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final last = ref.watch(settingsControllerProvider.select((s) => s.lastBackupAt));
+    final last = ref.watch(
+      settingsControllerProvider.select((s) => s.lastBackupAt),
+    );
     return G04Scaffold(
       title: 'Backup',
       body: Stack(
@@ -86,11 +91,20 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Letztes Backup', style: context.text.titleSmall),
                           Text(
-                            last == null ? 'Noch kein Backup erstellt' : DateFormat.yMMMd('de_DE').add_Hm().format(last),
+                            'Letztes Backup',
+                            style: context.text.titleSmall,
+                          ),
+                          Text(
+                            last == null
+                                ? 'Noch kein Backup erstellt'
+                                : DateFormat.yMMMd(
+                                    'de_DE',
+                                  ).add_Hm().format(last),
                             style: context.text.bodySmall?.copyWith(
-                              color: last == null ? AppColors.warning : AppColors.textSecondary,
+                              color: last == null
+                                  ? AppColors.warning
+                                  : AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -105,13 +119,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 iconColor: AppColors.success,
                 title: 'Verschlüsseltes Backup erstellen',
                 subtitle: '.g04vault – nur mit deinem Master-Passwort lesbar',
-                onTap: () => _run(() async =>
-                    await _c.exportEncryptedBackup() ? 'Backup gespeichert' : null),
+                onTap: () => _run(
+                  () async => await _c.exportEncryptedBackup()
+                      ? 'Backup gespeichert'
+                      : null,
+                ),
               ),
               GlassTile(
                 icon: Icons.restore_rounded,
                 title: 'Backup wiederherstellen',
-                subtitle: 'Einträge werden zusammengeführt (neuere Version gewinnt)',
+                subtitle:
+                    'Einträge werden zusammengeführt (neuere Version gewinnt)',
                 onTap: () => _run(() async {
                   final file = await _c.pickFile(['g04vault', 'json']);
                   if (file == null) return null;
@@ -125,7 +143,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               GlassTile(
                 icon: Icons.file_upload_outlined,
                 title: 'Passwörter importieren (CSV)',
-                subtitle: 'Bitwarden, 1Password, KeePass, Chrome, Edge, Firefox, LastPass',
+                subtitle:
+                    'Bitwarden, 1Password, KeePass, Chrome, Edge, Firefox, LastPass',
                 onTap: () => _run(() async {
                   final file = await _c.pickFile(['csv']);
                   if (file == null) return null;
@@ -142,7 +161,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 onTap: () => _run(() async {
                   final ok = await context.confirm(
                     title: 'Unverschlüsselter Export',
-                    message: 'Die CSV-Datei enthält alle Passwörter im Klartext. '
+                    message:
+                        'Die CSV-Datei enthält alle Passwörter im Klartext. '
                         'Lösche sie sofort nach dem Import in die Ziel-App.',
                     confirmLabel: 'Trotzdem exportieren',
                     destructive: true,

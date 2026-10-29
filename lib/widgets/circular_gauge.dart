@@ -41,7 +41,11 @@ class CircularGauge extends StatelessWidget {
 }
 
 class _GaugePainter extends CustomPainter {
-  _GaugePainter({required this.value, required this.color, required this.stroke});
+  _GaugePainter({
+    required this.value,
+    required this.color,
+    required this.stroke,
+  });
 
   final double value;
   final Color color;

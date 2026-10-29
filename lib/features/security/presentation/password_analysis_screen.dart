@@ -22,7 +22,11 @@ class PasswordAnalysisScreen extends ConsumerWidget {
     final items = {for (final i in ref.watch(itemsProvider)) i.id: i};
     final color = scoreColor(report.score);
 
-    Widget section(String title, Iterable<ItemAudit> audits, {String Function(ItemAudit a)? label}) {
+    Widget section(
+      String title,
+      Iterable<ItemAudit> audits, {
+      String Function(ItemAudit a)? label,
+    }) {
       final list = audits.where((a) => items.containsKey(a.itemId)).toList();
       if (list.isEmpty) return const SizedBox.shrink();
       return Column(
@@ -32,7 +36,10 @@ class PasswordAnalysisScreen extends ConsumerWidget {
           for (final a in list)
             VaultItemTile(
               item: items[a.itemId]!,
-              trailing: StatusBadge(label?.call(a) ?? a.strength.level.label, color: a.strength.level.color),
+              trailing: StatusBadge(
+                label?.call(a) ?? a.strength.level.label,
+                color: a.strength.level.color,
+              ),
             ),
         ],
       );
@@ -52,25 +59,57 @@ class PasswordAnalysisScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('${report.score}%', style: context.text.headlineMedium),
-                  Text(report.scoreLabel, style: context.text.bodySmall?.copyWith(color: color)),
+                  Text(
+                    report.scoreLabel,
+                    style: context.text.bodySmall?.copyWith(color: color),
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          GlassTile(icon: Icons.check_circle_rounded, iconColor: AppColors.success, title: 'Starke Passwörter', value: '${report.strong}'),
-          GlassTile(icon: Icons.remove_circle_rounded, iconColor: AppColors.warning, title: 'Mittlere Passwörter', value: '${report.medium}'),
-          GlassTile(icon: Icons.cancel_rounded, iconColor: AppColors.danger, title: 'Schwache Passwörter', value: '${report.weak}'),
-          GlassTile(icon: Icons.copy_all_rounded, iconColor: AppColors.warning, title: 'Doppelte Passwörter', value: '${report.reused}'),
+          GlassTile(
+            icon: Icons.check_circle_rounded,
+            iconColor: AppColors.success,
+            title: 'Starke Passwörter',
+            value: '${report.strong}',
+          ),
+          GlassTile(
+            icon: Icons.remove_circle_rounded,
+            iconColor: AppColors.warning,
+            title: 'Mittlere Passwörter',
+            value: '${report.medium}',
+          ),
+          GlassTile(
+            icon: Icons.cancel_rounded,
+            iconColor: AppColors.danger,
+            title: 'Schwache Passwörter',
+            value: '${report.weak}',
+          ),
+          GlassTile(
+            icon: Icons.copy_all_rounded,
+            iconColor: AppColors.warning,
+            title: 'Doppelte Passwörter',
+            value: '${report.reused}',
+          ),
           if (report.total == 0)
             const EmptyState(
               icon: Icons.analytics_outlined,
               title: 'Noch nichts zu analysieren',
-              message: 'Sobald du Logins speicherst, erscheint hier die Analyse.',
+              message:
+                  'Sobald du Logins speicherst, erscheint hier die Analyse.',
             ),
           section('Schwach', report.audits.where((a) => a.strength.score <= 1)),
-          section('Doppelt verwendet', report.audits.where((a) => a.reused), label: (_) => 'Doppelt'),
-          section('Älter als 1 Jahr', report.audits.where((a) => a.old), label: (_) => 'Alt'),
+          section(
+            'Doppelt verwendet',
+            report.audits.where((a) => a.reused),
+            label: (_) => 'Doppelt',
+          ),
+          section(
+            'Älter als 1 Jahr',
+            report.audits.where((a) => a.old),
+            label: (_) => 'Alt',
+          ),
           section('Mittel', report.audits.where((a) => a.strength.score == 2)),
         ],
       ),

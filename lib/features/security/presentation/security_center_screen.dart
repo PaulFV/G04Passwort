@@ -13,10 +13,10 @@ import '../../vault/application/vault_providers.dart';
 
 /// Colour for a security score.
 Color scoreColor(int score) => switch (score) {
-      >= 75 => AppColors.success,
-      >= 50 => AppColors.warning,
-      _ => AppColors.danger,
-    };
+  >= 75 => AppColors.success,
+  >= 50 => AppColors.warning,
+  _ => AppColors.danger,
+};
 
 /// Sicherheitszentrum (design screen 7).
 class SecurityCenterScreen extends ConsumerWidget {
@@ -41,7 +41,9 @@ class SecurityCenterScreen extends ConsumerWidget {
                   Icons.shield_rounded,
                   size: 210,
                   color: color.withValues(alpha: 0.12),
-                  shadows: [Shadow(color: color.withValues(alpha: 0.5), blurRadius: 30)],
+                  shadows: [
+                    Shadow(color: color.withValues(alpha: 0.5), blurRadius: 30),
+                  ],
                 ),
                 CircularGauge(
                   value: report.score / 100,
@@ -51,8 +53,14 @@ class SecurityCenterScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('${report.score}%', style: context.text.displaySmall),
-                      Text(report.scoreLabel, style: context.text.bodySmall?.copyWith(color: color)),
+                      Text(
+                        '${report.score}%',
+                        style: context.text.displaySmall,
+                      ),
+                      Text(
+                        report.scoreLabel,
+                        style: context.text.bodySmall?.copyWith(color: color),
+                      ),
                     ],
                   ),
                 ),
@@ -60,7 +68,9 @@ class SecurityCenterScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Center(child: Text(report.scoreLabel, style: context.text.titleLarge)),
+          Center(
+            child: Text(report.scoreLabel, style: context.text.titleLarge),
+          ),
           const SizedBox(height: 18),
           GlassTile(
             icon: Icons.check_circle_rounded,
@@ -94,7 +104,8 @@ class SecurityCenterScreen extends ConsumerWidget {
             icon: Icons.travel_explore_rounded,
             iconColor: AppColors.danger,
             title: 'Leckage-Warnungen',
-            subtitle: 'Online-Prüfung (Have I Been Pwned, k-Anonymität) in Vorbereitung',
+            subtitle:
+                'Online-Prüfung (Have I Been Pwned, k-Anonymität) in Vorbereitung',
             value: '0',
           ),
           GlassTile(
@@ -105,7 +116,10 @@ class SecurityCenterScreen extends ConsumerWidget {
             onTap: () => context.push(Routes.authenticator),
           ),
           const SizedBox(height: 14),
-          NeonButton(label: 'Details anzeigen', onPressed: () => context.push(Routes.analysis)),
+          NeonButton(
+            label: 'Details anzeigen',
+            onPressed: () => context.push(Routes.analysis),
+          ),
         ],
       ),
     );

@@ -6,7 +6,11 @@ import '../core/constants/app_constants.dart';
 /// Encrypted row as stored in SQLite. [payload] is a base64 AES-GCM
 /// envelope – the database never sees plaintext vault data.
 class EncryptedRow {
-  const EncryptedRow({required this.id, required this.payload, required this.updatedAt});
+  const EncryptedRow({
+    required this.id,
+    required this.payload,
+    required this.updatedAt,
+  });
 
   final String id;
   final String payload;
@@ -27,12 +31,12 @@ class AppDatabase extends GeneratedDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   static QueryExecutor _openConnection() => driftDatabase(
-        name: AppConstants.databaseName,
-        web: DriftWebOptions(
-          sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-          driftWorker: Uri.parse('drift_worker.js'),
-        ),
-      );
+    name: AppConstants.databaseName,
+    web: DriftWebOptions(
+      sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+      driftWorker: Uri.parse('drift_worker.js'),
+    ),
+  );
 
   static const tableItems = 'vault_items';
   static const tableFolders = 'folders';
@@ -46,25 +50,25 @@ class AppDatabase extends GeneratedDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await customStatement('''
+    onCreate: (m) async {
+      await customStatement('''
             CREATE TABLE IF NOT EXISTS vault_meta (
               key TEXT NOT NULL PRIMARY KEY,
               value TEXT NOT NULL
             )''');
-          for (final table in [tableItems, tableFolders, tableAttachments]) {
-            await customStatement('''
+      for (final table in [tableItems, tableFolders, tableAttachments]) {
+        await customStatement('''
               CREATE TABLE IF NOT EXISTS $table (
                 id TEXT NOT NULL PRIMARY KEY,
                 payload TEXT NOT NULL,
                 updated_at INTEGER NOT NULL
               )''');
-          }
-        },
-        onUpgrade: (m, from, to) async {
-          // Future schema migrations go here.
-        },
-      );
+      }
+    },
+    onUpgrade: (m, from, to) async {
+      // Future schema migrations go here.
+    },
+  );
 
   // ---------------------------------------------------------------------------
   // Meta (vault header etc.)
@@ -79,9 +83,9 @@ class AppDatabase extends GeneratedDatabase {
   }
 
   Future<void> writeMeta(String key, String value) => customStatement(
-        'INSERT OR REPLACE INTO vault_meta (key, value) VALUES (?, ?)',
-        [key, value],
-      );
+    'INSERT OR REPLACE INTO vault_meta (key, value) VALUES (?, ?)',
+    [key, value],
+  );
 
   Future<void> deleteMeta(String key) =>
       customStatement('DELETE FROM vault_meta WHERE key = ?', [key]);
@@ -99,7 +103,9 @@ class AppDatabase extends GeneratedDatabase {
           (r) => EncryptedRow(
             id: r.read<String>('id'),
             payload: r.read<String>('payload'),
-            updatedAt: DateTime.fromMillisecondsSinceEpoch(r.read<int>('updated_at')),
+            updatedAt: DateTime.fromMillisecondsSinceEpoch(
+              r.read<int>('updated_at'),
+            ),
           ),
         )
         .toList();
@@ -120,11 +126,12 @@ class AppDatabase extends GeneratedDatabase {
   }
 
   Future<void> upsert(String table, EncryptedRow row) => customStatement(
-        'INSERT OR REPLACE INTO $table (id, payload, updated_at) VALUES (?, ?, ?)',
-        [row.id, row.payload, row.updatedAt.millisecondsSinceEpoch],
-      );
+    'INSERT OR REPLACE INTO $table (id, payload, updated_at) VALUES (?, ?, ?)',
+    [row.id, row.payload, row.updatedAt.millisecondsSinceEpoch],
+  );
 
-  Future<void> upsertAll(String table, List<EncryptedRow> rows) => transaction(() async {
+  Future<void> upsertAll(String table, List<EncryptedRow> rows) =>
+      transaction(() async {
         for (final row in rows) {
           await upsert(table, row);
         }
@@ -135,8 +142,13 @@ class AppDatabase extends GeneratedDatabase {
 
   /// Removes all vault data (used by "Tresor zurücksetzen").
   Future<void> wipe() => transaction(() async {
-        for (final t in ['vault_meta', tableItems, tableFolders, tableAttachments]) {
-          await customStatement('DELETE FROM $t');
-        }
-      });
+    for (final t in [
+      'vault_meta',
+      tableItems,
+      tableFolders,
+      tableAttachments,
+    ]) {
+      await customStatement('DELETE FROM $t');
+    }
+  });
 }

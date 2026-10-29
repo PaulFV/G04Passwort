@@ -27,7 +27,11 @@ class TotpConfig {
 /// A generated one-time code plus its remaining validity.
 @immutable
 class TotpCode {
-  const TotpCode({required this.code, required this.remaining, required this.period});
+  const TotpCode({
+    required this.code,
+    required this.remaining,
+    required this.period,
+  });
 
   final String code;
   final int remaining;
@@ -37,8 +41,8 @@ class TotpCode {
   String get formatted => code.length == 6
       ? '${code.substring(0, 3)} ${code.substring(3)}'
       : code.length == 8
-          ? '${code.substring(0, 4)} ${code.substring(4)}'
-          : code;
+      ? '${code.substring(0, 4)} ${code.substring(4)}'
+      : code;
 
   double get progress => remaining / period;
 }
@@ -63,12 +67,15 @@ class TotpService {
         secret: secret,
         digits: int.tryParse(uri.queryParameters['digits'] ?? '') ?? 6,
         period: int.tryParse(uri.queryParameters['period'] ?? '') ?? 30,
-        algorithm: switch ((uri.queryParameters['algorithm'] ?? 'SHA1').toUpperCase()) {
+        algorithm: switch ((uri.queryParameters['algorithm'] ?? 'SHA1')
+            .toUpperCase()) {
           'SHA256' => TotpAlgorithm.sha256,
           'SHA512' => TotpAlgorithm.sha512,
           _ => TotpAlgorithm.sha1,
         },
-        issuer: uri.queryParameters['issuer'] ?? (parts.length > 1 ? parts.first : null),
+        issuer:
+            uri.queryParameters['issuer'] ??
+            (parts.length > 1 ? parts.first : null),
         account: parts.last,
       );
     }
@@ -81,7 +88,12 @@ class TotpService {
   Future<TotpCode> generate(TotpConfig config, {DateTime? time}) async {
     final now = (time ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000;
     final counter = now ~/ config.period;
-    final code = await hotp(config.secret, counter, digits: config.digits, algorithm: config.algorithm);
+    final code = await hotp(
+      config.secret,
+      counter,
+      digits: config.digits,
+      algorithm: config.algorithm,
+    );
     return TotpCode(
       code: code,
       remaining: config.period - (now % config.period),
@@ -110,7 +122,8 @@ class TotpService {
     );
     final h = mac.bytes;
     final offset = h.last & 0x0f;
-    final binary = ((h[offset] & 0x7f) << 24) |
+    final binary =
+        ((h[offset] & 0x7f) << 24) |
         ((h[offset + 1] & 0xff) << 16) |
         ((h[offset + 2] & 0xff) << 8) |
         (h[offset + 3] & 0xff);

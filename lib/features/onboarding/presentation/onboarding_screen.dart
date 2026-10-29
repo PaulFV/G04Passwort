@@ -33,13 +33,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _next() {
     if (_page < _slides - 1) {
-      _controller.nextPage(duration: const Duration(milliseconds: 420), curve: Curves.easeOutCubic);
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+      );
     } else {
       ref.read(authControllerProvider.notifier).completeOnboarding();
     }
   }
 
-  void _finish() => ref.read(authControllerProvider.notifier).completeOnboarding();
+  void _finish() =>
+      ref.read(authControllerProvider.notifier).completeOnboarding();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          const AppBackground(asset: 'assets/images/bg_login.jpg', dim: 0.35, alignment: Alignment.center),
+          const AppBackground(
+            asset: 'assets/images/bg_login.jpg',
+            dim: 0.35,
+            alignment: Alignment.center,
+          ),
           SafeArea(
             child: Column(
               children: [
@@ -56,7 +64,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 200),
                     opacity: _page == 0 ? 0 : 1,
-                    child: TextButton(onPressed: _finish, child: const Text('Überspringen')),
+                    child: TextButton(
+                      onPressed: _finish,
+                      child: const Text('Überspringen'),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -68,19 +79,28 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       _Slide(
                         image: Image.asset(kLock3dAsset, height: 220),
                         title: 'Maximale Sicherheit',
-                        text: 'Alle Daten werden lokal mit AES-256-GCM verschlüsselt. '
+                        text:
+                            'Alle Daten werden lokal mit AES-256-GCM verschlüsselt. '
                             'Dein Master-Passwort wird mit Argon2id geschützt und verlässt nie dein Gerät.',
                       ),
                       const _Slide(
-                        image: _IconRow(icons: [FeatureIcon.biometric, FeatureIcon.security, FeatureIcon.totp]),
+                        image: _IconRow(
+                          icons: [
+                            FeatureIcon.biometric,
+                            FeatureIcon.security,
+                            FeatureIcon.totp,
+                          ],
+                        ),
                         title: 'Schnell & komfortabel',
-                        text: 'Entsperre mit Fingerabdruck oder Face ID. Auto-Lock, Zwischenablage-Löschung '
+                        text:
+                            'Entsperre mit Fingerabdruck oder Face ID. Auto-Lock, Zwischenablage-Löschung '
                             'und Screenshot-Schutz arbeiten automatisch für dich.',
                       ),
                       const _Slide(
                         image: _IconGrid(),
                         title: 'Alles an einem Ort',
-                        text: 'Passwörter, 2FA-Codes, Kreditkarten, Dokumente und sichere Notizen – '
+                        text:
+                            'Passwörter, 2FA-Codes, Kreditkarten, Dokumente und sichere Notizen – '
                             'auch Zugänge zu Geräten, HMIs, Routern und Portalen.',
                       ),
                     ],
@@ -90,14 +110,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
                   child: NeonButton(
-                    label: _page == _slides - 1 ? 'Jetzt starten' : 'Los geht\'s',
+                    label: _page == _slides - 1
+                        ? 'Jetzt starten'
+                        : 'Los geht\'s',
                     onPressed: _next,
                   ),
                 ),
                 SizedBox(
                   height: 48,
                   child: _page == 0
-                      ? TextButton(onPressed: _finish, child: const Text('Anmelden'))
+                      ? TextButton(
+                          onPressed: _finish,
+                          child: const Text('Anmelden'),
+                        )
                       : null,
                 ),
                 const SizedBox(height: 8),
@@ -120,12 +145,18 @@ class _Welcome extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
-            Image.asset(kLogoAsset, width: 280, filterQuality: FilterQuality.high),
+            Image.asset(
+              kLogoAsset,
+              width: 280,
+              filterQuality: FilterQuality.high,
+            ),
             const SizedBox(height: 12),
             Text(
               AppConstants.tagline,
               textAlign: TextAlign.center,
-              style: context.text.titleMedium?.copyWith(color: AppColors.textSecondary),
+              style: context.text.titleMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -152,12 +183,19 @@ class _Slide extends StatelessWidget {
             children: [
               image,
               const SizedBox(height: 32),
-              Text(title, textAlign: TextAlign.center, style: context.text.headlineMedium),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: context.text.headlineMedium,
+              ),
               const SizedBox(height: 14),
               Text(
                 text,
                 textAlign: TextAlign.center,
-                style: context.text.bodyLarge?.copyWith(color: AppColors.textSecondary, height: 1.45),
+                style: context.text.bodyLarge?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
               ),
             ],
           ),
@@ -234,8 +272,13 @@ class _Dots extends StatelessWidget {
             height: 8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: i == index ? AppColors.cyan : AppColors.textMuted.withValues(alpha: 0.5),
-              boxShadow: [if (i == index) const BoxShadow(color: AppColors.cyan, blurRadius: 8)],
+              color: i == index
+                  ? AppColors.cyan
+                  : AppColors.textMuted.withValues(alpha: 0.5),
+              boxShadow: [
+                if (i == index)
+                  const BoxShadow(color: AppColors.cyan, blurRadius: 8),
+              ],
             ),
           ),
       ],

@@ -22,9 +22,13 @@ void main() {
         password: 'pw',
         urls: const ['http://192.168.0.1'],
         host: '192.168.0.1',
-        passwordHistory: [PasswordHistoryEntry(password: 'old', changedAt: now)],
+        passwordHistory: [
+          PasswordHistoryEntry(password: 'old', changedAt: now),
+        ],
       ),
-      customFields: const [CustomField(name: 'PIN', value: '1234', secret: true)],
+      customFields: const [
+        CustomField(name: 'PIN', value: '1234', secret: true),
+      ],
     );
     final copy = VaultItem.fromJson(item.toJson());
     expect(copy.title, 'Router Büro');
@@ -37,7 +41,11 @@ void main() {
   });
 
   test('card helpers', () {
-    const card = CardData(number: '4242 4242 4242 4242', expiryMonth: 1, expiryYear: 20);
+    const card = CardData(
+      number: '4242 4242 4242 4242',
+      expiryMonth: 1,
+      expiryYear: 20,
+    );
     expect(card.brand, 'VISA');
     expect(card.masked, '•••• 4242');
     expect(card.expiryLabel, '01/20');
@@ -47,7 +55,11 @@ void main() {
   });
 
   test('settings JSON round trip', () {
-    const s = AppSettings(autoLockSeconds: 300, biometricEnabled: true, syncProviders: {'icloud': true});
+    const s = AppSettings(
+      autoLockSeconds: 300,
+      biometricEnabled: true,
+      syncProviders: {'icloud': true},
+    );
     final copy = AppSettings.fromJson(s.toJson());
     expect(copy.autoLockSeconds, 300);
     expect(copy.biometricEnabled, isTrue);

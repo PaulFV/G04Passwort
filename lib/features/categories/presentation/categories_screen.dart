@@ -15,13 +15,18 @@ class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
   String _route(ItemCategory c) => switch (c) {
-        ItemCategory.card => Routes.cards,
-        ItemCategory.document => Routes.documents,
-        ItemCategory.note => Routes.notes,
-        _ => '${Routes.vault}?category=${c.name}',
-      };
+    ItemCategory.card => Routes.cards,
+    ItemCategory.document => Routes.documents,
+    ItemCategory.note => Routes.notes,
+    _ => '${Routes.vault}?category=${c.name}',
+  };
 
-  Future<void> _folderDialog(BuildContext context, WidgetRef ref, {String? id, String? name}) async {
+  Future<void> _folderDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    String? id,
+    String? name,
+  }) async {
     final controller = TextEditingController(text: name);
     final result = await showDialog<String>(
       context: context,
@@ -34,7 +39,10 @@ class CategoriesScreen extends ConsumerWidget {
           onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Abbrechen')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Abbrechen'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.pop(context, controller.text),
@@ -93,7 +101,9 @@ class CategoriesScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 'Noch keine Ordner – erstelle z. B. „Arbeit“, „Kunden“ oder „Anlage Halle 2“.',
-                style: context.text.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
             ),
           for (final f in folders)
@@ -109,11 +119,13 @@ class CategoriesScreen extends ConsumerWidget {
                   } else {
                     final ok = await context.confirm(
                       title: 'Ordner löschen?',
-                      message: 'Die Einträge bleiben erhalten und werden keinem Ordner mehr zugeordnet.',
+                      message:
+                          'Die Einträge bleiben erhalten und werden keinem Ordner mehr zugeordnet.',
                       destructive: true,
                       confirmLabel: 'Löschen',
                     );
-                    if (ok) await ref.read(vaultActionsProvider).deleteFolder(f.id);
+                    if (ok)
+                      await ref.read(vaultActionsProvider).deleteFolder(f.id);
                   }
                 },
                 itemBuilder: (_) => const [
@@ -132,7 +144,9 @@ class CategoriesScreen extends ConsumerWidget {
                   ActionChip(
                     avatar: const Icon(Icons.sell_outlined, size: 16),
                     label: Text(t),
-                    onPressed: () => context.push('${Routes.vault}?tag=${Uri.encodeComponent(t)}'),
+                    onPressed: () => context.push(
+                      '${Routes.vault}?tag=${Uri.encodeComponent(t)}',
+                    ),
                   ),
               ],
             ),

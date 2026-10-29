@@ -33,7 +33,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     // Offer biometric unlock right away if enabled.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.read(settingsControllerProvider).biometricEnabled) unawaited(_biometric());
+      if (ref.read(settingsControllerProvider).biometricEnabled)
+        unawaited(_biometric());
     });
   }
 
@@ -67,7 +68,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     if (_password.text.isEmpty) return;
-    final ok = await ref.read(authControllerProvider.notifier).unlock(_password.text);
+    final ok = await ref
+        .read(authControllerProvider.notifier)
+        .unlock(_password.text);
     if (ok) _password.clear();
   }
 
@@ -85,7 +88,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           'Danach kannst du ein Backup wiederherstellen.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Abbrechen')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Abbrechen'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
@@ -97,7 +103,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (reset != true || !mounted) return;
     final sure = await context.confirm(
       title: 'Wirklich alles löschen?',
-      message: 'Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht.',
+      message:
+          'Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht.',
       confirmLabel: 'Endgültig löschen',
       destructive: true,
     );
@@ -128,7 +135,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'Bitte authentifizieren Sie sich.',
-                  style: context.text.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                  style: context.text.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 28),
                 Row(
@@ -142,7 +151,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Text('oder', style: context.text.bodySmall?.copyWith(color: AppColors.textMuted)),
+                      child: Text(
+                        'oder',
+                        style: context.text.bodySmall?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
                     ),
                     _BioTile(
                       icon: Icons.face_retouching_natural_rounded,
@@ -180,10 +194,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Text(
                       auth.error!,
                       textAlign: TextAlign.center,
-                      style: context.text.bodySmall?.copyWith(color: AppColors.danger),
+                      style: context.text.bodySmall?.copyWith(
+                        color: AppColors.danger,
+                      ),
                     ),
                   ),
-                NeonButton(label: 'Entsperren', loading: auth.busy, onPressed: _unlock),
+                NeonButton(
+                  label: 'Entsperren',
+                  loading: auth.busy,
+                  onPressed: _unlock,
+                ),
                 const SizedBox(height: 14),
                 if (!_showPassword)
                   NeonButton.outline(
@@ -191,7 +211,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () => setState(() => _showPassword = true),
                   ),
                 const SizedBox(height: 10),
-                TextButton(onPressed: _forgot, child: const Text('Passwort vergessen?')),
+                TextButton(
+                  onPressed: _forgot,
+                  child: const Text('Passwort vergessen?'),
+                ),
               ],
             ),
           ),
@@ -202,7 +225,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 }
 
 class _BioTile extends StatelessWidget {
-  const _BioTile({required this.icon, required this.label, required this.onTap, this.highlighted = false});
+  const _BioTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.highlighted = false,
+  });
 
   final IconData icon;
   final String label;

@@ -11,12 +11,43 @@ class PasswordAnalyzerService {
   const PasswordAnalyzerService();
 
   static const _common = {
-    '123456', '123456789', '12345678', 'password', 'passwort', 'qwerty',
-    'qwertz', '111111', '123123', 'abc123', 'password1', 'iloveyou',
-    'admin', 'welcome', 'monkey', 'dragon', 'letmein', 'hallo', 'hallo123',
-    'schatz', 'master', 'sommer', 'fussball', 'football',
-    'baseball', 'sunshine', 'princess', 'login', 'test', 'test123',
-    'root', 'toor', '000000', '1234', '12345', 'geheim', 'secret',
+    '123456',
+    '123456789',
+    '12345678',
+    'password',
+    'passwort',
+    'qwerty',
+    'qwertz',
+    '111111',
+    '123123',
+    'abc123',
+    'password1',
+    'iloveyou',
+    'admin',
+    'welcome',
+    'monkey',
+    'dragon',
+    'letmein',
+    'hallo',
+    'hallo123',
+    'schatz',
+    'master',
+    'sommer',
+    'fussball',
+    'football',
+    'baseball',
+    'sunshine',
+    'princess',
+    'login',
+    'test',
+    'test123',
+    'root',
+    'toor',
+    '000000',
+    '1234',
+    '12345',
+    'geheim',
+    'secret',
   };
 
   static const _sequences = [
@@ -43,7 +74,10 @@ class PasswordAnalyzerService {
     if (hasSymbol) pool += 33;
 
     // Effective length: collapse runs of the same character.
-    final effective = password.replaceAllMapped(RegExp(r'(.)\1{2,}'), (m) => m[1]! * 2);
+    final effective = password.replaceAllMapped(
+      RegExp(r'(.)\1{2,}'),
+      (m) => m[1]! * 2,
+    );
     var entropy = effective.length * (log(max(pool, 1)) / ln2);
 
     if (_common.contains(lower) ||
@@ -65,7 +99,8 @@ class PasswordAnalyzerService {
       feedback.add('Jahreszahlen sind leicht zu erraten.');
     }
     if (password.length < 8) feedback.add('Nutze mindestens 12 Zeichen.');
-    if (!hasSymbol && password.length < 20) feedback.add('Füge Sonderzeichen hinzu.');
+    if (!hasSymbol && password.length < 20)
+      feedback.add('Füge Sonderzeichen hinzu.');
     if (!(hasUpper && hasLower) && password.length < 20) {
       feedback.add('Kombiniere Groß- und Kleinbuchstaben.');
     }
@@ -82,7 +117,11 @@ class PasswordAnalyzerService {
       < 80 => 3,
       _ => 4,
     };
-    return PasswordStrength(score: score, entropyBits: entropy, feedback: feedback);
+    return PasswordStrength(
+      score: score,
+      entropyBits: entropy,
+      feedback: feedback,
+    );
   }
 
   int _longestSequence(String s) {

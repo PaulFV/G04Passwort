@@ -46,7 +46,10 @@ class NeonButton extends StatelessWidget {
         if (loading)
           const SizedBox.square(
             dimension: 20,
-            child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
+            child: CircularProgressIndicator(
+              strokeWidth: 2.4,
+              color: Colors.white,
+            ),
           )
         else if (icon != null)
           Icon(icon, size: 20, color: outlined ? accent : Colors.white),
@@ -56,11 +59,11 @@ class NeonButton extends StatelessWidget {
             label,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: outlined
-                      ? Theme.of(context).colorScheme.onSurface
-                      : Colors.white,
-                  fontSize: 16,
-                ),
+              color: outlined
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Colors.white,
+              fontSize: 16,
+            ),
           ),
         ),
       ],

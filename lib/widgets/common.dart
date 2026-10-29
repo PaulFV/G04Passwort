@@ -65,8 +65,8 @@ class EmptyState extends StatelessWidget {
                 message!,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
             if (action != null) ...[const SizedBox(height: 24), action!],
@@ -185,7 +185,10 @@ class AnimatedEntrance extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, t, child) => Opacity(
         opacity: t,
-        child: Transform.translate(offset: Offset(0, (1 - t) * 18), child: child),
+        child: Transform.translate(
+          offset: Offset(0, (1 - t) * 18),
+          child: child,
+        ),
       ),
       child: child,
     );
@@ -211,9 +214,9 @@ class StatusBadge extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

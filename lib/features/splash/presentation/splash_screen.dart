@@ -48,7 +48,11 @@ class SplashScreen extends StatelessWidget {
                     opacity: ((v - 0.6) / 0.4).clamp(0, 1),
                     child: Transform.scale(scale: v, child: child),
                   ),
-                  child: Image.asset(kLogoAsset, width: 260, filterQuality: FilterQuality.high),
+                  child: Image.asset(
+                    kLogoAsset,
+                    width: 260,
+                    filterQuality: FilterQuality.high,
+                  ),
                 ),
                 const Spacer(flex: 4),
                 const SizedBox(
@@ -62,7 +66,9 @@ class SplashScreen extends StatelessWidget {
                 const SizedBox(height: 18),
                 Text(
                   'v${AppConstants.version}',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textMuted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: AppColors.textMuted),
                 ),
                 const SizedBox(height: 24),
               ],

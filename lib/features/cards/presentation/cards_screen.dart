@@ -28,7 +28,8 @@ class CardsScreen extends ConsumerWidget {
                 ? const EmptyState(
                     icon: Icons.credit_card_rounded,
                     title: 'Keine Karten',
-                    message: 'Speichere Kredit-, Debit- und Kundenkarten sicher verschlüsselt.',
+                    message:
+                        'Speichere Kredit-, Debit- und Kundenkarten sicher verschlüsselt.',
                   )
                 : ListView(
                     children: [
@@ -47,9 +48,15 @@ class CardsScreen extends ConsumerWidget {
                                 ),
                               ),
                               if (c.card!.isExpired)
-                                const StatusBadge('Abgelaufen', color: AppColors.danger)
+                                const StatusBadge(
+                                  'Abgelaufen',
+                                  color: AppColors.danger,
+                                )
                               else if (c.card!.expiryLabel.isNotEmpty)
-                                Text(c.card!.expiryLabel, style: context.text.labelSmall),
+                                Text(
+                                  c.card!.expiryLabel,
+                                  style: context.text.labelSmall,
+                                ),
                             ],
                           ),
                         ),

@@ -30,11 +30,15 @@ class AuthenticatorScreen extends ConsumerWidget {
                 ? const EmptyState(
                     icon: Icons.qr_code_2_rounded,
                     title: 'Keine 2FA-Codes',
-                    message: 'Füge bei einem Login den TOTP-Schlüssel (Base32 oder otpauth://-Link) hinzu.',
+                    message:
+                        'Füge bei einem Login den TOTP-Schlüssel (Base32 oder otpauth://-Link) hinzu.',
                   )
                 : ListView.builder(
                     itemCount: items.length,
-                    itemBuilder: (_, i) => AnimatedEntrance(index: i, child: _TotpCard(item: items[i])),
+                    itemBuilder: (_, i) => AnimatedEntrance(
+                      index: i,
+                      child: _TotpCard(item: items[i]),
+                    ),
                   ),
           ),
           Padding(
@@ -76,11 +80,18 @@ class _TotpCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.title, style: context.text.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  item.title,
+                  style: context.text.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 if (item.login!.username.isNotEmpty)
                   Text(
                     item.login!.username,
-                    style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary),
+                    style: context.text.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -91,7 +102,12 @@ class _TotpCard extends ConsumerWidget {
                     color: warn ? AppColors.danger : AppColors.neonBlueLight,
                     fontFamily: 'monospace',
                     letterSpacing: 2,
-                    shadows: [Shadow(color: warn ? AppColors.danger : AppColors.neonBlue, blurRadius: 10)],
+                    shadows: [
+                      Shadow(
+                        color: warn ? AppColors.danger : AppColors.neonBlue,
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -103,7 +119,10 @@ class _TotpCard extends ConsumerWidget {
             size: 44,
             strokeWidth: 4,
             animate: false,
-            child: Text('${code?.remaining ?? ''}', style: context.text.labelMedium),
+            child: Text(
+              '${code?.remaining ?? ''}',
+              style: context.text.labelMedium,
+            ),
           ),
         ],
       ),

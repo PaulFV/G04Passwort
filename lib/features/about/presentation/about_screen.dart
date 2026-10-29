@@ -26,7 +26,9 @@ class AboutScreen extends StatelessWidget {
           Center(
             child: Text(
               'Version ${AppConstants.version} (${AppConstants.buildNumber})',
-              style: context.text.bodySmall?.copyWith(color: AppColors.textMuted),
+              style: context.text.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+              ),
             ),
           ),
           const SizedBox(height: 18),
@@ -72,12 +74,18 @@ class AboutScreen extends StatelessWidget {
               applicationLegalese: AppConstants.copyright,
             ),
           ),
-          const GlassTile(icon: Icons.code_rounded, title: 'Quellcode', subtitle: AppConstants.repositoryUrl),
+          const GlassTile(
+            icon: Icons.code_rounded,
+            title: 'Quellcode',
+            subtitle: AppConstants.repositoryUrl,
+          ),
           const SizedBox(height: 12),
           Center(
             child: Text(
               '${AppConstants.copyright} · ${AppConstants.tagline}',
-              style: context.text.bodySmall?.copyWith(color: AppColors.textMuted),
+              style: context.text.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+              ),
             ),
           ),
         ],
