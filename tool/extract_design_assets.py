@@ -117,8 +117,10 @@ def main():
     up(logo, 2 * k).save(ROOT / "assets/branding/logo.png")
     # App icon = logo (shield + "G04 Passwort") on the night-blue backdrop.
     yy, xx = np.mgrid[0:1024, 0:1024]
-    d = np.clip(np.sqrt((xx - 512) ** 2 + (yy - 470) ** 2) / 620, 0, 1)
-    chans = [(a * (1 - d) + b * d).astype("uint8") for a, b in [(14, 2), (52, 6), (130, 18)]]
+    # Bright neon-blue glow behind the shield (as on the design board) so the
+    # icon reads clearly on dark and light home screens.
+    d = np.clip(np.sqrt((xx - 512) ** 2 + (yy - 440) ** 2) / 560, 0, 1) ** 0.9
+    chans = [(a * (1 - d) + b * d).astype("uint8") for a, b in [(30, 6), (120, 22), (255, 70)]]
     bg = Image.merge("RGB", [Image.fromarray(ch) for ch in chans]).convert("RGBA")
     mark = up(logo, 1)
     scale = 860 / max(mark.size)
