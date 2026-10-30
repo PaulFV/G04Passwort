@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../models/item_category.dart';
 import '../../../widgets/common.dart';
 import '../../../widgets/feature_icon.dart';
@@ -70,6 +71,7 @@ class CategoriesScreen extends ConsumerWidget {
 
     return G04Scaffold(
       title: 'Kategorien',
+      wide: true,
       actions: [
         IconButton(
           tooltip: 'Suche',
@@ -80,17 +82,22 @@ class CategoriesScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 110),
         children: [
-          for (final (i, c) in ItemCategory.values.indexed)
-            AnimatedEntrance(
-              index: i,
-              child: GlassTile(
-                icon: c.icon,
-                iconColor: c.color,
-                title: c.label,
-                value: '${counts[c]}',
-                onTap: () => context.push(_route(c)),
-              ),
-            ),
+          ResponsiveGrid(
+            minItemWidth: 300,
+            children: [
+              for (final (i, c) in ItemCategory.values.indexed)
+                AnimatedEntrance(
+                  index: i,
+                  child: GlassTile(
+                    icon: c.icon,
+                    iconColor: c.color,
+                    title: c.label,
+                    value: '${counts[c]}',
+                    onTap: () => context.push(_route(c)),
+                  ),
+                ),
+            ],
+          ),
           SectionHeader(
             'Ordner',
             actionLabel: 'Neu',
@@ -106,6 +113,9 @@ class CategoriesScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          ResponsiveGrid(
+            minItemWidth: 300,
+            children: [
           for (final f in folders)
             GlassTile(
               leading: const FeatureIconImage(FeatureIcon.folder, size: 38),
@@ -124,8 +134,9 @@ class CategoriesScreen extends ConsumerWidget {
                       destructive: true,
                       confirmLabel: 'Löschen',
                     );
-                    if (ok)
+                    if (ok) {
                       await ref.read(vaultActionsProvider).deleteFolder(f.id);
+                    }
                   }
                 },
                 itemBuilder: (_) => const [
@@ -134,6 +145,8 @@ class CategoriesScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            ],
+          ),
           if (tags.isNotEmpty) ...[
             const SectionHeader('Tags'),
             Wrap(

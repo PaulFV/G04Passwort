@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_theme.dart';
+import '../core/utils/responsive.dart';
 import '../features/settings/application/settings_controller.dart';
 
 /// Full-screen artwork background with a dark gradient for readability.
@@ -73,6 +74,7 @@ class G04Scaffold extends ConsumerWidget {
     this.bottom,
     this.leading,
     this.dim = 0.55,
+    this.wide = false,
   });
 
   final String? title;
@@ -87,6 +89,10 @@ class G04Scaffold extends ConsumerWidget {
   final Widget? bottom;
   final Widget? leading;
   final double dim;
+
+  /// Lets the content use the full width on tablets / desktop (grids,
+  /// dashboards). Forms and detail pages keep a readable width.
+  final bool wide;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -118,10 +124,17 @@ class G04Scaffold extends ConsumerWidget {
             child: Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: AppSpacing.maxContentWidth,
+                constraints: BoxConstraints(
+                  maxWidth: wide
+                      ? AppSpacing.maxWideContentWidth
+                      : AppSpacing.maxContentWidth,
                 ),
-                child: Padding(padding: padding, child: body),
+                child: Padding(
+                  padding: context.windowSize.isCompact
+                      ? padding
+                      : padding.add(const EdgeInsets.symmetric(horizontal: 8)),
+                  child: body,
+                ),
               ),
             ),
           ),

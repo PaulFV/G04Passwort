@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -23,6 +24,7 @@ class AuthenticatorScreen extends ConsumerWidget {
     final items = ref.watch(totpItemsProvider);
     return G04Scaffold(
       title: '2FA Authenticator',
+      wide: true,
       body: Column(
         children: [
           Expanded(
@@ -33,7 +35,8 @@ class AuthenticatorScreen extends ConsumerWidget {
                     message:
                         'Füge bei einem Login den TOTP-Schlüssel (Base32 oder otpauth://-Link) hinzu.',
                   )
-                : ListView.builder(
+                : ResponsiveListView.builder(
+                    gridItemExtent: 124,
                     itemCount: items.length,
                     itemBuilder: (_, i) => AnimatedEntrance(
                       index: i,

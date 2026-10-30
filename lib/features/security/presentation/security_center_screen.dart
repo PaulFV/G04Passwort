@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -29,6 +30,7 @@ class SecurityCenterScreen extends ConsumerWidget {
 
     return G04Scaffold(
       title: 'Sicherheitszentrum',
+      wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -72,6 +74,9 @@ class SecurityCenterScreen extends ConsumerWidget {
             child: Text(report.scoreLabel, style: context.text.titleLarge),
           ),
           const SizedBox(height: 18),
+          ResponsiveGrid(
+            minItemWidth: 320,
+            children: [
           GlassTile(
             icon: Icons.check_circle_rounded,
             iconColor: AppColors.success,
@@ -114,6 +119,8 @@ class SecurityCenterScreen extends ConsumerWidget {
             title: '2FA aktiviert',
             value: '${report.withTotp}',
             onTap: () => context.push(Routes.authenticator),
+          ),
+            ],
           ),
           const SizedBox(height: 14),
           NeonButton(

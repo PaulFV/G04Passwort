@@ -14,6 +14,7 @@ abstract final class AppSpacing {
   static const double radius = 18;
   static const double radiusSmall = 12;
   static const double maxContentWidth = 720;
+  static const double maxWideContentWidth = 1280;
 }
 
 /// Builds the Material 3 themes of G04Passwort.

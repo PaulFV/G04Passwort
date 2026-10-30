@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../widgets/common.dart';
 import '../../../widgets/g04_scaffold.dart';
@@ -37,6 +38,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return G04Scaffold(
       title: 'Suche',
+      wide: true,
       body: Column(
         children: [
           VaultSearchBar(
@@ -85,7 +87,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     icon: Icons.search_off_rounded,
                     title: 'Keine Treffer',
                   )
-                : ListView.builder(
+                : ResponsiveListView.builder(
+                    gridItemExtent: 78,
                     padding: const EdgeInsets.only(bottom: 32),
                     itemCount: results.length,
                     itemBuilder: (_, i) => VaultItemTile(item: results[i]),

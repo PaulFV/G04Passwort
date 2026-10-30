@@ -69,7 +69,11 @@ class NeonButton extends StatelessWidget {
       ],
     );
 
-    return AnimatedOpacity(
+    // Buttons never stretch wider than a comfortable width on desktop.
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 520),
+        child: AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
       opacity: enabled ? 1 : 0.55,
       child: Container(
@@ -106,6 +110,8 @@ class NeonButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    ),
       ),
     );
   }

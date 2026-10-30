@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../models/item_category.dart';
+import '../../../widgets/circular_gauge.dart';
 import '../../../widgets/common.dart';
 import '../../../widgets/g04_logo.dart';
 import '../../../widgets/g04_scaffold.dart';
@@ -27,6 +29,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return G04Scaffold(
       showAppBar: false,
+      wide: true,
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -151,50 +154,58 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
             ),
-          if (favorites.isNotEmpty) ...[
+          if (items.isNotEmpty)
             SliverToBoxAdapter(
-              child: SectionHeader(
-                'Favoriten',
-                actionLabel: favorites.length > 5 ? 'Alle' : null,
-                onAction: () =>
-                    context.push('${Routes.vault}?filter=favorites'),
+              child: ResponsiveGrid(
+                minItemWidth: 360,
+                spacing: 20,
+                children: [
+                  if (favorites.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SectionHeader(
+                          'Favoriten',
+                          actionLabel: favorites.length > 5 ? 'Alle' : null,
+                          onAction: () =>
+                              context.push('${Routes.vault}?filter=favorites'),
+                        ),
+                        for (final (i, item) in favorites.take(5).indexed)
+                          AnimatedEntrance(
+                            index: i,
+                            child: VaultItemTile(item: item),
+                          ),
+                      ],
+                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SectionHeader('Kategorien'),
+                      for (final c in const [
+                        ItemCategory.login,
+                        ItemCategory.card,
+                        ItemCategory.document,
+                        ItemCategory.note,
+                      ])
+                        GlassTile(
+                          icon: c.icon,
+                          iconColor: c.color,
+                          title: c.label,
+                          value: '${counts[c]}',
+                          onTap: () => context.push(switch (c) {
+                            ItemCategory.card => Routes.cards,
+                            ItemCategory.document => Routes.documents,
+                            ItemCategory.note => Routes.notes,
+                            _ => '${Routes.vault}?category=${c.name}',
+                          }),
+                        ),
+                    ],
+                  ),
+                  // Tablets & desktop: extra security overview column.
+                  if (!context.windowSize.isCompact) const _SecurityOverview(),
+                ],
               ),
             ),
-            SliverList.list(
-              children: [
-                for (final (i, item) in favorites.take(5).indexed)
-                  AnimatedEntrance(
-                    index: i,
-                    child: VaultItemTile(item: item),
-                  ),
-              ],
-            ),
-          ],
-          if (items.isNotEmpty) ...[
-            const SliverToBoxAdapter(child: SectionHeader('Kategorien')),
-            SliverList.list(
-              children: [
-                for (final c in const [
-                  ItemCategory.login,
-                  ItemCategory.card,
-                  ItemCategory.document,
-                  ItemCategory.note,
-                ])
-                  GlassTile(
-                    icon: c.icon,
-                    iconColor: c.color,
-                    title: c.label,
-                    value: '${counts[c]}',
-                    onTap: () => context.push(switch (c) {
-                      ItemCategory.card => Routes.cards,
-                      ItemCategory.document => Routes.documents,
-                      ItemCategory.note => Routes.notes,
-                      _ => '${Routes.vault}?category=${c.name}',
-                    }),
-                  ),
-              ],
-            ),
-          ],
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
@@ -202,6 +213,67 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   void _lock(WidgetRef ref) => ref.read(authControllerProvider.notifier).lock();
+}
+
+/// Compact security summary shown on tablets and desktop.
+class _SecurityOverview extends ConsumerWidget {
+  const _SecurityOverview();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final report = ref.watch(securityReportProvider);
+    final color = report.score >= 75
+        ? AppColors.success
+        : report.score >= 50
+        ? AppColors.warning
+        : AppColors.danger;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SectionHeader('Sicherheit'),
+        GlassCard(
+          onTap: () => context.push(Routes.security),
+          child: Row(
+            children: [
+              CircularGauge(
+                value: report.score / 100,
+                color: color,
+                size: 84,
+                strokeWidth: 8,
+                child: Text('${report.score}%', style: context.text.titleMedium),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(report.scoreLabel, style: context.text.titleMedium?.copyWith(color: color)),
+                    const SizedBox(height: 6),
+                    Text('${report.weak} schwach · ${report.reused} doppelt',
+                        style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                    Text('${report.withTotp} mit 2FA',
+                        style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        GlassTile(
+          icon: Icons.password_rounded,
+          title: 'Passwort-Generator',
+          subtitle: 'Strg+G',
+          onTap: () => context.go(Routes.generator),
+        ),
+        GlassTile(
+          icon: Icons.qr_code_2_rounded,
+          title: '2FA Authenticator',
+          onTap: () => context.push(Routes.authenticator),
+        ),
+      ],
+    );
+  }
 }
 
 class _QuickTile extends StatelessWidget {

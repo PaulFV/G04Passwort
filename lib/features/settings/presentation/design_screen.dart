@@ -21,6 +21,7 @@ class DesignScreen extends ConsumerWidget {
 
     return G04Scaffold(
       title: 'Design',
+      wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -62,8 +63,8 @@ class DesignScreen extends ConsumerWidget {
             ),
           ),
           const SectionHeader('Hintergrund'),
-          GridView.count(
-            crossAxisCount: 3,
+          GridView.extent(
+            maxCrossAxisExtent: 170,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 10,

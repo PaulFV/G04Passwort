@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/vault_item_type.dart';
@@ -29,6 +30,7 @@ class DocumentsScreen extends ConsumerWidget {
     final docs = ref.watch(itemsByTypeProvider(VaultItemType.document));
     return G04Scaffold(
       title: 'Dokumente',
+      wide: true,
       body: Column(
         children: [
           Expanded(
@@ -41,6 +43,9 @@ class DocumentsScreen extends ConsumerWidget {
                   )
                 : ListView(
                     children: [
+                      ResponsiveGrid(
+                        minItemWidth: 340,
+                        children: [
                       for (final d in docs)
                         GlassTile(
                           icon: Icons.picture_as_pdf_rounded,
@@ -60,6 +65,8 @@ class DocumentsScreen extends ConsumerWidget {
                           ].join(' · '),
                           onTap: () => context.push(Routes.item(d.id)),
                         ),
+                        ],
+                      ),
                     ],
                   ),
           ),

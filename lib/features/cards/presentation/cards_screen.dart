@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -21,6 +22,7 @@ class CardsScreen extends ConsumerWidget {
     final cards = ref.watch(itemsByTypeProvider(VaultItemType.card));
     return G04Scaffold(
       title: 'Kreditkarten',
+      wide: true,
       body: Column(
         children: [
           Expanded(
@@ -33,6 +35,9 @@ class CardsScreen extends ConsumerWidget {
                   )
                 : ListView(
                     children: [
+                      ResponsiveGrid(
+                        minItemWidth: 340,
+                        children: [
                       for (final c in cards)
                         VaultItemTile(
                           item: c,
@@ -60,6 +65,8 @@ class CardsScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
+                        ],
+                      ),
                     ],
                   ),
           ),

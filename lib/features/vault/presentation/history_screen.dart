@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../widgets/common.dart';
 import '../../../widgets/g04_scaffold.dart';
 import '../application/vault_providers.dart';
@@ -18,12 +19,14 @@ class HistoryScreen extends ConsumerWidget {
     final fmt = DateFormat.yMMMd('de_DE').add_Hm();
     return G04Scaffold(
       title: 'Passwort-Verlauf',
+      wide: true,
       body: items.isEmpty
           ? const EmptyState(
               icon: Icons.history_rounded,
               title: 'Noch keine Änderungen',
             )
-          : ListView.builder(
+          : ResponsiveListView.builder(
+                    gridItemExtent: 78,
               padding: const EdgeInsets.only(bottom: 32),
               itemCount: items.length,
               itemBuilder: (context, i) {

@@ -46,6 +46,18 @@ Die App verwaltet Zugangsdaten zu Websites und Portalen, aber auch zu **Geräten
 | ☁️ **Cloud Sync** | Zero-Knowledge-Sync-Architektur (Google Drive, OneDrive, iCloud, WebDAV vorbereitet) |
 | 🎨 **Design** | Material 3, Dark/Light, 6 Akzentfarben, 11 Hintergründe, Glassmorphism, Lottie-Animationen, responsiv mit Navigation Rail auf Tablet und Desktop |
 
+### Handy, Tablet & Desktop
+
+| Gerät | Layout |
+|---|---|
+| 📱 Handy (< 600 px) | Glas-Bottom-Navigation, eine Spalte |
+| 📲 Tablet (600–1199 px) | Navigation Rail, 2 Spalten (Dashboard, Listen, Einstellungen) |
+| 🖥️ Desktop (≥ 1200 px) | Ausgeklappte Seitenleiste mit „Neuer Eintrag“, bis zu 3 Spalten |
+
+Tastaturkürzel (Web/Desktop): **Strg/⌘ + K** Suche · **Strg/⌘ + N** neuer Eintrag · **Strg/⌘ + G** Generator · **Strg/⌘ + L** Tresor sperren
+
+**Web-App:** https://paulfv.github.io/G04Passwort/ – auf iPhone/Android über „Zum Home-Bildschirm“, am Desktop (Chrome/Edge) über „App installieren“ in der Adressleiste.
+
 ### Screens
 
 Splash · Onboarding · Login/Biometrie · Master-Passwort · Dashboard (Tresor-Übersicht) · Passwortliste · Passwortdetails · Neuer Eintrag · Passwort-Generator · Sicherheitszentrum · Passwort-Analyse · 2FA Authenticator · Dokumente · Kreditkarten · Sichere Notizen · Kategorien · Suche · Einstellungen · Design & Personalisierung · Auto-Save · Profil · Backup · Cloud Sync · Passwort-Verlauf · Mehr · About

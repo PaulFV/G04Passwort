@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -21,6 +22,7 @@ class NotesScreen extends ConsumerWidget {
     final notes = ref.watch(itemsByTypeProvider(VaultItemType.note));
     return G04Scaffold(
       title: 'Notizen',
+      wide: true,
       body: Column(
         children: [
           Expanded(
@@ -33,6 +35,9 @@ class NotesScreen extends ConsumerWidget {
                   )
                 : ListView(
                     children: [
+                      ResponsiveGrid(
+                        minItemWidth: 340,
+                        children: [
                       for (final n in notes)
                         GlassCard(
                           margin: const EdgeInsets.only(bottom: 10),
@@ -67,6 +72,8 @@ class NotesScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
+                        ],
+                      ),
                     ],
                   ),
           ),

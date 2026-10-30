@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../models/item_category.dart';
 import '../../../models/vault_item.dart';
@@ -72,6 +73,7 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
         : '${Routes.newItem}?type=${widget.category!.defaultType.name}&category=${widget.category!.name}';
     return G04Scaffold(
       title: _title,
+      wide: true,
       actions: [
         PopupMenuButton<_Sort>(
           tooltip: 'Sortieren',
@@ -100,7 +102,8 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
               title: 'Noch keine Einträge',
               message: 'Tippe auf +, um einen neuen Eintrag anzulegen.',
             )
-          : ListView.builder(
+          : ResponsiveListView.builder(
+                    gridItemExtent: 78,
               padding: const EdgeInsets.only(top: 4, bottom: 96),
               itemCount: items.length,
               itemBuilder: (context, i) => AnimatedEntrance(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../widgets/common.dart';
 import '../../../widgets/feature_icon.dart';
 import '../../../widgets/g04_scaffold.dart';
@@ -89,9 +90,13 @@ class MoreScreen extends StatelessWidget {
         ];
     return G04Scaffold(
       title: 'Mehr',
+      wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 110),
         children: [
+          ResponsiveGrid(
+            minItemWidth: 320,
+            children: [
           for (final (i, e) in entries.indexed)
             AnimatedEntrance(
               index: i,
@@ -111,6 +116,8 @@ class MoreScreen extends StatelessWidget {
             icon: Icons.info_outline_rounded,
             title: 'Über G04Passwort',
             onTap: () => context.push(Routes.about),
+          ),
+            ],
           ),
         ],
       ),

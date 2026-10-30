@@ -32,8 +32,8 @@ class AboutScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          GridView.count(
-            crossAxisCount: 4,
+          GridView.extent(
+            maxCrossAxisExtent: 120,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             childAspectRatio: 0.78,
