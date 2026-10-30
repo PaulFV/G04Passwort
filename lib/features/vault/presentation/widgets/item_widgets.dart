@@ -127,8 +127,9 @@ class VaultItemTile extends ConsumerWidget {
               tooltip: 'Passwort kopieren',
               icon: const Icon(Icons.copy_rounded, size: 20),
               onPressed: () async {
-                await ref.read(vaultActionsProvider).copy(password);
-                if (context.mounted) context.showSnack('Passwort kopiert');
+                final ok = await ref.read(vaultActionsProvider).copy(password);
+                if (!context.mounted) return;
+                ok ? context.showSnack('Passwort kopiert') : context.showError(kCopyFailed);
               },
             )
           else

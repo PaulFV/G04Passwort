@@ -89,10 +89,13 @@ class _FieldRowState extends ConsumerState<FieldRow> {
                   tooltip: 'Kopieren',
                   icon: const Icon(Icons.copy_rounded, size: 20),
                   onPressed: () async {
-                    await ref
+                    final ok = await ref
                         .read(vaultActionsProvider)
                         .copy(widget.value, secret: widget.secret);
-                    if (context.mounted) {
+                    if (!context.mounted) return;
+                    if (!ok) {
+                      context.showError(kCopyFailed);
+                    } else {
                       context.showSnack(
                         widget.secret
                             ? '${widget.label} kopiert – wird automatisch gelöscht'

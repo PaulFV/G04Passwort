@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
+/// Message shown when the clipboard is not accessible.
+const kCopyFailed = 'Kopieren nicht möglich – Zwischenablage ist blockiert.';
+
 /// Small UI helpers on [BuildContext].
 extension ContextX on BuildContext {
   ThemeData get theme => Theme.of(this);

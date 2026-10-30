@@ -183,7 +183,8 @@ class VaultActions {
       _ref.read(vaultRepositoryProvider).deleteAttachment(id);
 
   /// Copies a value; secrets are wiped after the configured delay.
-  Future<void> copy(String value, {bool secret = true}) => _ref
+  /// Returns `false` if the platform denied clipboard access.
+  Future<bool> copy(String value, {bool secret = true}) => _ref
       .read(clipboardServiceProvider)
       .copy(
         value,

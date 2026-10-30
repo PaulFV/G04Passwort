@@ -114,6 +114,7 @@ class DashboardScreen extends ConsumerWidget {
                     child: _QuickTile(
                       icon: Icons.grid_view_rounded,
                       label: 'Kategorien',
+                      value: '${ItemCategory.values.length}',
                       onTap: () => context.go(Routes.categories),
                     ),
                   ),

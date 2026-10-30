@@ -14,11 +14,17 @@ class ClipboardService {
 
   /// Copies [text]. If [clearAfter] is non-null the clipboard is wiped
   /// after that duration.
-  Future<void> copy(String text, {Duration? clearAfter}) async {
-    await Clipboard.setData(ClipboardData(text: text));
+  /// Returns `false` if the platform denied clipboard access (e.g. a
+  /// browser without clipboard permission).
+  Future<bool> copy(String text, {Duration? clearAfter}) async {
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
+    } on Object {
+      return false;
+    }
     _timer?.cancel();
     _pending = null;
-    if (clearAfter == null) return;
+    if (clearAfter == null) return true;
     _pending = text;
     _timer = Timer(clearAfter, () async {
       try {
@@ -32,6 +38,7 @@ class ClipboardService {
         _pending = null;
       }
     });
+    return true;
   }
 
   /// Clears a pending secret right away (e.g. when the vault is locked).
@@ -47,7 +54,11 @@ class ClipboardService {
     } on Object {
       // Reading may be denied (web) – clear to be safe.
     }
-    await Clipboard.setData(const ClipboardData(text: ''));
+    try {
+      await Clipboard.setData(const ClipboardData(text: ''));
+    } on Object {
+      // Ignore – nothing more we can do without clipboard access.
+    }
   }
 
   void dispose() => _timer?.cancel();

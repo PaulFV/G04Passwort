@@ -72,8 +72,9 @@ class _TotpCard extends ConsumerWidget {
       onTap: code == null
           ? null
           : () async {
-              await ref.read(vaultActionsProvider).copy(code.code);
-              if (context.mounted) context.showSnack('Code kopiert');
+              final ok = await ref.read(vaultActionsProvider).copy(code.code);
+              if (!context.mounted) return;
+              ok ? context.showSnack('Code kopiert') : context.showError(kCopyFailed);
             },
       child: Row(
         children: [

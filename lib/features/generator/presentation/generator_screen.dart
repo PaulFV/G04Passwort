@@ -24,8 +24,9 @@ class GeneratorScreen extends ConsumerWidget {
     final strength = ref.watch(passwordStrengthProvider(state.password));
 
     Future<void> copy(String value) async {
-      await ref.read(vaultActionsProvider).copy(value);
-      if (context.mounted) context.showSnack('Passwort kopiert');
+      final ok = await ref.read(vaultActionsProvider).copy(value);
+      if (!context.mounted) return;
+      ok ? context.showSnack('Passwort kopiert') : context.showError(kCopyFailed);
     }
 
     return G04Scaffold(
