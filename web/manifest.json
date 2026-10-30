@@ -1,14 +1,19 @@
 {
-    "name": "g04passwort",
-    "short_name": "g04passwort",
-    "start_url": ".",
+    "name": "G04Passwort",
+    "short_name": "G04Passwort",
+    "start_url": "./",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
+    "background_color": "#050A1A",
+    "theme_color": "#050A1A",
     "description": "G04Passwort – Premium Passwort-Tresor.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
+        {
+            "src": "icons/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
         {
             "src": "icons/Icon-192.png",
             "sizes": "192x192",
@@ -31,5 +36,7 @@
             "type": "image/png",
             "purpose": "maskable"
         }
-    ]
+    ],
+    "id": "/G04Passwort/",
+    "scope": "./"
 }
