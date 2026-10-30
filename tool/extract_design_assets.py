@@ -123,7 +123,9 @@ def main():
     chans = [(a * (1 - d) + b * d).astype("uint8") for a, b in [(30, 6), (120, 22), (255, 70)]]
     bg = Image.merge("RGB", [Image.fromarray(ch) for ch in chans]).convert("RGBA")
     mark = up(logo, 1)
-    scale = 860 / max(mark.size)
+    mark = mark.crop(mark.getchannel("A").getbbox())  # drop transparent margins
+    # Large logo, but clear of the rounded corners iOS/Android cut away.
+    scale = min(900 / mark.width, 900 / mark.height)
     mark = mark.resize((round(mark.width * scale), round(mark.height * scale)), Image.LANCZOS)
     bg.alpha_composite(mark, ((1024 - mark.width) // 2, (1024 - mark.height) // 2))
     bg.convert("RGB").save(ROOT / "assets/branding/app_icon.png")
