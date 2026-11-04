@@ -224,7 +224,7 @@ class SettingsScreen extends ConsumerWidget {
           GlassTile(
             icon: Icons.lock_rounded,
             title: 'Tresor jetzt sperren',
-            onTap: () => ref.read(authControllerProvider.notifier).lock(),
+            onTap: () => ref.read(authControllerProvider.notifier).lock(manual: true),
           ),
           GlassTile(
             icon: Icons.delete_forever_rounded,

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,13 +10,16 @@ import '../../../services/biometric_service.dart';
 import '../../../widgets/app_text_field.dart';
 import '../../../widgets/g04_logo.dart';
 import '../../../widgets/g04_scaffold.dart';
-import '../../../widgets/glass_card.dart';
 import '../../../widgets/neon_button.dart';
 import '../../settings/application/settings_controller.dart';
 import '../application/auth_controller.dart';
 
-/// Login / Biometrie (design screen 2): "Willkommen zurück!", fingerprint
-/// and face tiles, "Entsperren", "Passwort eingeben", "Passwort vergessen?".
+/// Sperrbildschirm.
+///
+/// * Face ID / Fingerabdruck aktiviert: die Prüfung startet sofort beim
+///   Öffnen. Schlägt sie fehl oder wird sie abgebrochen, erscheint das
+///   Master-Passwort-Feld und „Erneut mit Face ID versuchen“.
+/// * Nicht aktiviert: direkt die Eingabe des Master-Passworts.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -27,18 +29,23 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _password = TextEditingController();
-  bool _showPassword = false;
+
+  /// Face ID prompt is currently shown.
+  bool _checking = false;
+
+  /// Face ID failed or was cancelled at least once.
+  bool _bioFailed = false;
+
+  bool get _bioEnabled => ref.read(settingsControllerProvider).biometricEnabled;
 
   @override
   void initState() {
     super.initState();
-    // Offer biometric unlock right away if enabled. Browsers only show the
-    // passkey (Face ID) prompt after a tap, so the web app waits for one.
-    if (!kIsWeb) {
+    final auth = ref.read(authControllerProvider);
+    if (_bioEnabled && !auth.lockedManually) {
+      _checking = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (ref.read(settingsControllerProvider).biometricEnabled) {
-          unawaited(_biometric());
-        }
+        if (mounted) unawaited(_biometric());
       });
     }
   }
@@ -50,29 +57,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  /// Starts Face ID / fingerprint. Keep the controller call first (no
+  /// `await` before it): browsers need it inside the tap.
   Future<void> _biometric() async {
-    final enabled = ref.read(settingsControllerProvider).biometricEnabled;
-    if (!enabled) {
-      setState(() => _showPassword = true);
-      context.showSnack(
-        'Face ID / Fingerabdruck ist noch nicht aktiviert. Entsperre mit dem '
-        'Master-Passwort und schalte es unter Einstellungen → App-Sperre ein.',
-        icon: Icons.info_outline_rounded,
-      );
-      return;
-    }
-    await ref.read(authControllerProvider.notifier).unlockWithBiometrics();
+    final future = ref
+        .read(authControllerProvider.notifier)
+        .unlockWithBiometrics();
+    setState(() => _checking = true);
+    final ok = await future;
+    if (!mounted || ok) return;
+    setState(() {
+      _checking = false;
+      _bioFailed = true;
+    });
   }
 
   Future<void> _unlock() async {
-    if (!_showPassword) {
-      if (ref.read(settingsControllerProvider).biometricEnabled) {
-        await _biometric();
-      } else {
-        setState(() => _showPassword = true);
-      }
-      return;
-    }
     if (_password.text.isEmpty) return;
     final ok = await ref
         .read(authControllerProvider.notifier)
@@ -120,7 +120,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authControllerProvider);
-    final kind = auth.biometricKind;
+    final bioEnabled = ref.watch(
+      settingsControllerProvider.select((s) => s.biometricEnabled),
+    );
+    final fingerprint = auth.biometricKind == BiometricKind.fingerprint;
+    final bioName = fingerprint ? 'Fingerabdruck' : 'Face ID';
+    final bioIcon = fingerprint
+        ? Icons.fingerprint_rounded
+        : Icons.face_retouching_natural_rounded;
+    final checking = _checking && auth.error == null;
+
+    final String subtitle;
+    if (checking) {
+      subtitle = 'Entsperren mit $bioName …';
+    } else if (bioEnabled && _bioFailed) {
+      subtitle =
+          '$bioName nicht erkannt. Gib dein Master-Passwort ein '
+          'oder versuche es erneut.';
+    } else {
+      subtitle = 'Gib dein Master-Passwort ein.';
+    }
 
     return G04Scaffold(
       showAppBar: false,
@@ -138,88 +157,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Text(AppConstants.appName, style: context.text.headlineMedium),
                 const SizedBox(height: 22),
                 Text('Willkommen zurück!', style: context.text.titleLarge),
-                const SizedBox(height: 4),
-                Text(
-                  'Bitte authentifizieren Sie sich.',
-                  style: context.text.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                const SizedBox(height: 6),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: Text(
+                    subtitle,
+                    key: ValueKey(subtitle),
+                    textAlign: TextAlign.center,
+                    style: context.text.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 28),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _BioTile(
-                      icon: Icons.fingerprint_rounded,
-                      label: 'Fingerabdruck',
-                      highlighted: kind == BiometricKind.fingerprint,
-                      onTap: auth.busy ? null : _biometric,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Text(
-                        'oder',
-                        style: context.text.bodySmall?.copyWith(
-                          color: AppColors.textMuted,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 320),
+                  switchInCurve: Curves.easeOutCubic,
+                  child: checking
+                      ? _BioScanner(key: const ValueKey('scan'), icon: bioIcon)
+                      : _PasswordForm(
+                          key: const ValueKey('form'),
+                          controller: _password,
+                          busy: auth.busy,
+                          error: auth.error,
+                          onUnlock: _unlock,
+                          retryLabel: bioEnabled
+                              ? 'Erneut mit $bioName versuchen'
+                              : null,
+                          retryIcon: bioIcon,
+                          onRetry: auth.busy ? null : _biometric,
+                          onForgot: _forgot,
                         ),
-                      ),
-                    ),
-                    _BioTile(
-                      icon: Icons.face_retouching_natural_rounded,
-                      label: 'Face ID',
-                      highlighted: kind == BiometricKind.face,
-                      onTap: auth.busy ? null : _biometric,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 28),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 280),
-                  curve: Curves.easeOutCubic,
-                  child: _showPassword
-                      ? Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: AutofillGroup(
-                            child: AppTextField(
-                              controller: _password,
-                              label: 'Master-Passwort',
-                              icon: Icons.lock_outline_rounded,
-                              isSecret: true,
-                              autofocus: true,
-                              autofillHints: const [AutofillHints.password],
-                              textInputAction: TextInputAction.done,
-                              onSubmitted: (_) => _unlock(),
-                            ),
-                          ),
-                        )
-                      : const SizedBox(width: double.infinity),
-                ),
-                if (auth.error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: Text(
-                      auth.error!,
-                      textAlign: TextAlign.center,
-                      style: context.text.bodySmall?.copyWith(
-                        color: AppColors.danger,
-                      ),
-                    ),
-                  ),
-                NeonButton(
-                  label: 'Entsperren',
-                  loading: auth.busy,
-                  onPressed: _unlock,
-                ),
-                const SizedBox(height: 14),
-                if (!_showPassword)
-                  NeonButton.outline(
-                    label: 'Passwort eingeben',
-                    onPressed: () => setState(() => _showPassword = true),
-                  ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: _forgot,
-                  child: const Text('Passwort vergessen?'),
                 ),
               ],
             ),
@@ -230,35 +198,135 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-class _BioTile extends StatelessWidget {
-  const _BioTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.highlighted = false,
+/// Password entry with unlock, optional Face ID retry and "forgot".
+class _PasswordForm extends StatelessWidget {
+  const _PasswordForm({
+    super.key,
+    required this.controller,
+    required this.busy,
+    required this.error,
+    required this.onUnlock,
+    required this.retryLabel,
+    required this.retryIcon,
+    required this.onRetry,
+    required this.onForgot,
   });
 
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-  final bool highlighted;
+  final TextEditingController controller;
+  final bool busy;
+  final String? error;
+  final VoidCallback onUnlock;
+  final String? retryLabel;
+  final IconData retryIcon;
+  final VoidCallback? onRetry;
+  final VoidCallback onForgot;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: GlassCard(
-        onTap: onTap,
-        borderRadius: 18,
-        padding: const EdgeInsets.all(16),
-        glowColor: highlighted ? AppColors.neonBlue : null,
-        borderColor: AppColors.neonBlueLight.withValues(alpha: 0.7),
-        child: Icon(
-          icon,
-          size: 40,
-          color: AppColors.neonBlueLight,
-          shadows: const [Shadow(color: AppColors.neonBlue, blurRadius: 14)],
+    return Column(
+      children: [
+        AutofillGroup(
+          child: AppTextField(
+            controller: controller,
+            label: 'Master-Passwort',
+            icon: Icons.lock_outline_rounded,
+            isSecret: true,
+            autofocus: true,
+            autofillHints: const [AutofillHints.password],
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => onUnlock(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Text(
+              error!,
+              textAlign: TextAlign.center,
+              style: context.text.bodySmall?.copyWith(color: AppColors.danger),
+            ),
+          ),
+        NeonButton(label: 'Entsperren', loading: busy, onPressed: onUnlock),
+        if (retryLabel != null) ...[
+          const SizedBox(height: 14),
+          NeonButton.outline(
+            label: retryLabel!,
+            icon: retryIcon,
+            onPressed: onRetry,
+          ),
+        ],
+        const SizedBox(height: 10),
+        TextButton(
+          onPressed: onForgot,
+          child: const Text('Passwort vergessen?'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Pulsing neon ring shown while Face ID / fingerprint is being checked.
+class _BioScanner extends StatefulWidget {
+  const _BioScanner({super.key, required this.icon});
+
+  final IconData icon;
+
+  @override
+  State<_BioScanner> createState() => _BioScannerState();
+}
+
+class _BioScannerState extends State<_BioScanner>
+    with SingleTickerProviderStateMixin {
+  late final _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: AnimatedBuilder(
+          animation: _pulse,
+          builder: (context, child) {
+            final t = Curves.easeInOut.transform(_pulse.value);
+            return Container(
+              width: 132,
+              height: 132,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const RadialGradient(
+                  colors: [Color(0xFF1B3D7A), Color(0xFF081430)],
+                ),
+                border: Border.all(
+                  color: AppColors.neonBlueLight.withValues(alpha: 0.6 + 0.4 * t),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.neonBlue.withValues(alpha: 0.35 + 0.35 * t),
+                    blurRadius: 24 + 22 * t,
+                    spreadRadius: 2 + 6 * t,
+                  ),
+                ],
+              ),
+              child: child,
+            );
+          },
+          child: Icon(
+            widget.icon,
+            size: 68,
+            color: AppColors.neonBlueLight,
+            shadows: const [Shadow(color: AppColors.neonBlue, blurRadius: 18)],
+          ),
         ),
       ),
     );

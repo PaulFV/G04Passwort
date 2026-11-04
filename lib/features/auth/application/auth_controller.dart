@@ -41,9 +41,14 @@ class AuthState {
     this.lockedUntil,
     this.biometricKind = BiometricKind.none,
     this.passwordHint,
+    this.lockedManually = false,
   });
 
   final AuthStatus status;
+
+  /// The user locked the vault himself (lock button) – the login screen
+  /// then waits instead of starting Face ID right away.
+  final bool lockedManually;
   final bool busy;
   final String? error;
   final int failedAttempts;
@@ -63,6 +68,7 @@ class AuthState {
     bool clearLockout = false,
     BiometricKind? biometricKind,
     String? passwordHint,
+    bool? lockedManually,
   }) => AuthState(
     status: status ?? this.status,
     busy: busy ?? this.busy,
@@ -71,6 +77,7 @@ class AuthState {
     lockedUntil: clearLockout ? null : (lockedUntil ?? this.lockedUntil),
     biometricKind: biometricKind ?? this.biometricKind,
     passwordHint: passwordHint ?? this.passwordHint,
+    lockedManually: lockedManually ?? this.lockedManually,
   );
 }
 
@@ -198,6 +205,7 @@ class AuthController extends Notifier<AuthState> {
       await ref.read(vaultRepositoryProvider).load();
       state = state.copyWith(
         status: AuthStatus.unlocked,
+        lockedManually: false,
         busy: false,
         passwordHint: hint,
       );
@@ -235,6 +243,7 @@ class AuthController extends Notifier<AuthState> {
       await _saveLockout(0, null);
       state = state.copyWith(
         status: AuthStatus.unlocked,
+        lockedManually: false,
         busy: false,
         failedAttempts: 0,
         clearLockout: true,
@@ -304,6 +313,7 @@ class AuthController extends Notifier<AuthState> {
     await _saveLockout(0, null);
     state = state.copyWith(
       status: AuthStatus.unlocked,
+        lockedManually: false,
       busy: false,
       failedAttempts: 0,
       clearLockout: true,
@@ -411,15 +421,20 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
-  /// Locks the vault and wipes decrypted data from memory.
-  void lock() {
+  /// Locks the vault and wipes decrypted data from memory. [manual] is
+  /// `true` when the user pressed a lock button.
+  void lock({bool manual = false}) {
     if (state.status != AuthStatus.unlocked) return;
     ref.read(authRepositoryProvider).lock();
     ref.read(vaultRepositoryProvider).clear();
     unawaited(
       ref.read(clipboardServiceProvider).clearNow().catchError((Object _) {}),
     );
-    state = state.copyWith(status: AuthStatus.locked, clearError: true);
+    state = state.copyWith(
+      status: AuthStatus.locked,
+      clearError: true,
+      lockedManually: manual,
+    );
   }
 
   /// Deletes the vault irrevocably.

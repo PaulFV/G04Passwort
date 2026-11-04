@@ -37,7 +37,7 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = context.windowSize;
-    void lock() => ref.read(authControllerProvider.notifier).lock();
+    void lock() => ref.read(authControllerProvider.notifier).lock(manual: true);
 
     final shortcuts = <ShortcutActivator, VoidCallback>{
       for (final ctrl in [true, false]) ...{

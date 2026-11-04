@@ -193,7 +193,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  void _lock(WidgetRef ref) => ref.read(authControllerProvider.notifier).lock();
+  void _lock(WidgetRef ref) => ref.read(authControllerProvider.notifier).lock(manual: true);
 }
 
 class _Header extends StatelessWidget {
