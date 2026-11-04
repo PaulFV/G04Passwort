@@ -99,6 +99,7 @@ class _Raised3DState extends State<Raised3D> {
       child: ClipRRect(
         borderRadius: radius,
         child: Stack(
+          fit: StackFit.passthrough,
           children: [
             // Glossy reflection on the upper half of the face.
             Positioned(
@@ -156,6 +157,7 @@ class _Raised3DState extends State<Raised3D> {
             ],
           ),
           child: Stack(
+            fit: StackFit.passthrough,
             children: [
               // Side of the slab, visible below the face.
               Positioned.fill(
