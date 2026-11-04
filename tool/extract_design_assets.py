@@ -65,6 +65,28 @@ def loader(name):
     return lambda box: im.crop(tuple(round(v * f) for v in box)), f
 
 
+def snap_icon(crop, box, search=8, margin=3):
+    """Crops a feature icon tile so its neon frame is fully visible.
+
+    The hand-measured [box] is only a hint: the glowing frame is located in
+    a slightly larger area and cut out with an even [margin] on all sides,
+    so no icon loses part of its border.
+    """
+    x0, y0, x1, y1 = box
+    area = crop((x0 - search, y0 - search, x1 + search, y1 + search))
+    a = np.array(area).astype(int)
+    frame = (a[:, :, 2] > 150) & (a[:, :, 1] > 100) & (a[:, :, 0] < 150)
+    h, w = frame.shape
+    cols = np.where(frame.sum(0) > h * 0.35)[0]
+    rows = np.where(frame.sum(1) > w * 0.35)[0]
+    if len(cols) < 2 or len(rows) < 2:
+        return crop(box)
+    m = round(margin * area.width / (x1 - x0 + 2 * search))
+    l, r = max(cols[0] - m, 0), min(cols[-1] + 1 + m, w)
+    t, b = max(rows[0] - m, 0), min(rows[-1] + 1 + m, h)
+    return area.crop((l, t, r, b))
+
+
 def remove_dark_background(rgb):
     """Makes the dark background connected to the image border transparent
     (removes the painted checkerboard of the logo)."""
@@ -134,7 +156,7 @@ def main():
     lock = radial_fade(crop((935, 695, 1215, 1055)))
     up(lock, 2 * k).save(ROOT / "assets/branding/lock_3d.png")
     for name, box in SHEET_ICONS.items():
-        up(crop(box), 3 * k).save(ROOT / f"assets/icons/ic_{name}.png")
+        up(snap_icon(crop, box), 3 * k).save(ROOT / f"assets/icons/ic_{name}.png")
     for name, box in SHEET_BACKGROUNDS.items():
         img = crop(box)
         up(img, max(1, 1600 / img.width)).save(ROOT / f"assets/images/{name}", quality=90)
