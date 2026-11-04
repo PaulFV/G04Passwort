@@ -137,6 +137,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       subtitle =
           '$bioName nicht erkannt. Gib dein Master-Passwort ein '
           'oder versuche es erneut.';
+    } else if (bioEnabled) {
+      subtitle = 'Entsperre mit $bioName oder deinem Master-Passwort.';
     } else {
       subtitle = 'Gib dein Master-Passwort ein.';
     }
@@ -181,9 +183,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           busy: auth.busy,
                           error: auth.error,
                           onUnlock: _unlock,
-                          retryLabel: bioEnabled
+                          retryLabel: !bioEnabled
+                              ? null
+                              : _bioFailed
                               ? 'Erneut mit $bioName versuchen'
-                              : null,
+                              : 'Mit $bioName entsperren',
                           retryIcon: bioIcon,
                           onRetry: auth.busy ? null : _biometric,
                           onForgot: _forgot,
