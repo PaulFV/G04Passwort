@@ -134,7 +134,7 @@ void main() {
   test('encrypted backup round trip and CSV import without duplicates', () async {
     await auth.createVault('Backup-Passwort-1');
     await vault.load();
-    final csv = 'name,url,username,password\nGitHub,https://github.com,paul,pw1\nRouter,,admin,pw2\n';
+    const csv = 'name,url,username,password\nGitHub,https://github.com,paul,pw1\nRouter,,admin,pw2\n';
     final first = await io.importCsv(csv);
     expect(first.imported, 2);
     final again = await io.importCsv(csv);

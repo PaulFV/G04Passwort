@@ -36,13 +36,13 @@ class LegalScreen extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  _LegalList(
+                  const _LegalList(
                     headline: 'Datenschutzerklärung',
                     intro: PrivacyText.intro,
                     sections: PrivacyText.sections,
                     footer: PrivacyText.updated,
                   ),
-                  _CopyrightView(),
+                  const _CopyrightView(),
                 ],
               ),
             ),
@@ -106,6 +106,8 @@ class _LegalList extends StatelessWidget {
 }
 
 class _CopyrightView extends StatelessWidget {
+  const _CopyrightView();
+
   @override
   Widget build(BuildContext context) {
     return ListView(
