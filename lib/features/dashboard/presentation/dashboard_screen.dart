@@ -7,17 +7,19 @@ import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../models/item_category.dart';
-import '../../../widgets/circular_gauge.dart';
+import '../../../models/security_report.dart';
 import '../../../widgets/common.dart';
+import '../../../widgets/depth.dart';
+import '../../../widgets/feature_icon.dart';
 import '../../../widgets/g04_logo.dart';
 import '../../../widgets/g04_scaffold.dart';
-import '../../../widgets/glass_card.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../vault/application/vault_providers.dart';
 import '../../vault/presentation/widgets/item_widgets.dart';
 
-/// Tresor Übersicht (design screen 3): search, quick tiles (Alle,
-/// Favoriten, Kategorien), favourites and category overview.
+/// Tresor Übersicht (design screen 3): 3D vault status card, search,
+/// raised quick tiles (Alle, Favoriten, Kategorien), quick actions,
+/// favourites and category overview.
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -26,95 +28,61 @@ class DashboardScreen extends ConsumerWidget {
     final items = ref.watch(itemsProvider);
     final favorites = ref.watch(favoritesProvider);
     final counts = ref.watch(categoryCountsProvider);
+    final report = ref.watch(securityReportProvider);
 
     return G04Scaffold(
       showAppBar: false,
       wide: true,
       body: CustomScrollView(
         slivers: [
+          SliverToBoxAdapter(child: _Header(onLock: () => _lock(ref))),
+          SliverToBoxAdapter(
+            child: _VaultHero(
+              entries: items.length,
+              report: report,
+              onTap: () => context.push(Routes.security),
+            ),
+          ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 16),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(kLogoMarkAsset, width: 40, height: 40),
-                  ),
-                  const SizedBox(width: 10),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'G04',
-                          style: context.text.titleLarge?.copyWith(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.neonBlueLight
-                                : AppColors.neonBlue,
-                            fontWeight: FontWeight.w900,
-                            shadows: const [
-                              Shadow(color: AppColors.neonBlue, blurRadius: 12),
-                            ],
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'Passwort',
-                          style: context.text.titleLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    tooltip: 'Sicherheitszentrum',
-                    icon: const Icon(Icons.shield_outlined),
-                    onPressed: () => context.push(Routes.security),
-                  ),
-                  IconButton(
-                    tooltip: 'Sperren',
-                    icon: const Icon(Icons.lock_outline_rounded),
-                    onPressed: () => _lock(ref),
-                  ),
-                ],
+              padding: const EdgeInsets.only(top: 18),
+              child: VaultSearchBar(
+                onTap: () => context.push(Routes.search),
+                onAdd: () => context.push(Routes.newItem),
               ),
             ),
           ),
           SliverToBoxAdapter(
-            child: VaultSearchBar(
-              onTap: () => context.push(Routes.search),
-              onAdd: () => context.push(Routes.newItem),
-            ),
-          ),
-          SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 18),
               child: Row(
                 children: [
                   Expanded(
                     child: _QuickTile(
-                      icon: Icons.person_rounded,
+                      icon: FeatureIcon.passwords,
                       label: 'Alle',
                       value: '${items.length}',
                       onTap: () => context.push(Routes.vault),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: _QuickTile(
-                      icon: Icons.star_rounded,
-                      iconColor: const Color(0xFFFFC857),
+                      icon: FeatureIcon.favorites,
                       label: 'Favoriten',
                       value: '${favorites.length}',
+                      accent: const Color(0xFF7C8CFF),
                       onTap: () =>
                           context.push('${Routes.vault}?filter=favorites'),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: _QuickTile(
-                      icon: Icons.grid_view_rounded,
+                      icon: FeatureIcon.folder,
                       label: 'Kategorien',
                       value: '${ItemCategory.values.length}',
+                      accent: AppColors.cyan,
                       onTap: () => context.go(Routes.categories),
                     ),
                   ),
@@ -122,33 +90,48 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const SliverToBoxAdapter(child: SectionHeader('Schnellzugriff')),
+          SliverToBoxAdapter(
+            child: Row(
+              children: [
+                for (final (i, a) in [
+                  (FeatureIcon.generator, 'Generator', () => context.go(Routes.generator)),
+                  (FeatureIcon.totp, '2FA', () => context.push(Routes.authenticator)),
+                  (FeatureIcon.analysis, 'Analyse', () => context.push(Routes.analysis)),
+                  (FeatureIcon.importExport, 'Backup', () => context.push(Routes.backup)),
+                ].indexed) ...[
+                  if (i > 0) const SizedBox(width: 10),
+                  Expanded(
+                    child: _ActionTile(icon: a.$1, label: a.$2, onTap: a.$3),
+                  ),
+                ],
+              ],
+            ),
+          ),
           if (items.isEmpty)
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(top: 24),
+                padding: const EdgeInsets.only(top: 12),
                 child: EmptyState(
                   icon: Icons.lock_open_rounded,
                   title: 'Dein Tresor ist bereit',
                   message:
                       'Lege deinen ersten Eintrag an oder importiere Passwörter aus einem anderen Manager.',
                   action: Wrap(
-                    spacing: 10,
+                    spacing: 12,
+                    runSpacing: 12,
+                    alignment: WrapAlignment.center,
                     children: [
-                      FilledButton.icon(
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(0, 44),
-                        ),
-                        onPressed: () => context.push(Routes.newItem),
-                        icon: const Icon(Icons.add_rounded),
-                        label: const Text('Neuer Eintrag'),
+                      Button3D(
+                        icon: Icons.add_rounded,
+                        label: 'Neuer Eintrag',
+                        onTap: () => context.push(Routes.newItem),
                       ),
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 44),
-                        ),
-                        onPressed: () => context.push(Routes.backup),
-                        icon: const Icon(Icons.file_download_outlined),
-                        label: const Text('Importieren'),
+                      Button3D(
+                        icon: Icons.file_download_outlined,
+                        label: 'Importieren',
+                        primary: false,
+                        onTap: () => context.push(Routes.backup),
                       ),
                     ],
                   ),
@@ -182,17 +165,16 @@ class DashboardScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SectionHeader('Kategorien'),
-                      for (final c in const [
-                        ItemCategory.login,
-                        ItemCategory.card,
-                        ItemCategory.document,
-                        ItemCategory.note,
+                      for (final (c, icon) in const [
+                        (ItemCategory.login, FeatureIcon.passwords),
+                        (ItemCategory.card, FeatureIcon.cards),
+                        (ItemCategory.document, FeatureIcon.documents),
+                        (ItemCategory.note, FeatureIcon.notes),
                       ])
-                        GlassTile(
-                          icon: c.icon,
-                          iconColor: c.color,
+                        _CategoryRow(
+                          icon: icon,
                           title: c.label,
-                          value: '${counts[c]}',
+                          count: counts[c] ?? 0,
                           onTap: () => context.push(switch (c) {
                             ItemCategory.card => Routes.cards,
                             ItemCategory.document => Routes.documents,
@@ -202,8 +184,6 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                     ],
                   ),
-                  // Tablets & desktop: extra security overview column.
-                  if (!context.windowSize.isCompact) const _SecurityOverview(),
                 ],
               ),
             ),
@@ -216,63 +196,179 @@ class DashboardScreen extends ConsumerWidget {
   void _lock(WidgetRef ref) => ref.read(authControllerProvider.notifier).lock();
 }
 
-/// Compact security summary shown on tablets and desktop.
-class _SecurityOverview extends ConsumerWidget {
-  const _SecurityOverview();
+class _Header extends StatelessWidget {
+  const _Header({required this.onLock});
+
+  final VoidCallback onLock;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final report = ref.watch(securityReportProvider);
-    final color = report.score >= 75
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 16),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset(kLogoMarkAsset, width: 40, height: 40),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'G04',
+                    style: context.text.titleLarge?.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.neonBlueLight
+                          : AppColors.neonBlue,
+                      fontWeight: FontWeight.w900,
+                      shadows: const [
+                        Shadow(color: AppColors.neonBlue, blurRadius: 12),
+                      ],
+                    ),
+                  ),
+                  TextSpan(text: 'Passwort', style: context.text.titleLarge),
+                ],
+              ),
+            ),
+          ),
+          RoundButton3D(
+            icon: Icons.shield_outlined,
+            tooltip: 'Sicherheitszentrum',
+            onTap: () => context.push(Routes.security),
+          ),
+          const SizedBox(width: 10),
+          RoundButton3D(
+            icon: Icons.lock_outline_rounded,
+            tooltip: 'Sperren',
+            onTap: onLock,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Large raised status card with the 3D lock from the asset sheet.
+class _VaultHero extends StatelessWidget {
+  const _VaultHero({
+    required this.entries,
+    required this.report,
+    required this.onTap,
+  });
+
+  final int entries;
+  final SecurityReport report;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasData = report.total > 0;
+    final color = !hasData || report.score >= 75
         ? AppColors.success
         : report.score >= 50
         ? AppColors.warning
         : AppColors.danger;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SectionHeader('Sicherheit'),
-        GlassCard(
-          onTap: () => context.push(Routes.security),
-          child: Row(
-            children: [
-              CircularGauge(
-                value: report.score / 100,
-                color: color,
-                size: 84,
-                strokeWidth: 8,
-                child: Text('${report.score}%', style: context.text.titleMedium),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Raised3D(
+      onTap: onTap,
+      radius: 24,
+      depth: 8,
+      padding: const EdgeInsets.fromLTRB(18, 16, 8, 16),
+      semanticLabel: 'Sicherheitszentrum öffnen',
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Text(report.scoreLabel, style: context.text.titleMedium?.copyWith(color: color)),
-                    const SizedBox(height: 6),
-                    Text('${report.weak} schwach · ${report.reused} doppelt',
-                        style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary)),
-                    Text('${report.withTotp} mit 2FA',
-                        style: context.text.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                    Icon(Icons.verified_user_rounded, color: color, size: 18,
+                        shadows: [Shadow(color: color, blurRadius: 10)]),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Tresor gesichert',
+                      style: context.text.labelLarge?.copyWith(color: color),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 6),
+                Text(
+                  hasData ? report.scoreLabel : 'Bereit für deine Daten',
+                  style: context.text.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'AES-256-GCM · Zero-Knowledge',
+                  style: context.text.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _StatChip(value: '$entries', label: 'Einträge'),
+                    _StatChip(
+                      value: hasData ? '${report.score}%' : '–',
+                      label: 'Sicherheit',
+                      color: color,
+                    ),
+                    _StatChip(value: '${report.withTotp}', label: '2FA'),
+                  ],
+                ),
+              ],
+            ),
           ),
+          Image.asset(
+            'assets/branding/lock_3d.png',
+            height: 128,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.value, required this.label, this.color});
+
+  final String value;
+  final String label;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? AppColors.neonBlueLight;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.black.withValues(alpha: 0.28),
+        border: Border.all(color: c.withValues(alpha: 0.45)),
+      ),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$value ',
+              style: context.text.labelLarge?.copyWith(color: c),
+            ),
+            TextSpan(
+              text: label,
+              style: context.text.labelSmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 10),
-        GlassTile(
-          icon: Icons.password_rounded,
-          title: 'Passwort-Generator',
-          subtitle: 'Strg+G',
-          onTap: () => context.go(Routes.generator),
-        ),
-        GlassTile(
-          icon: Icons.qr_code_2_rounded,
-          title: '2FA Authenticator',
-          onTap: () => context.push(Routes.authenticator),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -281,41 +377,141 @@ class _QuickTile extends StatelessWidget {
   const _QuickTile({
     required this.icon,
     required this.label,
+    required this.value,
     required this.onTap,
-    this.value,
-    this.iconColor = AppColors.neonBlueLight,
+    this.accent,
   });
 
-  final IconData icon;
+  final FeatureIcon icon;
   final String label;
-  final String? value;
+  final String value;
   final VoidCallback onTap;
-  final Color iconColor;
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
+    return Raised3D(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-      borderRadius: 16,
-      borderColor: AppColors.neonBlue.withValues(alpha: 0.6),
+      accent: accent,
+      radius: 18,
+      depth: 7,
+      padding: const EdgeInsets.fromLTRB(8, 14, 8, 12),
+      semanticLabel: '$label: $value',
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: iconColor,
-            shadows: [Shadow(color: iconColor, blurRadius: 12)],
+          FeatureIconImage(icon, size: 46),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: context.text.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+              height: 1,
+            ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.text.labelMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final FeatureIcon icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Raised3D(
+      onTap: onTap,
+      radius: 16,
+      depth: 5,
+      glow: false,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      semanticLabel: label,
+      child: Column(
+        children: [
+          FeatureIconImage(icon, size: 38),
           const SizedBox(height: 6),
-          Text(label, style: context.text.labelLarge?.copyWith(fontSize: 13)),
-          if (value != null)
-            Text(
-              value!,
-              style: context.text.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.text.labelSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryRow extends StatelessWidget {
+  const _CategoryRow({
+    required this.icon,
+    required this.title,
+    required this.count,
+    required this.onTap,
+  });
+
+  final FeatureIcon icon;
+  final String title;
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Raised3D(
+        onTap: onTap,
+        radius: 16,
+        depth: 5,
+        glow: false,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        semanticLabel: '$title: $count',
+        child: Row(
+          children: [
+            FeatureIconImage(icon, size: 40),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                title,
+                style: context.text.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: AppColors.neonBlue.withValues(alpha: 0.18),
+                border: Border.all(
+                  color: AppColors.neonBlue.withValues(alpha: 0.5),
+                ),
+              ),
+              child: Text('$count', style: context.text.labelLarge),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.chevron_right_rounded),
+          ],
+        ),
       ),
     );
   }
