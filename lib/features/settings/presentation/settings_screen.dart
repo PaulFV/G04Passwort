@@ -157,25 +157,19 @@ class SettingsScreen extends ConsumerWidget {
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.biometric, size: 38),
-            title: 'App-Sperre (Biometrie)',
+            title: kIsWeb ? 'App-Sperre (Face ID / Passkey)' : 'App-Sperre (Biometrie)',
             subtitle: auth.biometricHardware
-                ? 'Fingerabdruck / Face ID'
+                ? (kIsWeb
+                      ? 'Mit Face ID / Fingerabdruck entsperren'
+                      : 'Fingerabdruck / Face ID')
                 : (kIsWeb
-                      ? 'Im Browser nicht verfügbar'
+                      ? 'Dieser Browser unterstützt keine Passkeys'
                       : 'Keine Biometrie auf diesem Gerät'),
             trailing: Switch(
               value: s.biometricEnabled,
               onChanged: !auth.biometricHardware
                   ? null
-                  : (v) async {
-                      final ok = await ref
-                          .read(authControllerProvider.notifier)
-                          .setBiometricEnabled(v);
-                      if (!ok && context.mounted)
-                        context.showError(
-                          'Biometrische Bestätigung fehlgeschlagen',
-                        );
-                    },
+                  : (v) => _toggleBiometric(context, ref, v),
             ),
           ),
           GlassTile(
@@ -255,5 +249,65 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+/// Switches biometric unlock on/off. Must start the prompt synchronously –
+/// the web app's passkey dialog needs the user's tap.
+Future<void> _toggleBiometric(
+  BuildContext context,
+  WidgetRef ref,
+  bool enabled,
+) async {
+  final auth = ref.read(authControllerProvider.notifier);
+  var result = await auth.setBiometricEnabled(enabled);
+  if (result.needsConfirmation) {
+    if (!context.mounted) return auth.cancelBiometricSetup();
+    result =
+        await showDialog<BiometricSetup>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            icon: const Icon(
+              Icons.face_retouching_natural_rounded,
+              size: 40,
+              color: AppColors.neonBlueLight,
+            ),
+            title: const Text('Fast fertig'),
+            content: const Text(
+              'Der Passkey wurde angelegt. Bestätige jetzt einmal mit '
+              'Face ID / Fingerabdruck, um das Entsperren zu aktivieren.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  auth.cancelBiometricSetup();
+                  Navigator.pop(dialogContext);
+                },
+                child: const Text('Abbrechen'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                onPressed: () async {
+                  final r = await auth.confirmBiometricSetup();
+                  if (dialogContext.mounted) Navigator.pop(dialogContext, r);
+                },
+                child: const Text('Bestätigen'),
+              ),
+            ],
+          ),
+        ) ??
+        const BiometricSetup.failed(null);
+  }
+  if (!context.mounted) return;
+  if (result.ok) {
+    if (enabled) {
+      context.showSnack(
+        kIsWeb ? 'Face ID / Passkey aktiviert' : 'Biometrie aktiviert',
+        icon: Icons.verified_user_rounded,
+      );
+    }
+  } else if (result.error != null) {
+    context.showError(result.error!);
   }
 }

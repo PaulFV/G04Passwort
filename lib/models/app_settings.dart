@@ -35,6 +35,7 @@ class AppSettings {
     this.lockOnBackground = true,
     this.clipboardClearSeconds = 30,
     this.biometricEnabled = false,
+    this.passkeyId = '',
     this.screenshotProtection = true,
     this.autoSaveEnabled = false,
     this.languageCode = 'de',
@@ -56,6 +57,7 @@ class AppSettings {
     lockOnBackground: j['lockOnBackground'] as bool? ?? true,
     clipboardClearSeconds: j['clipboardClearSeconds'] as int? ?? 30,
     biometricEnabled: j['biometricEnabled'] as bool? ?? false,
+    passkeyId: j['passkeyId'] as String? ?? '',
     screenshotProtection: j['screenshotProtection'] as bool? ?? true,
     autoSaveEnabled: j['autoSaveEnabled'] as bool? ?? false,
     languageCode: j['languageCode'] as String? ?? 'de',
@@ -82,6 +84,9 @@ class AppSettings {
   final bool lockOnBackground;
   final int clipboardClearSeconds;
   final bool biometricEnabled;
+
+  /// Passkey used for Face ID / fingerprint in the web app ('' = none).
+  final String passkeyId;
   final bool screenshotProtection;
   final bool autoSaveEnabled;
   final String languageCode;
@@ -109,6 +114,7 @@ class AppSettings {
     bool? lockOnBackground,
     int? clipboardClearSeconds,
     bool? biometricEnabled,
+    String? passkeyId,
     bool? screenshotProtection,
     bool? autoSaveEnabled,
     String? languageCode,
@@ -125,6 +131,7 @@ class AppSettings {
     lockOnBackground: lockOnBackground ?? this.lockOnBackground,
     clipboardClearSeconds: clipboardClearSeconds ?? this.clipboardClearSeconds,
     biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+    passkeyId: passkeyId ?? this.passkeyId,
     screenshotProtection: screenshotProtection ?? this.screenshotProtection,
     autoSaveEnabled: autoSaveEnabled ?? this.autoSaveEnabled,
     languageCode: languageCode ?? this.languageCode,
@@ -143,6 +150,7 @@ class AppSettings {
     'lockOnBackground': lockOnBackground,
     'clipboardClearSeconds': clipboardClearSeconds,
     'biometricEnabled': biometricEnabled,
+    if (passkeyId.isNotEmpty) 'passkeyId': passkeyId,
     'screenshotProtection': screenshotProtection,
     'autoSaveEnabled': autoSaveEnabled,
     'languageCode': languageCode,

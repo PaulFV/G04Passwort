@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/errors/vault_exceptions.dart';
 import '../../../services/biometric_service.dart';
+import '../../../services/crypto/crypto_service.dart';
 import '../../settings/application/settings_controller.dart';
 
 /// High level lifecycle of the vault.
@@ -70,6 +72,28 @@ class AuthState {
     biometricKind: biometricKind ?? this.biometricKind,
     passwordHint: passwordHint ?? this.passwordHint,
   );
+}
+
+/// Outcome of [AuthController.setBiometricEnabled].
+@immutable
+class BiometricSetup {
+  const BiometricSetup.done() : ok = true, needsConfirmation = false, error = null;
+
+  const BiometricSetup.confirm()
+    : ok = false,
+      needsConfirmation = true,
+      error = null;
+
+  const BiometricSetup.failed(this.error) : ok = false, needsConfirmation = false;
+
+  final bool ok;
+
+  /// Web: show a dialog whose button calls
+  /// [AuthController.confirmBiometricSetup].
+  final bool needsConfirmation;
+
+  /// User facing error, `null` when the user simply cancelled.
+  final String? error;
 }
 
 /// Orchestrates onboarding, vault creation, unlock (password / biometrics),
@@ -246,14 +270,25 @@ class AuthController extends Notifier<AuthState> {
   }
 
   /// Unlocks with Fingerprint / Face ID if enabled.
+  ///
+  /// Web: call synchronously from a tap handler (passkey prompt needs the
+  /// user gesture) – there must be no `await` before the prompt starts.
   Future<bool> unlockWithBiometrics() async {
-    if (!ref.read(settingsControllerProvider).biometricEnabled) return false;
-    final ok = await ref.read(biometricServiceProvider).authenticate();
-    if (!ok) return false;
+    final settings = ref.read(settingsControllerProvider);
+    if (!settings.biometricEnabled) return false;
+    final result = await ref
+        .read(biometricServiceProvider)
+        .authenticate(
+          credentialId: settings.passkeyId.isEmpty ? null : settings.passkeyId,
+        );
+    if (!result.ok) {
+      if (result.error != null) state = state.copyWith(error: result.error);
+      return false;
+    }
     state = state.copyWith(busy: true, clearError: true);
     final unlocked = await ref
         .read(authRepositoryProvider)
-        .unlockWithStoredKey();
+        .unlockWithStoredKey(secret: result.secret);
     if (!unlocked) {
       // The stored key was missing or did not match this vault.
       await ref.read(settingsControllerProvider.notifier).setBiometricFlag(false);
@@ -266,33 +301,95 @@ class AuthController extends Notifier<AuthState> {
       return false;
     }
     await ref.read(vaultRepositoryProvider).load();
+    await _saveLockout(0, null);
     state = state.copyWith(
       status: AuthStatus.unlocked,
       busy: false,
       failedAttempts: 0,
+      clearLockout: true,
     );
     return true;
   }
 
+  /// Vault key copy and passkey id kept between [setBiometricEnabled] and
+  /// [confirmBiometricSetup] (Safari needs a second Face ID check).
+  Uint8List? _pendingKey;
+  String? _pendingPasskey;
+
   /// Enables / disables biometric unlock. Enabling requires a successful
   /// biometric prompt and an unlocked vault.
-  Future<bool> setBiometricEnabled(bool enabled) async {
+  ///
+  /// Web: call synchronously from a tap handler.
+  Future<BiometricSetup> setBiometricEnabled(bool enabled) async {
     final auth = ref.read(authRepositoryProvider);
     final settings = ref.read(settingsControllerProvider.notifier);
     if (!enabled) {
+      _discardPending();
       await auth.removeBiometricKey();
       await settings.setBiometricFlag(false);
-      return true;
+      return const BiometricSetup.done();
     }
-    final ok = await ref
+    // Copy the key first: the vault may auto-lock while the system prompt
+    // covers the app.
+    final key = Uint8List.fromList(auth.requireKey());
+    final r = await ref.read(biometricServiceProvider).enroll();
+    if (!r.ok) {
+      CryptoService.wipe(key);
+      return BiometricSetup.failed(r.error);
+    }
+    if (r.needsConfirmation) {
+      _discardPending();
+      _pendingKey = key;
+      _pendingPasskey = r.credentialId;
+      return const BiometricSetup.confirm();
+    }
+    await _finishBiometricSetup(key, r.secret, r.credentialId);
+    return const BiometricSetup.done();
+  }
+
+  /// Second step of the web setup: one Face ID check that reveals the
+  /// passkey secret. Call synchronously from a tap handler.
+  Future<BiometricSetup> confirmBiometricSetup() async {
+    final key = _pendingKey;
+    final id = _pendingPasskey;
+    if (key == null || id == null) {
+      return const BiometricSetup.failed('Einrichtung abgelaufen. Bitte erneut aktivieren.');
+    }
+    final r = await ref
         .read(biometricServiceProvider)
-        .authenticate(
-          reason: 'Biometrisches Entsperren für G04Passwort aktivieren',
-        );
-    if (!ok) return false;
-    await auth.storeBiometricKey();
-    await settings.setBiometricFlag(true);
-    return true;
+        .authenticate(credentialId: id);
+    if (!r.ok) return BiometricSetup.failed(r.error);
+    _pendingKey = null;
+    _pendingPasskey = null;
+    await _finishBiometricSetup(key, r.secret, id);
+    return const BiometricSetup.done();
+  }
+
+  /// Aborts a pending web setup.
+  void cancelBiometricSetup() => _discardPending();
+
+  void _discardPending() {
+    CryptoService.wipe(_pendingKey);
+    _pendingKey = null;
+    _pendingPasskey = null;
+  }
+
+  Future<void> _finishBiometricSetup(
+    Uint8List key,
+    Uint8List? secret,
+    String? passkeyId,
+  ) async {
+    try {
+      await ref
+          .read(authRepositoryProvider)
+          .storeBiometricKey(secret: secret, key: key);
+      await ref
+          .read(settingsControllerProvider.notifier)
+          .setBiometricFlag(true, passkeyId: passkeyId);
+    } finally {
+      CryptoService.wipe(key);
+      CryptoService.wipe(secret);
+    }
   }
 
   /// Changes the master password. Returns an error message or `null`.

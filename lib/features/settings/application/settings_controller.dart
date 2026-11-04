@@ -36,8 +36,14 @@ class SettingsController extends Notifier<AppSettings> {
   Future<void> setClipboardClear(int seconds) =>
       _update(state.copyWith(clipboardClearSeconds: seconds));
 
-  Future<void> setBiometricFlag(bool enabled) =>
-      _update(state.copyWith(biometricEnabled: enabled));
+  /// Enables / disables the biometric flag. Disabling also forgets the
+  /// passkey id of the web app.
+  Future<void> setBiometricFlag(bool enabled, {String? passkeyId}) => _update(
+    state.copyWith(
+      biometricEnabled: enabled,
+      passkeyId: enabled ? (passkeyId ?? state.passkeyId) : '',
+    ),
+  );
 
   Future<void> setScreenshotProtection(bool enabled) async {
     await ref.read(screenProtectionProvider).setEnabled(enabled);

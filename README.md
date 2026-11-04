@@ -38,7 +38,7 @@ Die App verwaltet Zugangsdaten zu Websites und Portalen, aber auch zu **Geräten
 | ⚙️ **Generator** | Passwörter (4–64 Zeichen, Zeichenklassen, ähnliche Zeichen vermeiden), Passphrasen und PINs, gestützt auf `Random.secure()` |
 | 📊 **Sicherheitszentrum** | Sicherheits-Score, Passwortanalyse (Entropie + Muster), Duplikat-Erkennung, alte Passwörter, 2FA-Abdeckung |
 | 🔢 **2FA (TOTP)** | RFC 6238 Authenticator mit Countdown-Ringen, `otpauth://`-Links, SHA-1/256/512 |
-| 👆 **Biometrie** | Fingerabdruck, Face ID, Windows Hello (`local_auth`) |
+| 👆 **Biometrie** | Fingerabdruck, Face ID, Windows Hello (`local_auth`); in der Web-App Face ID / Fingerabdruck per Passkey (WebAuthn PRF) |
 | ⏱️ **Auto-Lock** | Sperre bei Inaktivität und im Hintergrund; konfigurierbar (sofort … nie) |
 | 📋 **Zwischenablage** | Automatisches Leeren kopierter Passwörter |
 | 🛡️ **Screenshot-Schutz** | Android `FLAG_SECURE` und Privacy-Shield in der App-Übersicht auf allen Plattformen |
@@ -78,6 +78,7 @@ Tresor-Schlüssel (zufällig, 256 Bit) ──AES-256-GCM + AAD──► jeder Ei
 - **Brute-Force-Schutz:** Nach 5 Fehlversuchen greift eine exponentielle Sperre, die auch einen Neustart der App übersteht.
 - **Schlüsselprüfung:** Ein veralteter Biometrie-Schlüssel (z. B. nach Neuinstallation) wird erkannt und verworfen.
 - **Biometrie:** Der Tresor-Schlüssel liegt nach Aktivierung im Keychain/Keystore (`flutter_secure_storage`) und wird erst nach erfolgreichem `local_auth`-Prompt gelesen.
+- **Face ID in der Web-App:** Ein Passkey (WebAuthn, Erweiterung PRF) liefert nach Face ID / Fingerabdruck ein Geheimnis, mit dem die Kopie des Tresor-Schlüssels per AES-256-GCM verschlüsselt ist. Ohne erfolgreiche Prüfung ist die gespeicherte Kopie wertlos. Benötigt iOS/iPadOS 18+ bzw. ein aktuelles Chrome/Edge/Safari.
 - **Speicherhygiene:** Schlüssel liegen nur im RAM, werden beim Sperren überschrieben, und die Zwischenablage wird geleert.
 - **Master-Passwort ändern:** Dabei wird nur der Tresor-Schlüssel neu verpackt. Die Einträge bleiben unverändert.
 

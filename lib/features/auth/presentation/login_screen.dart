@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,11 +32,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Offer biometric unlock right away if enabled.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.read(settingsControllerProvider).biometricEnabled)
-        unawaited(_biometric());
-    });
+    // Offer biometric unlock right away if enabled. Browsers only show the
+    // passkey (Face ID) prompt after a tap, so the web app waits for one.
+    if (!kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (ref.read(settingsControllerProvider).biometricEnabled) {
+          unawaited(_biometric());
+        }
+      });
+    }
   }
 
   @override
@@ -50,7 +55,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!enabled) {
       setState(() => _showPassword = true);
       context.showSnack(
-        'Biometrie ist noch nicht aktiviert. Entsperre mit dem Master-Passwort und aktiviere sie in den Einstellungen.',
+        'Face ID / Fingerabdruck ist noch nicht aktiviert. Entsperre mit dem '
+        'Master-Passwort und schalte es unter Einstellungen → App-Sperre ein.',
         icon: Icons.info_outline_rounded,
       );
       return;

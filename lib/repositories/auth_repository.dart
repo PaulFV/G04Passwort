@@ -26,11 +26,16 @@ abstract interface class AuthRepository {
   Future<bool> verifyMasterPassword(String masterPassword);
 
   /// Unlocks with the biometric-protected key copy. Call only after the
-  /// biometric prompt succeeded.
-  Future<bool> unlockWithStoredKey();
+  /// biometric prompt succeeded. [secret] is the passkey secret of the web
+  /// app (the key copy is encrypted with it).
+  Future<bool> unlockWithStoredKey({List<int>? secret});
 
   Future<bool> hasBiometricKey();
-  Future<void> storeBiometricKey();
+
+  /// Stores a copy of the vault key for biometric unlock. With [secret]
+  /// (web passkey) the copy is AES-256-GCM encrypted with it. [key]
+  /// defaults to the current vault key.
+  Future<void> storeBiometricKey({List<int>? secret, List<int>? key});
   Future<void> removeBiometricKey();
 
   Future<void> changeMasterPassword(
@@ -189,19 +194,55 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> hasBiometricKey() async =>
       (await _storage.read(StorageKeys.biometricVaultKey)) != null;
 
+  /// Prefix of a passkey-encrypted key copy (web app).
+  static const _passkeyPrefix = 'pk1:';
+  static const _passkeyAad = 'g04passwort:passkey:v1';
+
   @override
-  Future<void> storeBiometricKey() async =>
-      _storage.write(StorageKeys.biometricVaultKey, base64Encode(requireKey()));
+  Future<void> storeBiometricKey({List<int>? secret, List<int>? key}) async {
+    final vaultKey = key ?? requireKey();
+    if (secret == null) {
+      await _storage.write(StorageKeys.biometricVaultKey, base64Encode(vaultKey));
+      return;
+    }
+    final wrapped = await _crypto.encrypt(
+      vaultKey,
+      secret,
+      aad: utf8.encode(_passkeyAad),
+    );
+    await _storage.write(
+      StorageKeys.biometricVaultKey,
+      '$_passkeyPrefix${base64Encode(wrapped)}',
+    );
+  }
 
   @override
   Future<void> removeBiometricKey() =>
       _storage.delete(StorageKeys.biometricVaultKey);
 
   @override
-  Future<bool> unlockWithStoredKey() async {
+  Future<bool> unlockWithStoredKey({List<int>? secret}) async {
     final raw = await _storage.read(StorageKeys.biometricVaultKey);
     if (raw == null) return false;
-    final key = base64Decode(raw);
+    final Uint8List key;
+    try {
+      if (raw.startsWith(_passkeyPrefix)) {
+        if (secret == null || secret.length != CryptoService.keyLength) {
+          return false;
+        }
+        key = await _crypto.decrypt(
+          base64Decode(raw.substring(_passkeyPrefix.length)),
+          secret,
+          aad: utf8.encode(_passkeyAad),
+        );
+      } else {
+        key = base64Decode(raw);
+      }
+    } on Object {
+      // Wrong passkey or corrupted entry.
+      await removeBiometricKey();
+      return false;
+    }
     final header = await readHeader();
     if (header == null || key.length != CryptoService.keyLength) return false;
     if (await _matchesVault(key) != true) {

@@ -9,7 +9,7 @@ abstract final class AppConstants {
   static const String ownerUrl = 'https://github.com/PaulFV';
   static const String privacyUrl =
       'https://github.com/PaulFV/G04Passwort/blob/main/PRIVACY.md';
-  static const String legalDate = '30. Oktober 2026';
+  static const String legalDate = '4. November 2026';
   static const String repositoryUrl = 'https://github.com/PaulFV/G04Passwort';
 
   /// Name of the local SQLite database (".sqlite" is appended on native).

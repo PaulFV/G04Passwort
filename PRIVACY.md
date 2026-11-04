@@ -35,6 +35,8 @@ Die Android-Test-Version wird über GitHub Releases heruntergeladen; dabei gilt 
 
 Fingerabdruck und Face ID werden vom Betriebssystem geprüft. Die App erhält nur die Information „erfolgreich“ oder „nicht erfolgreich“ – niemals biometrische Daten.
 
+Web-App: Face ID bzw. Fingerabdruck wird über einen Passkey (WebAuthn) genutzt. Der Passkey liegt im Schlüsselbund deines Geräts (z. B. iCloud-Schlüsselbund oder Google Passwortmanager) und kann darüber zwischen deinen eigenen Geräten synchronisiert werden. Er liefert nach erfolgreicher Prüfung nur einen geheimen Wert, mit dem die App den Tresor-Schlüssel lokal verschlüsselt. Es wird nichts an PaulFV oder einen Server übertragen. Den Passkey kannst du jederzeit in den Passwort-Einstellungen deines Geräts löschen.
+
 Kopierte Passwörter werden nach der eingestellten Zeit automatisch aus der Zwischenablage gelöscht. Der Screenshot-Schutz verhindert, dass Inhalte in Bildschirmfotos oder der App-Übersicht erscheinen.
 
 ## 7. Dateien, Backup und Import
@@ -53,4 +55,4 @@ Du kannst alle Daten jederzeit selbst löschen: Einstellungen → „Tresor zur�
 
 Du hast nach der DSGVO das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch sowie ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde. Da PaulFV keine personenbezogenen Daten von dir speichert, liegen alle Daten ausschließlich in deiner Hand. Für Daten in Server-Logs von GitHub wende dich an GitHub.
 
-*Stand: 30. Oktober 2026*
+*Stand: 4. November 2026*

@@ -63,6 +63,14 @@ abstract final class PrivacyText {
       'Fingerabdruck und Face ID werden vom Betriebssystem geprüft. Die App '
           'erhält nur die Information „erfolgreich“ oder „nicht erfolgreich“ – '
           'niemals biometrische Daten.',
+      'Web-App: Face ID bzw. Fingerabdruck wird über einen Passkey (WebAuthn) '
+          'genutzt. Der Passkey liegt im Schlüsselbund deines Geräts (z. B. '
+          'iCloud-Schlüsselbund oder Google Passwortmanager) und kann darüber '
+          'zwischen deinen eigenen Geräten synchronisiert werden. Er liefert nach '
+          'erfolgreicher Prüfung nur einen geheimen Wert, mit dem die App den '
+          'Tresor-Schlüssel lokal verschlüsselt. Es wird nichts an '
+          '${AppConstants.owner} oder einen Server übertragen. Den Passkey '
+          'kannst du jederzeit in den Passwort-Einstellungen deines Geräts löschen.',
       'Kopierte Passwörter werden nach der eingestellten Zeit automatisch aus der '
           'Zwischenablage gelöscht. Der Screenshot-Schutz verhindert, dass Inhalte '
           'in Bildschirmfotos oder der App-Übersicht erscheinen.',

@@ -112,6 +112,25 @@ void main() {
     expect(await auth.hasBiometricKey(), isFalse);
   });
 
+  test('passkey secret protects the stored key copy (web Face ID)', () async {
+    await auth.createVault('Passkey-Tresor-1');
+    final secret = List<int>.generate(32, (i) => i * 7 % 256);
+    await auth.storeBiometricKey(secret: secret);
+    final raw = await SecureStorageService().read('g04.bio.vault_key.v1');
+    expect(raw, startsWith('pk1:'));
+    auth.lock();
+    // Without the secret the copy is useless.
+    expect(await auth.unlockWithStoredKey(), isFalse);
+    expect(auth.isUnlocked, isFalse);
+    expect(await auth.unlockWithStoredKey(secret: secret), isTrue);
+    expect(auth.isUnlocked, isTrue);
+    // A different passkey secret is rejected and the copy is discarded.
+    auth.lock();
+    final other = List<int>.filled(32, 1);
+    expect(await auth.unlockWithStoredKey(secret: other), isFalse);
+    expect(await auth.hasBiometricKey(), isFalse);
+  });
+
   test('encrypted backup round trip and CSV import without duplicates', () async {
     await auth.createVault('Backup-Passwort-1');
     await vault.load();
