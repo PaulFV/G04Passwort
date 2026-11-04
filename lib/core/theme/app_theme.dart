@@ -47,6 +47,7 @@ abstract final class AppTheme {
 
     final base = ThemeData(
       useMaterial3: true,
+      fontFamily: 'Roboto', // bundled in assets/fonts (no Google Fonts CDN)
       brightness: brightness,
       colorScheme: scheme,
       scaffoldBackgroundColor: isDark

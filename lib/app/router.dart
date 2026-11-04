@@ -11,6 +11,7 @@ import '../features/backup/presentation/backup_screen.dart';
 import '../features/cards/presentation/cards_screen.dart';
 import '../features/categories/presentation/categories_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/legal/presentation/legal_screen.dart';
 import '../features/documents/presentation/documents_screen.dart';
 import '../features/generator/presentation/generator_screen.dart';
 import '../features/more/presentation/more_screen.dart';
@@ -75,6 +76,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final status = ref.read(authControllerProvider).status;
       final loc = state.matchedLocation;
+      // Legal pages are always reachable (also before unlocking).
+      if (loc.startsWith('/legal/')) return null;
       String? target(String path) => loc == path ? null : path;
       switch (status) {
         case AuthStatus.initializing:
@@ -175,6 +178,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       page(Routes.backup, (_) => const BackupScreen()),
       page(Routes.sync, (_) => const CloudSyncScreen()),
       page(Routes.about, (_) => const AboutScreen()),
+      page(Routes.privacy, (_) => const LegalScreen()),
+      page(
+        Routes.copyright,
+        (_) => const LegalScreen(initialTab: LegalTab.copyright),
+      ),
     ],
   );
   ref.onDispose(router.dispose);

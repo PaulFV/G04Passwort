@@ -17,6 +17,13 @@ import 'services/secure_storage_service.dart';
 /// onboarding state are available synchronously, then starts the app.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Bundled font license (SIL OFL) for the "Open-Source-Lizenzen" page.
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(
+      ['Roboto (Schriftart)'],
+      await rootBundle.loadString('assets/fonts/OFL.txt'),
+    );
+  });
   Intl.defaultLocale = 'de_DE';
   await initializeDateFormatting('de_DE');
 

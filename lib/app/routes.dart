@@ -34,6 +34,8 @@ abstract final class Routes {
   static const backup = '/backup';
   static const sync = '/sync';
   static const about = '/about';
+  static const privacy = '/legal/privacy';
+  static const copyright = '/legal/copyright';
 
   /// Routes reachable without an unlocked vault.
   static const public = {splash, onboarding, setup, login};

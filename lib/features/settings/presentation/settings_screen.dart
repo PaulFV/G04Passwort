@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/app_settings.dart';
@@ -213,6 +214,18 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.info_outline_rounded,
             title: 'Über G04Passwort',
             onTap: () => context.push(Routes.about),
+          ),
+          GlassTile(
+            icon: Icons.copyright_rounded,
+            title: 'Copyright',
+            subtitle: AppConstants.rightsReserved,
+            onTap: () => context.push(Routes.copyright),
+          ),
+          GlassTile(
+            icon: Icons.privacy_tip_outlined,
+            title: 'Datenschutz',
+            subtitle: 'Kein Konto, kein Tracking – deine Daten bleiben verschlüsselt auf dem Gerät.',
+            onTap: () => context.push(Routes.privacy),
           ),
           GlassTile(
             icon: Icons.lock_rounded,

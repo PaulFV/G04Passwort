@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/routes.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_x.dart';
@@ -65,13 +68,24 @@ class AboutScreen extends StatelessWidget {
           ),
           const SectionHeader('Rechtliches'),
           GlassTile(
+            icon: Icons.privacy_tip_outlined,
+            title: 'Datenschutzerklärung',
+            onTap: () => context.push(Routes.privacy),
+          ),
+          GlassTile(
+            icon: Icons.copyright_rounded,
+            title: 'Copyright',
+            subtitle: AppConstants.rightsReserved,
+            onTap: () => context.push(Routes.copyright),
+          ),
+          GlassTile(
             icon: Icons.description_outlined,
             title: 'Open-Source-Lizenzen',
             onTap: () => showLicensePage(
               context: context,
               applicationName: AppConstants.appName,
               applicationVersion: AppConstants.version,
-              applicationLegalese: AppConstants.copyright,
+              applicationLegalese: AppConstants.rightsReserved,
             ),
           ),
           const GlassTile(
@@ -82,7 +96,7 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Center(
             child: Text(
-              AppConstants.copyright,
+              AppConstants.rightsReserved,
               style: context.text.bodySmall?.copyWith(
                 color: AppColors.textMuted,
               ),

@@ -9,7 +9,7 @@
   <img alt="Dart" src="https://img.shields.io/badge/Dart-3.11%2B-0175C2?logo=dart">
   <img alt="Platforms" src="https://img.shields.io/badge/Plattformen-Android%20·%20iOS%20·%20Web%20·%20Windows%20·%20macOS%20·%20Linux-1f6feb">
   <img alt="Encryption" src="https://img.shields.io/badge/Verschlüsselung-AES--256--GCM%20·%20Argon2id-2ee59d">
-  <img alt="License" src="https://img.shields.io/badge/Lizenz-MIT-blue">
+  <img alt="License" src="https://img.shields.io/badge/Lizenz-Alle%20Rechte%20vorbehalten-blue">
 </p>
 
 ---
@@ -26,6 +26,7 @@ Die App verwaltet Zugangsdaten zu Websites und Portalen, aber auch zu **Geräten
 - [Projektstruktur](#projektstruktur)
 - [Roadmap](#roadmap)
 - [Lizenz](#lizenz)
+- [Datenschutz](#datenschutz)
 
 ## Features
 
@@ -191,4 +192,10 @@ lib/
 
 ## Lizenz
 
-[MIT](LICENSE) © 2026 PaulFV
+© 2026 PaulFV · Alle Rechte vorbehalten – siehe [LICENSE](LICENSE).
+
+Private Nutzung der Web-App ist erlaubt. Kopieren, Verändern oder Weitergeben des Quelltexts nur mit ausdrücklicher Erlaubnis.
+
+## Datenschutz
+
+G04Passwort speichert alles verschlüsselt und ausschließlich auf deinem Gerät – kein Konto, kein Tracking, keine Werbung. Die vollständige Erklärung steht in [PRIVACY.md](PRIVACY.md) und in der App unter *Einstellungen → Datenschutz*.

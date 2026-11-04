@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/routes.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -212,6 +213,13 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                     loading: auth.busy,
                     onPressed: _submit,
                   ),
+                  if (!widget.changeMode)
+                    Center(
+                      child: TextButton(
+                        onPressed: () => context.push(Routes.privacy),
+                        child: const Text('Datenschutz · Copyright'),
+                      ),
+                    ),
                   if (auth.busy)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),

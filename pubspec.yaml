@@ -49,3 +49,21 @@ flutter:
     - assets/lottie/
     - assets/branding/
     - assets/icons/
+    - assets/fonts/OFL.txt
+
+  # Bundled locally so the web app never loads fonts from Google servers
+  # (no IP transfer to third parties – GDPR).
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Roboto-Black.ttf
+          weight: 900
