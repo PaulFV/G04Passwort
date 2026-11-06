@@ -117,6 +117,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (sure) await ref.read(authControllerProvider.notifier).resetVault();
   }
 
+  String? _getRetryLabel(bool bioEnabled, String bioName) {
+    if (!bioEnabled) return null;
+    return _bioFailed
+        ? 'Erneut mit $bioName versuchen'
+        : 'Mit $bioName entsperren';
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authControllerProvider);
@@ -183,11 +190,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           busy: auth.busy,
                           error: auth.error,
                           onUnlock: _unlock,
-                          retryLabel: !bioEnabled
-                              ? null
-                              : _bioFailed
-                              ? 'Erneut mit $bioName versuchen'
-                              : 'Mit $bioName entsperren',
+                          retryLabel: _getRetryLabel(bioEnabled, bioName),
                           retryIcon: bioIcon,
                           onRetry: auth.busy ? null : _biometric,
                           onForgot: _forgot,
