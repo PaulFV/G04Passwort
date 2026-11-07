@@ -1,6 +1,7 @@
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
 
+
 /// Hash algorithm of a TOTP secret.
 enum TotpAlgorithm { sha1, sha256, sha512 }
 

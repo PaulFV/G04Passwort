@@ -1,14 +1,19 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/l10n/l10n.dart';
+
 /// Mode of the password generator.
 enum GeneratorMode {
   password('Passwort'),
   passphrase('Passphrase'),
   pin('PIN');
 
-  const GeneratorMode(this.label);
+  const GeneratorMode(this._labelDe);
 
-  final String label;
+  final String _labelDe;
+
+  /// Translated label.
+  String get label => tr(_labelDe);
 }
 
 /// Options for [PasswordGeneratorService].

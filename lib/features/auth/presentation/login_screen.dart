@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -85,33 +86,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final reset = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Passwort vergessen?'),
+        title: Text(tr('Passwort vergessen?')),
         content: Text(
-          '${hint == null || hint.isEmpty ? '' : 'Dein Hinweis: „$hint“\n\n'}'
-          'G04Passwort ist Zero-Knowledge: Dein Master-Passwort wird nirgends gespeichert '
-          'und kann nicht wiederhergestellt werden.\n\n'
-          'Du kannst den Tresor zurücksetzen – dabei werden alle Daten gelöscht. '
-          'Danach kannst du ein Backup wiederherstellen.',
+          '${hint == null || hint.isEmpty ? '' : '${tr('Dein Hinweis: „{hint}“', {'hint': hint})}\n\n'}'
+          '${tr('G04Passwort ist Zero-Knowledge: Dein Master-Passwort wird '
+              'nirgends gespeichert und kann nicht wiederhergestellt werden.\n\n'
+              'Du kannst den Tresor zurücksetzen – dabei werden alle Daten '
+              'gelöscht. Danach kannst du ein Backup wiederherstellen.')}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(tr('Abbrechen')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Tresor zurücksetzen'),
+            child: Text(tr('Tresor zurücksetzen')),
           ),
         ],
       ),
     );
     if (reset != true || !mounted) return;
     final sure = await context.confirm(
-      title: 'Wirklich alles löschen?',
+      title: tr('Wirklich alles löschen?'),
       message:
-          'Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht.',
-      confirmLabel: 'Endgültig löschen',
+          tr('Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht.'),
+      confirmLabel: tr('Endgültig löschen'),
       destructive: true,
     );
     if (sure) await ref.read(authControllerProvider.notifier).resetVault();
@@ -120,8 +121,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _getRetryLabel(bool bioEnabled, String bioName) {
     if (!bioEnabled) return null;
     return _bioFailed
-        ? 'Erneut mit $bioName versuchen'
-        : 'Mit $bioName entsperren';
+        ? tr('Erneut mit {bioName} versuchen', {'bioName': bioName})
+        : tr('Mit {bioName} entsperren', {'bioName': bioName});
   }
 
   @override
@@ -131,7 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       settingsControllerProvider.select((s) => s.biometricEnabled),
     );
     final fingerprint = auth.biometricKind == BiometricKind.fingerprint;
-    final bioName = fingerprint ? 'Fingerabdruck' : 'Face ID';
+    final bioName = fingerprint ? tr('Fingerabdruck') : tr('Face ID');
     final bioIcon = fingerprint
         ? Icons.fingerprint_rounded
         : Icons.face_retouching_natural_rounded;
@@ -139,15 +140,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final String subtitle;
     if (checking) {
-      subtitle = 'Entsperren mit $bioName …';
+      subtitle = tr('Entsperren mit {bioName} …', {'bioName': bioName});
     } else if (bioEnabled && _bioFailed) {
       subtitle =
-          '$bioName nicht erkannt. Gib dein Master-Passwort ein '
-          'oder versuche es erneut.';
+          tr('{bioName} nicht erkannt. Gib dein Master-Passwort ein '
+      'oder versuche es erneut.', {'bioName': bioName});
     } else if (bioEnabled) {
-      subtitle = 'Entsperre mit $bioName oder deinem Master-Passwort.';
+      subtitle = tr('Entsperre mit {bioName} oder deinem Master-Passwort.', {'bioName': bioName});
     } else {
-      subtitle = 'Gib dein Master-Passwort ein.';
+      subtitle = tr('Gib dein Master-Passwort ein.');
     }
 
     return G04Scaffold(
@@ -165,7 +166,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 18),
                 Text(AppConstants.appName, style: context.text.headlineMedium),
                 const SizedBox(height: 22),
-                Text('Willkommen zurück!', style: context.text.titleLarge),
+                Text(tr('Willkommen zurück!'), style: context.text.titleLarge),
                 const SizedBox(height: 6),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
@@ -235,7 +236,7 @@ class _PasswordForm extends StatelessWidget {
         AutofillGroup(
           child: AppTextField(
             controller: controller,
-            label: 'Master-Passwort',
+            label: tr('Master-Passwort'),
             icon: Icons.lock_outline_rounded,
             isSecret: true,
             autofocus: true,
@@ -254,7 +255,7 @@ class _PasswordForm extends StatelessWidget {
               style: context.text.bodySmall?.copyWith(color: AppColors.danger),
             ),
           ),
-        NeonButton(label: 'Entsperren', loading: busy, onPressed: onUnlock),
+        NeonButton(label: tr('Entsperren'), loading: busy, onPressed: onUnlock),
         if (retryLabel != null) ...[
           const SizedBox(height: 14),
           NeonButton.outline(
@@ -266,7 +267,7 @@ class _PasswordForm extends StatelessWidget {
         const SizedBox(height: 10),
         TextButton(
           onPressed: onForgot,
-          child: const Text('Passwort vergessen?'),
+          child: Text(tr('Passwort vergessen?')),
         ),
       ],
     );

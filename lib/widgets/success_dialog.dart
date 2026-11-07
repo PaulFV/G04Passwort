@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import '../core/l10n/l10n.dart';
 import '../core/theme/app_colors.dart';
 import 'glass_card.dart';
 import 'neon_button.dart';
@@ -8,13 +9,15 @@ import 'neon_button.dart';
 /// "Erledigt!" confirmation with an animated check (Lottie).
 Future<void> showSuccessDialog(
   BuildContext context, {
-  String title = 'Erledigt!',
-  String message = 'Ihr Passwort wurde sicher gespeichert.',
+  String? title,
+  String? message,
 }) {
+  final heading = title ?? tr('Erledigt!');
+  final body = message ?? tr('Dein Passwort wurde sicher gespeichert.');
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Schließen',
+    barrierLabel: tr('Schließen'),
     barrierColor: Colors.black.withValues(alpha: 0.6),
     transitionDuration: const Duration(milliseconds: 280),
     transitionBuilder: (context, a, _, child) => ScaleTransition(
@@ -46,10 +49,10 @@ Future<void> showSuccessDialog(
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(title, style: Theme.of(context).textTheme.headlineSmall),
+                Text(heading, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 6),
                 Text(
-                  message,
+                  body,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,

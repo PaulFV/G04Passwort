@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../../../core/extensions/context_x.dart';
 import '../../../../widgets/glass_card.dart';
 import '../../application/vault_providers.dart';
@@ -76,7 +77,7 @@ class _FieldRowState extends ConsumerState<FieldRow> {
               ),
               if (widget.secret && widget.value.isNotEmpty)
                 IconButton(
-                  tooltip: _revealed ? 'Verbergen' : 'Anzeigen',
+                  tooltip: _revealed ? tr('Verbergen') : tr('Anzeigen'),
                   icon: Icon(
                     _revealed
                         ? Icons.visibility_off_outlined
@@ -86,7 +87,7 @@ class _FieldRowState extends ConsumerState<FieldRow> {
                 ),
               if (widget.copyable && widget.value.isNotEmpty)
                 IconButton(
-                  tooltip: 'Kopieren',
+                  tooltip: tr('Kopieren'),
                   icon: const Icon(Icons.copy_rounded, size: 20),
                   onPressed: () async {
                     final ok = await ref
@@ -98,7 +99,7 @@ class _FieldRowState extends ConsumerState<FieldRow> {
                     } else {
                       context.showSnack(
                         widget.secret
-                            ? '${widget.label} kopiert – wird automatisch gelöscht'
+                            ? tr('{label} kopiert – wird automatisch gelöscht', {'label': widget.label})
                             : '${widget.label} kopiert',
                       );
                     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../models/item_category.dart';
@@ -38,7 +39,7 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
   _Sort _sort = _Sort.name;
 
   String get _title {
-    if (widget.favoritesOnly) return 'Favoriten';
+    if (widget.favoritesOnly) return tr('Favoriten');
     if (widget.category != null) return widget.category!.label;
     if (widget.tag != null) return '#${widget.tag}';
     if (widget.folderId != null) {
@@ -46,16 +47,18 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
         if (f.id == widget.folderId) return f.name;
       }
     }
-    return 'Alle Einträge';
+    return tr('Alle Einträge');
   }
 
   List<VaultItem> _filter(List<VaultItem> items) {
     var list = items.where((i) {
       if (widget.favoritesOnly && !i.favorite) return false;
-      if (widget.category != null && i.category != widget.category)
+      if (widget.category != null && i.category != widget.category) {
         return false;
-      if (widget.folderId != null && i.folderId != widget.folderId)
+      }
+      if (widget.folderId != null && i.folderId != widget.folderId) {
         return false;
+      }
       if (widget.tag != null && !i.tags.contains(widget.tag)) return false;
       return true;
     }).toList();
@@ -76,31 +79,31 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
       wide: true,
       actions: [
         PopupMenuButton<_Sort>(
-          tooltip: 'Sortieren',
+          tooltip: tr('Sortieren'),
           icon: const Icon(Icons.sort_rounded),
           initialValue: _sort,
           onSelected: (s) => setState(() => _sort = s),
-          itemBuilder: (_) => const [
-            PopupMenuItem(value: _Sort.name, child: Text('Name (A–Z)')),
-            PopupMenuItem(value: _Sort.recent, child: Text('Zuletzt geändert')),
+          itemBuilder: (_) => [
+            PopupMenuItem(value: _Sort.name, child: Text(tr('Name (A–Z)'))),
+            PopupMenuItem(value: _Sort.recent, child: Text(tr('Zuletzt geändert'))),
           ],
         ),
         IconButton(
-          tooltip: 'Suche',
+          tooltip: tr('Suche'),
           icon: const Icon(Icons.search_rounded),
           onPressed: () => context.push(Routes.search),
         ),
       ],
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Neuer Eintrag',
+        tooltip: tr('Neuer Eintrag'),
         onPressed: () => context.push(newRoute),
         child: const Icon(Icons.add_rounded),
       ),
       body: items.isEmpty
           ? EmptyState(
               icon: widget.category?.icon ?? Icons.key_rounded,
-              title: 'Noch keine Einträge',
-              message: 'Tippe auf +, um einen neuen Eintrag anzulegen.',
+              title: tr('Noch keine Einträge'),
+              message: tr('Tippe auf +, um einen neuen Eintrag anzulegen.'),
             )
           : ResponsiveListView.builder(
                     gridItemExtent: 78,

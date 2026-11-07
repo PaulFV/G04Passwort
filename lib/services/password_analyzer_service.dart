@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../core/l10n/l10n.dart';
 import '../models/password_strength.dart';
 
 /// Offline password strength estimation (no network, no external data).
@@ -83,30 +84,31 @@ class PasswordAnalyzerService {
     if (_common.contains(lower) ||
         _common.contains(lower.replaceAll(RegExp(r'[0-9!.]+$'), ''))) {
       entropy = min(entropy, 8);
-      feedback.add('Sehr häufiges Passwort – leicht zu erraten.');
+      feedback.add(tr('Sehr häufiges Passwort – leicht zu erraten.'));
     }
 
     final seqLen = _longestSequence(lower);
     if (seqLen >= 3) {
       entropy -= seqLen * 2.5;
-      feedback.add('Vermeide Folgen wie „abc“, „123“ oder Tastaturreihen.');
+      feedback.add(tr('Vermeide Folgen wie „abc“, „123“ oder Tastaturreihen.'));
     }
     if (RegExp(r'(.)\1{2,}').hasMatch(password)) {
-      feedback.add('Vermeide wiederholte Zeichen.');
+      feedback.add(tr('Vermeide wiederholte Zeichen.'));
     }
     if (RegExp(r'(19|20)\d{2}').hasMatch(password)) {
       entropy -= 6;
-      feedback.add('Jahreszahlen sind leicht zu erraten.');
+      feedback.add(tr('Jahreszahlen sind leicht zu erraten.'));
     }
-    if (password.length < 8) feedback.add('Nutze mindestens 12 Zeichen.');
-    if (!hasSymbol && password.length < 20)
-      feedback.add('Füge Sonderzeichen hinzu.');
+    if (password.length < 8) feedback.add(tr('Nutze mindestens 12 Zeichen.'));
+    if (!hasSymbol && password.length < 20) {
+      feedback.add(tr('Füge Sonderzeichen hinzu.'));
+    }
     if (!(hasUpper && hasLower) && password.length < 20) {
-      feedback.add('Kombiniere Groß- und Kleinbuchstaben.');
+      feedback.add(tr('Kombiniere Groß- und Kleinbuchstaben.'));
     }
     if (RegExp(r'^[a-zA-Z]+[0-9]{1,4}[!?.]?$').hasMatch(password)) {
       entropy -= 10;
-      feedback.add('Muster „Wort + Zahl“ ist sehr verbreitet.');
+      feedback.add(tr('Muster „Wort + Zahl“ ist sehr verbreitet.'));
     }
 
     entropy = max(0, entropy);

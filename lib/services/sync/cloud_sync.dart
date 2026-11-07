@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/errors/vault_exceptions.dart';
 
 /// Encrypted vault snapshot exchanged with a cloud provider. The payload is
@@ -52,7 +53,9 @@ abstract class PreparedSyncProvider implements CloudSyncProvider {
   @override
   bool get isAvailable => false;
 
-  Never _na() => throw FeatureNotAvailableException('$name-Synchronisation');
+  Never _na() => throw FeatureNotAvailableException(
+        tr('{name}-Synchronisation', {'name': name}),
+      );
 
   @override
   Future<void> connect() async => _na();
@@ -117,7 +120,7 @@ class WebDavSyncProvider extends PreparedSyncProvider {
   String get id => 'webdav';
 
   @override
-  String get name => 'WebDAV / Nextcloud';
+  String get name => tr('WebDAV / Nextcloud');
 
   @override
   IconData get icon => Icons.dns_rounded;

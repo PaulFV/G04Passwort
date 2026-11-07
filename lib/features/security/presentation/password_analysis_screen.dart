@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/security_report.dart';
@@ -46,7 +47,7 @@ class PasswordAnalysisScreen extends ConsumerWidget {
     }
 
     return G04Scaffold(
-      title: 'Passwort-Analyse',
+      title: tr('Passwort-Analyse'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -71,46 +72,46 @@ class PasswordAnalysisScreen extends ConsumerWidget {
           GlassTile(
             icon: Icons.check_circle_rounded,
             iconColor: AppColors.success,
-            title: 'Starke Passwörter',
+            title: tr('Starke Passwörter'),
             value: '${report.strong}',
           ),
           GlassTile(
             icon: Icons.remove_circle_rounded,
             iconColor: AppColors.warning,
-            title: 'Mittlere Passwörter',
+            title: tr('Mittlere Passwörter'),
             value: '${report.medium}',
           ),
           GlassTile(
             icon: Icons.cancel_rounded,
             iconColor: AppColors.danger,
-            title: 'Schwache Passwörter',
+            title: tr('Schwache Passwörter'),
             value: '${report.weak}',
           ),
           GlassTile(
             icon: Icons.copy_all_rounded,
             iconColor: AppColors.warning,
-            title: 'Doppelte Passwörter',
+            title: tr('Doppelte Passwörter'),
             value: '${report.reused}',
           ),
           if (report.total == 0)
-            const EmptyState(
+            EmptyState(
               icon: Icons.analytics_outlined,
-              title: 'Noch nichts zu analysieren',
+              title: tr('Noch nichts zu analysieren'),
               message:
-                  'Sobald du Logins speicherst, erscheint hier die Analyse.',
+                  tr('Sobald du Logins speicherst, erscheint hier die Analyse.'),
             ),
-          section('Schwach', report.audits.where((a) => a.strength.score <= 1)),
+          section(tr('Schwach'), report.audits.where((a) => a.strength.score <= 1)),
           section(
-            'Doppelt verwendet',
+            tr('Doppelt verwendet'),
             report.audits.where((a) => a.reused),
-            label: (_) => 'Doppelt',
+            label: (_) => tr('Doppelt'),
           ),
           section(
-            'Älter als 1 Jahr',
+            tr('Älter als 1 Jahr'),
             report.audits.where((a) => a.old),
-            label: (_) => 'Alt',
+            label: (_) => tr('Alt'),
           ),
-          section('Mittel', report.audits.where((a) => a.strength.score == 2)),
+          section(tr('Mittel'), report.audits.where((a) => a.strength.score == 2)),
         ],
       ),
     );

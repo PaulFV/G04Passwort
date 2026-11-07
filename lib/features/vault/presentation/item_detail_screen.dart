@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -31,22 +32,22 @@ class ItemDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final item = ref.watch(itemByIdProvider(itemId));
     if (item == null) {
-      return const G04Scaffold(
-        title: 'Eintrag',
+      return G04Scaffold(
+        title: tr('Eintrag'),
         body: EmptyState(
           icon: Icons.search_off_rounded,
-          title: 'Eintrag nicht gefunden',
+          title: tr('Eintrag nicht gefunden'),
         ),
       );
     }
     final actions = ref.read(vaultActionsProvider);
-    final date = DateFormat.yMMMd('de_DE').add_Hm();
+    final date = DateFormat.yMMMd(L10n.intlLocale).add_Hm();
 
     return G04Scaffold(
-      title: 'Eintrag',
+      title: tr('Eintrag'),
       actions: [
         IconButton(
-          tooltip: item.favorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten',
+          tooltip: item.favorite ? tr('Aus Favoriten entfernen') : tr('Zu Favoriten'),
           icon: Icon(
             item.favorite ? Icons.star_rounded : Icons.star_outline_rounded,
             color: item.favorite ? const Color(0xFFFFC857) : null,
@@ -91,14 +92,14 @@ class ItemDetailScreen extends ConsumerWidget {
           for (final f in item.customFields)
             FieldRow(label: f.name, value: f.value, secret: f.secret),
           FieldRow(
-            label: 'Kategorie',
+            label: tr('Kategorie'),
             value: [
               item.category.label,
               if (item.folderId != null)
                 ...ref
                     .watch(foldersProvider)
                     .where((f) => f.id == item.folderId)
-                    .map((f) => 'Ordner: ${f.name}'),
+                    .map((f) => tr('Ordner: {name}', {'name': f.name})),
             ].join(' · '),
             copyable: false,
           ),
@@ -121,8 +122,8 @@ class ItemDetailScreen extends ConsumerWidget {
               ),
             ),
           FieldRow(
-            label: 'Notizen',
-            value: item.notes.isEmpty ? 'Keine Notizen' : item.notes,
+            label: tr('Notizen'),
+            value: item.notes.isEmpty ? tr('Keine Notizen') : item.notes,
             copyable: item.notes.isNotEmpty,
             maxLines: 12,
           ),
@@ -131,7 +132,7 @@ class ItemDetailScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              'Erstellt ${date.format(item.createdAt)} · Geändert ${date.format(item.updatedAt)}',
+              tr('Erstellt {v} · Geändert {v2}', {'v': date.format(item.createdAt), 'v2': date.format(item.updatedAt)}),
               textAlign: TextAlign.center,
               style: context.text.bodySmall?.copyWith(
                 color: AppColors.textMuted,
@@ -143,7 +144,7 @@ class ItemDetailScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: NeonButton.outline(
-                  label: 'Bearbeiten',
+                  label: tr('Bearbeiten'),
                   icon: Icons.edit_rounded,
                   onPressed: () => context.push(Routes.editItem(item.id)),
                 ),
@@ -151,7 +152,7 @@ class ItemDetailScreen extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: NeonButton.outline(
-                  label: 'Löschen',
+                  label: tr('Löschen'),
                   icon: Icons.delete_outline_rounded,
                   color: AppColors.danger,
                   onPressed: () => _delete(context, ref, item),
@@ -173,17 +174,17 @@ class ItemDetailScreen extends ConsumerWidget {
     final strength = ref.watch(passwordStrengthProvider(l.password));
     return [
       if (l.username.isNotEmpty)
-        FieldRow(label: 'Benutzername', value: l.username),
+        FieldRow(label: tr('Benutzername'), value: l.username),
       FieldRow(
-        label: 'Passwort',
+        label: tr('Passwort'),
         value: l.password,
         secret: true,
         footer: l.password.isEmpty ? null : StrengthMeter(strength: strength),
       ),
       if (l.hasTotp) _TotpRow(itemId: item.id),
-      for (final url in l.urls) FieldRow(label: 'Webseite', value: url),
+      for (final url in l.urls) FieldRow(label: tr('Webseite'), value: url),
       if (l.host != null && l.host!.isNotEmpty)
-        FieldRow(label: 'Host / IP-Adresse', value: l.host!, monospace: true),
+        FieldRow(label: tr('Host / IP-Adresse'), value: l.host!, monospace: true),
     ];
   }
 
@@ -195,13 +196,13 @@ class ItemDetailScreen extends ConsumerWidget {
         child: PaymentCardView(item: item),
       ),
       FieldRow(
-        label: 'Kartennummer',
+        label: tr('Kartennummer'),
         value: c.number,
         secret: true,
         monospace: true,
       ),
-      FieldRow(label: 'Karteninhaber', value: c.holder),
-      FieldRow(label: 'Gültig bis', value: c.expiryLabel, copyable: false),
+      FieldRow(label: tr('Karteninhaber'), value: c.holder),
+      FieldRow(label: tr('Gültig bis'), value: c.expiryLabel, copyable: false),
       if (c.cvv.isNotEmpty) FieldRow(label: 'CVV', value: c.cvv, secret: true),
       if (c.pin.isNotEmpty) FieldRow(label: 'PIN', value: c.pin, secret: true),
     ];
@@ -213,17 +214,17 @@ class ItemDetailScreen extends ConsumerWidget {
     VaultItem item,
   ) {
     final d = item.document!;
-    final date = DateFormat.yMd('de_DE');
+    final date = DateFormat.yMd(L10n.intlLocale);
     return [
-      FieldRow(label: 'Dokumenttyp', value: d.documentType, copyable: false),
+      FieldRow(label: tr('Dokumenttyp'), value: tr(d.documentType), copyable: false),
       if (d.number.isNotEmpty)
-        FieldRow(label: 'Nummer', value: d.number, secret: true),
-      if (d.fullName.isNotEmpty) FieldRow(label: 'Name', value: d.fullName),
+        FieldRow(label: tr('Nummer'), value: d.number, secret: true),
+      if (d.fullName.isNotEmpty) FieldRow(label: tr('Name'), value: d.fullName),
       if (d.issuer.isNotEmpty)
-        FieldRow(label: 'Ausstellende Behörde', value: d.issuer),
+        FieldRow(label: tr('Ausstellende Behörde'), value: d.issuer),
       if (d.expiryDate != null)
         FieldRow(
-          label: 'Gültig bis',
+          label: tr('Gültig bis'),
           value: date.format(d.expiryDate!),
           copyable: false,
         ),
@@ -232,7 +233,7 @@ class ItemDetailScreen extends ConsumerWidget {
           icon: Icons.picture_as_pdf_rounded,
           iconColor: AppColors.danger,
           title: a.name,
-          subtitle: '${a.extension} · ${formatBytes(a.size)} · verschlüsselt',
+          subtitle: tr('{extension} · {v} · verschlüsselt', {'extension': a.extension, 'v': formatBytes(a.size)}),
           trailing: const Icon(Icons.download_rounded),
           onTap: () => _exportAttachment(context, ref, a),
         ),
@@ -252,8 +253,11 @@ class ItemDetailScreen extends ConsumerWidget {
         mimeType: a.mimeType,
       );
     } on Object catch (e) {
-      if (context.mounted)
-        context.showError('Datei konnte nicht gespeichert werden: $e');
+      if (context.mounted) {
+        context.showError(
+          tr('Datei konnte nicht gespeichert werden: {e}', {'e': e}),
+        );
+      }
     }
   }
 
@@ -263,15 +267,15 @@ class ItemDetailScreen extends ConsumerWidget {
     VaultItem item,
   ) async {
     final ok = await context.confirm(
-      title: 'Eintrag löschen?',
-      message: '„${item.title}“ wird endgültig gelöscht.',
-      confirmLabel: 'Löschen',
+      title: tr('Eintrag löschen?'),
+      message: tr('„{title}“ wird endgültig gelöscht.', {'title': item.title}),
+      confirmLabel: tr('Löschen'),
       destructive: true,
     );
     if (!ok) return;
     await ref.read(vaultActionsProvider).delete(item.id);
     if (context.mounted) {
-      context.showSnack('Eintrag gelöscht');
+      context.showSnack(tr('Eintrag gelöscht'));
       context.pop();
     }
   }
@@ -287,14 +291,14 @@ class _TotpRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final code = ref.watch(totpCodeProvider(itemId)).value;
     if (code == null) {
-      return const FieldRow(
+      return FieldRow(
         label: '2FA-Code',
-        value: 'Ungültiger TOTP-Schlüssel',
+        value: tr('Ungültiger TOTP-Schlüssel'),
         copyable: false,
       );
     }
     return FieldRow(
-      label: '2FA-Code (TOTP)',
+      label: tr('2FA-Code (TOTP)'),
       value: code.code,
       monospace: true,
       footer: Row(
@@ -321,7 +325,7 @@ class _PasswordHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateFormat.yMd('de_DE').add_Hm();
+    final date = DateFormat.yMd(L10n.intlLocale).add_Hm();
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.zero,
@@ -329,13 +333,13 @@ class _PasswordHistory extends StatelessWidget {
       child: ExpansionTile(
         shape: const Border(),
         leading: const Icon(Icons.history_rounded),
-        title: Text('Passwort-Verlauf (${item.login!.passwordHistory.length})'),
+        title: Text(tr('Passwort-Verlauf ({v})', {'v': item.login!.passwordHistory.length})),
         children: [
           for (final h in item.login!.passwordHistory)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
               child: FieldRow(
-                label: 'Bis ${date.format(h.changedAt)}',
+                label: tr('Bis {v}', {'v': date.format(h.changedAt)}),
                 value: h.password,
                 secret: true,
               ),
@@ -349,6 +353,6 @@ class _PasswordHistory extends StatelessWidget {
 /// Human readable file size.
 String formatBytes(int bytes) {
   if (bytes < 1024) return '$bytes B';
-  if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-  return '${(bytes / 1024 / 1024).toStringAsFixed(1)} MB';
+  if (bytes < 1024 * 1024) return tr('{v} KB', {'v': (bytes / 1024).toStringAsFixed(1)});
+  return tr('{v} MB', {'v': (bytes / 1024 / 1024).toStringAsFixed(1)});
 }

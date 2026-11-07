@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/generator_options.dart';
@@ -26,11 +27,11 @@ class GeneratorScreen extends ConsumerWidget {
     Future<void> copy(String value) async {
       final ok = await ref.read(vaultActionsProvider).copy(value);
       if (!context.mounted) return;
-      ok ? context.showSnack('Passwort kopiert') : context.showError(kCopyFailed);
+      ok ? context.showSnack(tr('Passwort kopiert')) : context.showError(kCopyFailed);
     }
 
     return G04Scaffold(
-      title: 'Passwort-Generator',
+      title: tr('Passwort-Generator'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 110),
         children: [
@@ -56,7 +57,7 @@ class GeneratorScreen extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Kopieren',
+                  tooltip: tr('Kopieren'),
                   icon: const Icon(Icons.copy_rounded),
                   onPressed: () => copy(state.password),
                 ),
@@ -71,7 +72,7 @@ class GeneratorScreen extends ConsumerWidget {
                 StrengthMeter(strength: strength),
                 const SizedBox(height: 6),
                 Text(
-                  'Knackzeit (offline): ${strength.crackTimeLabel} · ${strength.entropyBits.round()} Bit',
+                  tr('Knackzeit (offline): {crackTimeLabel} · {round} Bit', {'crackTimeLabel': strength.crackTimeLabel, 'round': strength.entropyBits.round()}),
                   style: context.text.bodySmall?.copyWith(
                     color: AppColors.textMuted,
                   ),
@@ -95,7 +96,7 @@ class GeneratorScreen extends ConsumerWidget {
               children: [
                 if (o.mode == GeneratorMode.passphrase) ...[
                   _SliderRow(
-                    label: 'Wörter',
+                    label: tr('Wörter'),
                     value: o.wordCount,
                     min: 3,
                     max: 10,
@@ -104,7 +105,7 @@ class GeneratorScreen extends ConsumerWidget {
                   ),
                   _Toggle(
                     icon: Icons.text_fields_rounded,
-                    label: 'Wörter großschreiben',
+                    label: tr('Wörter großschreiben'),
                     value: o.capitalizeWords,
                     onChanged: (v) => controller.update(
                       (o) => o.copyWith(capitalizeWords: v),
@@ -112,7 +113,7 @@ class GeneratorScreen extends ConsumerWidget {
                   ),
                   _Toggle(
                     icon: Icons.pin_outlined,
-                    label: 'Zahl einfügen',
+                    label: tr('Zahl einfügen'),
                     value: o.includeNumber,
                     onChanged: (v) =>
                         controller.update((o) => o.copyWith(includeNumber: v)),
@@ -124,7 +125,7 @@ class GeneratorScreen extends ConsumerWidget {
                         color: AppColors.neonBlueLight,
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(child: Text('Trennzeichen')),
+                      Expanded(child: Text(tr('Trennzeichen'))),
                       for (final sep in const ['-', '.', '_', ' '])
                         Padding(
                           padding: const EdgeInsets.only(left: 6),
@@ -140,7 +141,7 @@ class GeneratorScreen extends ConsumerWidget {
                   ),
                 ] else ...[
                   _SliderRow(
-                    label: 'Länge',
+                    label: tr('Länge'),
                     value: o.length,
                     min: o.mode == GeneratorMode.pin
                         ? 4
@@ -154,35 +155,35 @@ class GeneratorScreen extends ConsumerWidget {
                   if (o.mode == GeneratorMode.password) ...[
                     _Toggle(
                       icon: Icons.keyboard_capslock_rounded,
-                      label: 'Großbuchstaben (A-Z)',
+                      label: tr('Großbuchstaben (A-Z)'),
                       value: o.uppercase,
                       onChanged: (v) =>
                           controller.update((o) => o.copyWith(uppercase: v)),
                     ),
                     _Toggle(
                       icon: Icons.text_fields_rounded,
-                      label: 'Kleinbuchstaben (a-z)',
+                      label: tr('Kleinbuchstaben (a-z)'),
                       value: o.lowercase,
                       onChanged: (v) =>
                           controller.update((o) => o.copyWith(lowercase: v)),
                     ),
                     _Toggle(
                       icon: Icons.looks_one_outlined,
-                      label: 'Zahlen (0-9)',
+                      label: tr('Zahlen (0-9)'),
                       value: o.digits,
                       onChanged: (v) =>
                           controller.update((o) => o.copyWith(digits: v)),
                     ),
                     _Toggle(
                       icon: Icons.tag_rounded,
-                      label: 'Sonderzeichen (!@#…)',
+                      label: tr('Sonderzeichen (!@#…)'),
                       value: o.symbols,
                       onChanged: (v) =>
                           controller.update((o) => o.copyWith(symbols: v)),
                     ),
                     _Toggle(
                       icon: Icons.visibility_off_outlined,
-                      label: 'Ähnliche Zeichen vermeiden (l, 1, O, 0)',
+                      label: tr('Ähnliche Zeichen vermeiden (l, 1, O, 0)'),
                       value: o.excludeAmbiguous,
                       onChanged: (v) => controller.update(
                         (o) => o.copyWith(excludeAmbiguous: v),
@@ -195,18 +196,18 @@ class GeneratorScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 18),
           NeonButton(
-            label: 'Neues Passwort generieren',
+            label: tr('Neues Passwort generieren'),
             icon: Icons.autorenew_rounded,
             onPressed: controller.regenerate,
           ),
           if (state.history.isNotEmpty) ...[
-            const SectionHeader('Zuletzt generiert'),
+            SectionHeader(tr('Zuletzt generiert')),
             for (final p in state.history.take(5))
               GlassTile(
                 title: p,
                 icon: Icons.history_rounded,
                 trailing: IconButton(
-                  tooltip: 'Kopieren',
+                  tooltip: tr('Kopieren'),
                   icon: const Icon(Icons.copy_rounded, size: 20),
                   onPressed: () => copy(p),
                 ),

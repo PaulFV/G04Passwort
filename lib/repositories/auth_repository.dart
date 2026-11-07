@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../core/l10n/l10n.dart';
 import '../core/constants/app_constants.dart';
 import '../core/errors/vault_exceptions.dart';
 import '../database/app_database.dart';
@@ -170,7 +171,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> unlock(String masterPassword) async {
     final header = await readHeader();
     if (header == null) {
-      throw const InvalidBackupException('Kein Tresor vorhanden.');
+      throw InvalidBackupException(tr('Kein Tresor vorhanden.'));
     }
     final key = await unwrapKey(header, masterPassword);
     if (await _matchesVault(key) == null) await _writeKeyCheck(key);

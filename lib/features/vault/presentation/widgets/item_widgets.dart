@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../../../core/utils/platform_quirks.dart';
 import '../../../../app/routes.dart';
 import '../../../../core/extensions/context_x.dart';
@@ -125,12 +126,12 @@ class VaultItemTile extends ConsumerWidget {
             trailing!
           else if (password.isNotEmpty)
             IconButton(
-              tooltip: 'Passwort kopieren',
+              tooltip: tr('Passwort kopieren'),
               icon: const Icon(Icons.copy_rounded, size: 20),
               onPressed: () async {
                 final ok = await ref.read(vaultActionsProvider).copy(password);
                 if (!context.mounted) return;
-                ok ? context.showSnack('Passwort kopiert') : context.showError(kCopyFailed);
+                ok ? context.showSnack(tr('Passwort kopiert')) : context.showError(kCopyFailed);
               },
             )
           else
@@ -179,13 +180,13 @@ class VaultSearchBar extends StatelessWidget {
               readOnly: onTap != null,
               onTap: onTap,
               onChanged: onChanged,
-              decoration: const InputDecoration(
-                hintText: 'Suche im Tresor …',
+              decoration: InputDecoration(
+                hintText: tr('Suche im Tresor …'),
                 filled: false,
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 14,
                 ),
@@ -196,7 +197,7 @@ class VaultSearchBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(4),
               child: IconButton.filled(
-                tooltip: 'Neuer Eintrag',
+                tooltip: tr('Neuer Eintrag'),
                 onPressed: onAdd,
                 icon: const Icon(Icons.add_rounded),
                 style: IconButton.styleFrom(

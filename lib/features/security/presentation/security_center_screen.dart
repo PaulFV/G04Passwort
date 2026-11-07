@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
@@ -29,7 +30,7 @@ class SecurityCenterScreen extends ConsumerWidget {
     final color = scoreColor(report.score);
 
     return G04Scaffold(
-      title: 'Sicherheitszentrum',
+      title: tr('Sicherheitszentrum'),
       wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
@@ -80,43 +81,43 @@ class SecurityCenterScreen extends ConsumerWidget {
           GlassTile(
             icon: Icons.check_circle_rounded,
             iconColor: AppColors.success,
-            title: 'Starke Passwörter',
+            title: tr('Starke Passwörter'),
             value: '${report.strong}',
             onTap: () => context.push(Routes.analysis),
           ),
           GlassTile(
             icon: Icons.copy_all_rounded,
             iconColor: AppColors.warning,
-            title: 'Doppelte Passwörter',
+            title: tr('Doppelte Passwörter'),
             value: '${report.reused}',
             onTap: () => context.push(Routes.analysis),
           ),
           GlassTile(
             icon: Icons.warning_amber_rounded,
             iconColor: AppColors.danger,
-            title: 'Schwache Passwörter',
+            title: tr('Schwache Passwörter'),
             value: '${report.weak}',
             onTap: () => context.push(Routes.analysis),
           ),
           GlassTile(
             icon: Icons.update_rounded,
             iconColor: AppColors.warning,
-            title: 'Älter als 1 Jahr',
+            title: tr('Älter als 1 Jahr'),
             value: '${report.old}',
             onTap: () => context.push(Routes.analysis),
           ),
-          const GlassTile(
+          GlassTile(
             icon: Icons.travel_explore_rounded,
             iconColor: AppColors.danger,
-            title: 'Leckage-Warnungen',
+            title: tr('Leckage-Warnungen'),
             subtitle:
-                'Online-Prüfung (Have I Been Pwned, k-Anonymität) in Vorbereitung',
+                tr('Online-Prüfung (Have I Been Pwned, k-Anonymität) in Vorbereitung'),
             value: '0',
           ),
           GlassTile(
             icon: Icons.verified_user_rounded,
             iconColor: AppColors.success,
-            title: '2FA aktiviert',
+            title: tr('2FA aktiviert'),
             value: '${report.withTotp}',
             onTap: () => context.push(Routes.authenticator),
           ),
@@ -124,7 +125,7 @@ class SecurityCenterScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           NeonButton(
-            label: 'Details anzeigen',
+            label: tr('Details anzeigen'),
             onPressed: () => context.push(Routes.analysis),
           ),
         ],

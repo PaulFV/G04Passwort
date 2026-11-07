@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 
+import 'core/l10n/l10n.dart';
 import 'app/app.dart';
 import 'core/di/providers.dart';
 import 'core/theme/app_colors.dart';
@@ -21,12 +21,12 @@ Future<void> main() async {
   // Bundled font license (SIL OFL) for the "Open-Source-Lizenzen" page.
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks(
-      ['Roboto (Schriftart)'],
+      [tr('Roboto (Schriftart)')],
       await rootBundle.loadString('assets/fonts/OFL.txt'),
     );
   });
-  Intl.defaultLocale = 'de_DE';
   await initializeDateFormatting('de_DE');
+  await initializeDateFormatting('en_US');
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../core/l10n/l10n.dart';
 import '../core/utils/platform_quirks.dart';
 import 'native_input/native_secret_input.dart';
 
@@ -67,7 +68,7 @@ class _AppTextFieldState extends State<AppTextField> {
   Widget build(BuildContext context) {
     final toggle = widget.isSecret
         ? IconButton(
-            tooltip: _obscured ? 'Anzeigen' : 'Verbergen',
+            tooltip: _obscured ? tr('Anzeigen') : tr('Verbergen'),
             icon: Icon(
               _obscured
                   ? Icons.visibility_outlined

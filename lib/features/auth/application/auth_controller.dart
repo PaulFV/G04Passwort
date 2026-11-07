@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/errors/vault_exceptions.dart';
@@ -121,7 +121,7 @@ class AuthController extends Notifier<AuthState> {
       final settings = ref.read(settingsControllerProvider);
       state = state.copyWith(
         status: settings.onboardingDone ? AuthStatus.setup : AuthStatus.onboarding,
-        error: 'Speicher konnte nicht geöffnet werden: $e',
+        error: tr('Speicher konnte nicht geöffnet werden: {e}', {'e': e}),
       );
     }
   }
@@ -200,8 +200,8 @@ class AuthController extends Notifier<AuthState> {
       return null;
     } on Object catch (e, st) {
       debugPrint('completeOnboarding failed: $e\n$st');
-      return 'Der sichere Speicher konnte nicht geöffnet werden. Bitte schließe '
-          'die App ganz und öffne sie erneut.';
+      return tr('Der sichere Speicher konnte nicht geöffnet werden. Bitte schließe '
+      'die App ganz und öffne sie erneut.');
     }
   }
 
@@ -224,7 +224,7 @@ class AuthController extends Notifier<AuthState> {
     } on Object catch (e) {
       state = state.copyWith(
         busy: false,
-        error: 'Tresor konnte nicht erstellt werden: $e',
+        error: tr('Tresor konnte nicht erstellt werden: {e}', {'e': e}),
       );
       return false;
     }
@@ -243,7 +243,7 @@ class AuthController extends Notifier<AuthState> {
     final wait = remainingLockout;
     if (wait != null) {
       state = state.copyWith(
-        error: 'Zu viele Fehlversuche. Bitte warte ${wait.inSeconds + 1} s.',
+        error: tr('Zu viele Fehlversuche. Bitte warte {v} s.', {'v': wait.inSeconds + 1}),
       );
       return false;
     }
@@ -276,15 +276,15 @@ class AuthController extends Notifier<AuthState> {
         failedAttempts: attempts,
         lockedUntil: until,
         error: until == null
-            ? '${e.message} (${AppConstants.maxFailedAttempts - attempts} Versuche bis zur Sperre)'
-            : 'Zu viele Fehlversuche – gesperrt für ${until.difference(DateTime.now()).inSeconds} s.',
+            ? tr('{message} ({v} Versuche bis zur Sperre)', {'message': e.message, 'v': AppConstants.maxFailedAttempts - attempts})
+            : tr('Zu viele Fehlversuche – gesperrt für {v} s.', {'v': until.difference(DateTime.now()).inSeconds}),
       );
       return false;
     } on VaultException catch (e) {
       state = state.copyWith(busy: false, error: e.message);
       return false;
     } on Object catch (e) {
-      state = state.copyWith(busy: false, error: 'Entsperren fehlgeschlagen: $e');
+      state = state.copyWith(busy: false, error: tr('Entsperren fehlgeschlagen: {e}', {'e': e}));
       return false;
     }
   }
@@ -315,8 +315,8 @@ class AuthController extends Notifier<AuthState> {
       state = state.copyWith(
         busy: false,
         error:
-            'Biometrie-Schlüssel ungültig. Bitte mit dem Master-Passwort entsperren '
-            'und Biometrie in den Einstellungen erneut aktivieren.',
+            tr('Biometrie-Schlüssel ungültig. Bitte mit dem Master-Passwort entsperren '
+      'und Biometrie in den Einstellungen erneut aktivieren.'),
       );
       return false;
     }
@@ -374,7 +374,7 @@ class AuthController extends Notifier<AuthState> {
     final key = _pendingKey;
     final id = _pendingPasskey;
     if (key == null || id == null) {
-      return const BiometricSetup.failed('Einrichtung abgelaufen. Bitte erneut aktivieren.');
+      return BiometricSetup.failed(tr('Einrichtung abgelaufen. Bitte erneut aktivieren.'));
     }
     final r = await ref
         .read(biometricServiceProvider)

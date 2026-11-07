@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/l10n/l10n.dart';
 import 'item_category.dart';
 import 'vault_item_type.dart';
 
@@ -63,7 +64,7 @@ class AttachmentRef {
 
   factory AttachmentRef.fromJson(Json j) => AttachmentRef(
     id: j['id'] as String,
-    name: j['name'] as String? ?? 'Datei',
+    name: j['name'] as String? ?? tr('Datei'),
     size: j['size'] as int? ?? 0,
     mimeType: j['mime'] as String? ?? 'application/octet-stream',
   );
@@ -199,7 +200,7 @@ class CardData {
     if (RegExp(r'^(6011|65)').hasMatch(d)) return 'Discover';
     if (d.startsWith('62')) return 'UnionPay';
     if (RegExp(r'^35').hasMatch(d)) return 'JCB';
-    return 'Karte';
+    return tr('Karte');
   }
 
   bool get isExpired {
@@ -242,6 +243,7 @@ class DocumentData {
     attachments: _list(j['files'], AttachmentRef.fromJson),
   );
 
+  /// Stored values (German); show them with [tr].
   static const types = [
     'Reisepass',
     'Personalausweis',
@@ -350,8 +352,8 @@ class VaultItem {
     VaultItemType.card => card?.masked ?? '',
     VaultItemType.document =>
       document?.attachments.isNotEmpty == true
-          ? '${document!.attachments.length} Datei(en)'
-          : (document?.documentType ?? ''),
+          ? tr('{v} Datei(en)', {'v': document!.attachments.length})
+          : tr(document?.documentType ?? ''),
     VaultItemType.note => notes.split('\n').first,
   };
 

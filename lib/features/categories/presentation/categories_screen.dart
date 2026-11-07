@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/platform_quirks.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
@@ -33,22 +34,22 @@ class CategoriesScreen extends ConsumerWidget {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(id == null ? 'Neuer Ordner' : 'Ordner umbenennen'),
+        title: Text(id == null ? tr('Neuer Ordner') : tr('Ordner umbenennen')),
         content: TextField(
           controller: controller,
           autofocus: PlatformQuirks.autofocus(true),
-          decoration: const InputDecoration(labelText: 'Name'),
+          decoration: InputDecoration(labelText: tr('Name')),
           onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(tr('Abbrechen')),
           ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Speichern'),
+            child: Text(tr('Speichern')),
           ),
         ],
       ),
@@ -71,11 +72,11 @@ class CategoriesScreen extends ConsumerWidget {
     final tags = ref.watch(allTagsProvider);
 
     return G04Scaffold(
-      title: 'Kategorien',
+      title: tr('Kategorien'),
       wide: true,
       actions: [
         IconButton(
-          tooltip: 'Suche',
+          tooltip: tr('Suche'),
           icon: const Icon(Icons.search_rounded),
           onPressed: () => context.push(Routes.search),
         ),
@@ -100,15 +101,15 @@ class CategoriesScreen extends ConsumerWidget {
             ],
           ),
           SectionHeader(
-            'Ordner',
-            actionLabel: 'Neu',
+            tr('Ordner'),
+            actionLabel: tr('Neu'),
             onAction: () => _folderDialog(context, ref),
           ),
           if (folders.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                'Noch keine Ordner – erstelle z. B. „Arbeit“, „Kunden“ oder „Anlage Halle 2“.',
+                tr('Noch keine Ordner – erstelle z. B. „Arbeit“, „Kunden“ oder „Anlage Halle 2“.'),
                 style: context.text.bodySmall?.copyWith(
                   color: context.colors.onSurfaceVariant,
                 ),
@@ -129,27 +130,27 @@ class CategoriesScreen extends ConsumerWidget {
                     await _folderDialog(context, ref, id: f.id, name: f.name);
                   } else {
                     final ok = await context.confirm(
-                      title: 'Ordner löschen?',
+                      title: tr('Ordner löschen?'),
                       message:
-                          'Die Einträge bleiben erhalten und werden keinem Ordner mehr zugeordnet.',
+                          tr('Die Einträge bleiben erhalten und werden keinem Ordner mehr zugeordnet.'),
                       destructive: true,
-                      confirmLabel: 'Löschen',
+                      confirmLabel: tr('Löschen'),
                     );
                     if (ok) {
                       await ref.read(vaultActionsProvider).deleteFolder(f.id);
                     }
                   }
                 },
-                itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'rename', child: Text('Umbenennen')),
-                  PopupMenuItem(value: 'delete', child: Text('Löschen')),
+                itemBuilder: (_) => [
+                  PopupMenuItem(value: 'rename', child: Text(tr('Umbenennen'))),
+                  PopupMenuItem(value: 'delete', child: Text(tr('Löschen'))),
                 ],
               ),
             ),
             ],
           ),
           if (tags.isNotEmpty) ...[
-            const SectionHeader('Tags'),
+            SectionHeader(tr('Tags')),
             Wrap(
               spacing: 8,
               runSpacing: 8,

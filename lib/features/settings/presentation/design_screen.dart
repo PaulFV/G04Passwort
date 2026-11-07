@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/app_settings.dart';
@@ -20,7 +21,7 @@ class DesignScreen extends ConsumerWidget {
     final c = ref.read(settingsControllerProvider.notifier);
 
     return G04Scaffold(
-      title: 'Design',
+      title: tr('Design'),
       wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
@@ -53,7 +54,7 @@ class DesignScreen extends ConsumerWidget {
                               size: 18,
                             ),
                             const SizedBox(width: 8),
-                            Text(dark ? 'Dunkel' : 'Hell'),
+                            Text(dark ? tr('Dunkel') : tr('Hell')),
                           ],
                         ),
                       ),
@@ -62,7 +63,7 @@ class DesignScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SectionHeader('Hintergrund'),
+          SectionHeader(tr('Hintergrund')),
           GridView.extent(
             maxCrossAxisExtent: 170,
             shrinkWrap: true,
@@ -79,7 +80,7 @@ class DesignScreen extends ConsumerWidget {
                 ),
             ],
           ),
-          const SectionHeader('Akzentfarbe'),
+          SectionHeader(tr('Akzentfarbe')),
           Wrap(
             spacing: 14,
             runSpacing: 14,
@@ -88,7 +89,7 @@ class DesignScreen extends ConsumerWidget {
                 Semantics(
                   button: true,
                   selected: s.accentIndex == i,
-                  label: 'Akzentfarbe ${i + 1}',
+                  label: tr('Akzentfarbe {v}', {'v': i + 1}),
                   child: GestureDetector(
                     onTap: () => c.setAccent(i),
                     child: AnimatedContainer(

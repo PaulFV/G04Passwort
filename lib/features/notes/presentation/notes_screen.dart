@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
@@ -21,17 +22,17 @@ class NotesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notes = ref.watch(itemsByTypeProvider(VaultItemType.note));
     return G04Scaffold(
-      title: 'Notizen',
+      title: tr('Notizen'),
       wide: true,
       body: Column(
         children: [
           Expanded(
             child: notes.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.sticky_note_2_rounded,
-                    title: 'Keine Notizen',
+                    title: tr('Keine Notizen'),
                     message:
-                        'WLAN-Zugänge, PINs, Wiederherstellungscodes – alles sicher verschlüsselt.',
+                        tr('WLAN-Zugänge, PINs, Wiederherstellungscodes – alles sicher verschlüsselt.'),
                   )
                 : ListView(
                     children: [
@@ -80,7 +81,7 @@ class NotesScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: NeonButton(
-              label: 'Neue Notiz',
+              label: tr('Neue Notiz'),
               icon: Icons.add_rounded,
               onPressed: () => context.push('${Routes.newItem}?type=note'),
             ),

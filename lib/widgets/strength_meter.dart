@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/l10n/l10n.dart';
 import '../models/password_strength.dart';
 
 /// Animated, glowing bar visualising a [PasswordStrength].
@@ -26,7 +27,7 @@ class StrengthMeter extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 6),
             child: Row(
               children: [
-                Text('Stärke', style: Theme.of(context).textTheme.bodySmall),
+                Text(tr('Stärke'), style: Theme.of(context).textTheme.bodySmall),
                 const Spacer(),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 250),

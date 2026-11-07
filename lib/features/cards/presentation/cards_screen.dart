@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
@@ -21,17 +22,17 @@ class CardsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cards = ref.watch(itemsByTypeProvider(VaultItemType.card));
     return G04Scaffold(
-      title: 'Kreditkarten',
+      title: tr('Kreditkarten'),
       wide: true,
       body: Column(
         children: [
           Expanded(
             child: cards.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.credit_card_rounded,
-                    title: 'Keine Karten',
+                    title: tr('Keine Karten'),
                     message:
-                        'Speichere Kredit-, Debit- und Kundenkarten sicher verschlüsselt.',
+                        tr('Speichere Kredit-, Debit- und Kundenkarten sicher verschlüsselt.'),
                   )
                 : ListView(
                     children: [
@@ -53,8 +54,8 @@ class CardsScreen extends ConsumerWidget {
                                 ),
                               ),
                               if (c.card!.isExpired)
-                                const StatusBadge(
-                                  'Abgelaufen',
+                                StatusBadge(
+                                  tr('Abgelaufen'),
                                   color: AppColors.danger,
                                 )
                               else if (c.card!.expiryLabel.isNotEmpty)
@@ -73,7 +74,7 @@ class CardsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: NeonButton(
-              label: 'Neue Kreditkarte',
+              label: tr('Neue Kreditkarte'),
               icon: Icons.add_rounded,
               onPressed: () => context.push('${Routes.newItem}?type=card'),
             ),
