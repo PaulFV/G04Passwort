@@ -65,6 +65,16 @@ jobs:
           git add -A
           git commit -q -m "web preview ${GITHUB_SHA}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" web-preview
+      - name: Publish pull request build (branch web-preview-pr, not served)
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          cd build/web
+          git init -q -b web-preview-pr
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "PR build ${{ github.event.pull_request.head.sha }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" web-preview-pr
       - uses: actions/upload-artifact@v5
         continue-on-error: true
         with:
