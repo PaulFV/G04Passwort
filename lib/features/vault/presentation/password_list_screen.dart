@@ -53,10 +53,12 @@ class _PasswordListScreenState extends ConsumerState<PasswordListScreen> {
   List<VaultItem> _filter(List<VaultItem> items) {
     var list = items.where((i) {
       if (widget.favoritesOnly && !i.favorite) return false;
-      if (widget.category != null && i.category != widget.category)
+      if (widget.category != null && i.category != widget.category) {
         return false;
-      if (widget.folderId != null && i.folderId != widget.folderId)
+      }
+      if (widget.folderId != null && i.folderId != widget.folderId) {
         return false;
+      }
       if (widget.tag != null && !i.tags.contains(widget.tag)) return false;
       return true;
     }).toList();

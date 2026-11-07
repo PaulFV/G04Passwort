@@ -241,8 +241,9 @@ class SettingsScreen extends ConsumerWidget {
                 confirmLabel: tr('Alles löschen'),
                 destructive: true,
               );
-              if (ok)
+              if (ok) {
                 await ref.read(authControllerProvider.notifier).resetVault();
+              }
             },
           ),
             ],

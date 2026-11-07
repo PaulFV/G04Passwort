@@ -89,8 +89,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         ? null
         : ref.read(itemByIdProvider(widget.itemId!));
     _load(existing ?? ref.read(vaultActionsProvider).newItem(widget.type));
-    if (existing == null && widget.category != null)
+    if (existing == null && widget.category != null) {
       _category = widget.category!;
+    }
     _password.addListener(() => setState(() {}));
   }
 
@@ -293,7 +294,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               initialValue: _category,
               decoration: InputDecoration(
                 labelText: tr('Kategorie'),
-                prefixIcon: Icon(Icons.category_outlined),
+                prefixIcon: const Icon(Icons.category_outlined),
               ),
               items: [
                 for (final c in ItemCategory.values)
@@ -317,7 +318,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                   : null,
               decoration: InputDecoration(
                 labelText: tr('Ordner'),
-                prefixIcon: Icon(Icons.folder_outlined),
+                prefixIcon: const Icon(Icons.folder_outlined),
               ),
               items: [
                 DropdownMenuItem<String?>(child: Text(tr('Kein Ordner'))),
@@ -486,7 +487,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       initialValue: _docType,
       decoration: InputDecoration(
         labelText: tr('Dokumenttyp'),
-        prefixIcon: Icon(Icons.badge_outlined),
+        prefixIcon: const Icon(Icons.badge_outlined),
       ),
       items: [
         for (final t in DocumentData.types)

@@ -100,8 +100,9 @@ class PasswordAnalyzerService {
       feedback.add(tr('Jahreszahlen sind leicht zu erraten.'));
     }
     if (password.length < 8) feedback.add(tr('Nutze mindestens 12 Zeichen.'));
-    if (!hasSymbol && password.length < 20)
+    if (!hasSymbol && password.length < 20) {
       feedback.add(tr('Füge Sonderzeichen hinzu.'));
+    }
     if (!(hasUpper && hasLower) && password.length < 20) {
       feedback.add(tr('Kombiniere Groß- und Kleinbuchstaben.'));
     }

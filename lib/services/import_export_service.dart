@@ -179,8 +179,9 @@ class ImportExportService {
   /// KeePass/KeePassXC, LastPass).
   Future<ImportResult> importCsv(String content) async {
     final rows = parseCsv(content);
-    if (rows.length < 2)
+    if (rows.length < 2) {
       throw InvalidBackupException(tr('Die CSV-Datei ist leer.'));
+    }
     final header = rows.first.map((h) => h.trim().toLowerCase()).toList();
 
     int col(List<String> names) => header.indexWhere(names.contains);

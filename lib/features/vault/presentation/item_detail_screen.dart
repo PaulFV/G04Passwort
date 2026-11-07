@@ -253,8 +253,11 @@ class ItemDetailScreen extends ConsumerWidget {
         mimeType: a.mimeType,
       );
     } on Object catch (e) {
-      if (context.mounted)
-        context.showError(tr('Datei konnte nicht gespeichert werden: {e}', {'e': e}));
+      if (context.mounted) {
+        context.showError(
+          tr('Datei konnte nicht gespeichert werden: {e}', {'e': e}),
+        );
+      }
     }
   }
 

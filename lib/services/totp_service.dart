@@ -137,7 +137,7 @@ class TotpService {
 
   /// RFC 4648 Base32 decoding (case-insensitive, ignores spaces/padding).
   static Uint8List? base32Decode(String input) {
-    final alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     final clean = input.toUpperCase().replaceAll(RegExp(r'[\s=-]'), '');
     final out = <int>[];
     var buffer = 0;

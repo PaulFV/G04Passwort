@@ -12,8 +12,8 @@ Future<void> showSuccessDialog(
   String? title,
   String? message,
 }) {
-  title ??= tr('Erledigt!');
-  message ??= tr('Dein Passwort wurde sicher gespeichert.');
+  final heading = title ?? tr('Erledigt!');
+  final body = message ?? tr('Dein Passwort wurde sicher gespeichert.');
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -49,10 +49,10 @@ Future<void> showSuccessDialog(
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(title, style: Theme.of(context).textTheme.headlineSmall),
+                Text(heading, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 6),
                 Text(
-                  message,
+                  body,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,

@@ -94,7 +94,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       'Dein Master-Passwort wird mit Argon2id geschützt und verlässt nie dein Gerät.'),
                       ),
                       _Slide(
-                        image: _IconRow(
+                        image: const _IconRow(
                           icons: [
                             FeatureIcon.biometric,
                             FeatureIcon.security,
@@ -107,7 +107,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       'und Screenshot-Schutz arbeiten automatisch für dich.'),
                       ),
                       _Slide(
-                        image: _IconGrid(),
+                        image: const _IconGrid(),
                         title: tr('Alles an einem Ort'),
                         text:
                             tr('Passwörter, 2FA-Codes, Kreditkarten, Dokumente und sichere Notizen – '
