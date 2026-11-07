@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/utils/platform_quirks.dart';
+import 'native_input/native_secret_input.dart';
 
 /// Themed text field. With [isSecret] it obscures its value and shows a
 /// visibility toggle. Secret fields disable autocorrect, suggestions and
@@ -52,6 +53,15 @@ class AppTextField extends StatefulWidget {
 
 class _AppTextFieldState extends State<AppTextField> {
   late bool _obscured = widget.isSecret;
+  bool _nativeFocused = false;
+
+  /// iPhone/iPad web app: secret fields use a real browser input, because
+  /// iOS Safari sometimes does not open the keyboard for Flutter's own one.
+  bool get _useNativeInput =>
+      PlatformQuirks.isIosWeb &&
+      widget.isSecret &&
+      !widget.readOnly &&
+      widget.controller != null;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +86,8 @@ class _AppTextFieldState extends State<AppTextField> {
     } else {
       suffix = toggle ?? widget.suffix;
     }
+
+    if (_useNativeInput) return _buildNative(context, suffix);
 
     return TextFormField(
       controller: widget.controller,
@@ -105,6 +117,61 @@ class _AppTextFieldState extends State<AppTextField> {
         prefixIcon: widget.icon == null ? null : Icon(widget.icon),
         suffixIcon: suffix,
       ),
+    );
+  }
+
+  Widget _buildNative(BuildContext context, Widget? suffix) {
+    final theme = Theme.of(context);
+    final controller = widget.controller!;
+    final hints = widget.autofillHints ?? const <String>[];
+    // Login fields may use the iCloud keychain; a new master password is
+    // chosen by the user (no generated "strong password").
+    final autocomplete = hints.contains(AutofillHints.password)
+        ? 'current-password'
+        : 'off';
+    return FormField<String>(
+      validator: widget.validator == null
+          ? null
+          : (_) => widget.validator!(controller.text),
+      builder: (field) {
+        final decoration = InputDecoration(
+          prefixIcon: widget.icon == null ? null : Icon(widget.icon),
+          suffixIcon: suffix,
+          errorText: field.errorText,
+        ).applyDefaults(theme.inputDecorationTheme);
+        return Stack(
+          children: [
+            InputDecorator(
+              decoration: decoration,
+              isFocused: _nativeFocused,
+              isEmpty: true,
+              child: const SizedBox(height: 24),
+            ),
+            Positioned(
+              left: widget.icon == null ? 18 : 50,
+              right: suffix == null ? 18 : 50,
+              top: 0,
+              height: 56,
+              child: NativeSecretInput(
+                controller: controller,
+                placeholder: widget.label ?? widget.hint ?? '',
+                obscured: _obscured,
+                autocomplete: autocomplete,
+                textColor: theme.colorScheme.onSurface,
+                placeholderColor: theme.colorScheme.onSurfaceVariant,
+                onChanged: (v) {
+                  field.didChange(v);
+                  widget.onChanged?.call(v);
+                },
+                onSubmitted: widget.onSubmitted,
+                onFocusChange: (f) {
+                  if (mounted) setState(() => _nativeFocused = f);
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

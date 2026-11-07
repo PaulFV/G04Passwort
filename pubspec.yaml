@@ -21,6 +21,7 @@ dependencies:
   # Persistence (SQLite on native, WASM/IndexedDB on web)
   drift: ^2.30.0
   drift_flutter: ^0.3.0
+  web: ^1.1.0
   # sqlite3 3.9.0 ships a sqlite3.wasm that fails to load in the web app
   # (LinkError "dart.dispatch_trace") – stay on the last working line.
   sqlite3: ">=3.8.0 <3.9.0"
