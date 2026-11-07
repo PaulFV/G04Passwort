@@ -184,14 +184,25 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
-  Future<void> completeOnboarding() async {
-    await ref.read(settingsControllerProvider.notifier).completeOnboarding();
-    final initialized = await ref
-        .read(authRepositoryProvider)
-        .isVaultInitialized();
-    state = state.copyWith(
-      status: initialized ? AuthStatus.locked : AuthStatus.setup,
-    );
+  /// Finishes the onboarding. Returns a user facing error message when the
+  /// local storage could not be opened (the button must never just do
+  /// nothing).
+  Future<String?> completeOnboarding() async {
+    try {
+      await ref.read(settingsControllerProvider.notifier).completeOnboarding();
+      final initialized = await ref
+          .read(authRepositoryProvider)
+          .isVaultInitialized()
+          .timeout(const Duration(seconds: 20));
+      state = state.copyWith(
+        status: initialized ? AuthStatus.locked : AuthStatus.setup,
+      );
+      return null;
+    } on Object catch (e, st) {
+      debugPrint('completeOnboarding failed: $e\n$st');
+      return 'Der sichere Speicher konnte nicht geöffnet werden. Bitte schließe '
+          'die App ganz und öffne sie erneut.';
+    }
   }
 
   /// Creates a new vault. Returns `true` on success.

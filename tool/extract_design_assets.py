@@ -14,7 +14,7 @@ simply be copied over the generated assets (same file names).
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,11 +80,24 @@ def snap_icon(crop, box, search=8, margin=3):
     cols = np.where(frame.sum(0) > h * 0.35)[0]
     rows = np.where(frame.sum(1) > w * 0.35)[0]
     if len(cols) < 2 or len(rows) < 2:
-        return crop(box)
+        return round_corners(crop(box))
     m = round(margin * area.width / (x1 - x0 + 2 * search))
     l, r = max(cols[0] - m, 0), min(cols[-1] + 1 + m, w)
     t, b = max(rows[0] - m, 0), min(rows[-1] + 1 + m, h)
-    return area.crop((l, t, r, b))
+    return round_corners(area.crop((l, t, r, b)))
+
+
+def round_corners(img, radius=0.2):
+    """Makes the dark sheet background in the corners transparent, so the
+    tile looks right on any background (anti-aliased rounded mask)."""
+    ss = 4
+    w, h = img.size
+    mask = Image.new("L", (w * ss, h * ss), 0)
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (0, 0, w * ss - 1, h * ss - 1), radius=round(min(w, h) * radius * ss), fill=255)
+    out = img.convert("RGBA")
+    out.putalpha(mask.resize((w, h), Image.LANCZOS))
+    return out
 
 
 def remove_dark_background(rgb):

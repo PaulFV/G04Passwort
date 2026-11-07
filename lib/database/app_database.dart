@@ -30,11 +30,16 @@ class EncryptedRow {
 class AppDatabase extends GeneratedDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
+  /// Build id of the web app (git commit, set by CI). Appended to the
+  /// sqlite3.wasm / drift_worker.js URLs so a browser never combines a new
+  /// app with a cached, incompatible database runtime (or vice versa).
+  static const _buildId = String.fromEnvironment('BUILD_ID', defaultValue: 'dev');
+
   static QueryExecutor _openConnection() => driftDatabase(
     name: AppConstants.databaseName,
     web: DriftWebOptions(
-      sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-      driftWorker: Uri.parse('drift_worker.js'),
+      sqlite3Wasm: Uri.parse('sqlite3.wasm?v=$_buildId'),
+      driftWorker: Uri.parse('drift_worker.js?v=$_buildId'),
     ),
   );
 

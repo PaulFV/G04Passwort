@@ -37,12 +37,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         curve: Curves.easeOutCubic,
       );
     } else {
-      ref.read(authControllerProvider.notifier).completeOnboarding();
+      _finish();
     }
   }
 
-  void _finish() =>
-      ref.read(authControllerProvider.notifier).completeOnboarding();
+  bool _finishing = false;
+
+  Future<void> _finish() async {
+    if (_finishing) return;
+    setState(() => _finishing = true);
+    final error = await ref
+        .read(authControllerProvider.notifier)
+        .completeOnboarding();
+    if (!mounted) return;
+    setState(() => _finishing = false);
+    if (error != null) context.showError(error);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +122,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     label: _page == _slides - 1
                         ? 'Jetzt starten'
                         : 'Los geht\'s',
+                    loading: _finishing,
                     onPressed: _next,
                   ),
                 ),

@@ -53,7 +53,7 @@ jobs:
       - run: flutter pub get
       - name: Fetch drift web assets (sqlite3.wasm, drift_worker.js)
         run: bash tool/setup_web.sh
-      - run: bash tool/ci_annotate.sh "build web" flutter build web --release --no-web-resources-cdn --base-href /G04Passwort/
+      - run: bash tool/ci_annotate.sh "build web" flutter build web --release --no-web-resources-cdn --base-href /G04Passwort/ --dart-define=BUILD_ID=${{ github.sha }}
       - name: Publish web preview branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
