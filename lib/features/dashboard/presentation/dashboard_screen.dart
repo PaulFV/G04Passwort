@@ -229,7 +229,7 @@ class _Header extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TextSpan(text: tr('Passwort'), style: context.text.titleLarge),
+                  TextSpan(text: 'Passwort', style: context.text.titleLarge),
                 ],
               ),
             ),
