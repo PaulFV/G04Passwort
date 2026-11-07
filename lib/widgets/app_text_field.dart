@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../core/utils/platform_quirks.dart';
+
 /// Themed text field. With [isSecret] it obscures its value and shows a
 /// visibility toggle. Secret fields disable autocorrect, suggestions and
 /// personalised keyboard learning.
@@ -90,10 +92,10 @@ class _AppTextFieldState extends State<AppTextField> {
       textInputAction: widget.textInputAction,
       maxLines: widget.isSecret ? 1 : widget.maxLines,
       minLines: 1,
-      autofocus: widget.autofocus,
+      autofocus: PlatformQuirks.autofocus(widget.autofocus),
       readOnly: widget.readOnly,
       inputFormatters: widget.inputFormatters,
-      autofillHints: widget.autofillHints,
+      autofillHints: PlatformQuirks.autofillHints(widget.autofillHints),
       style: widget.monospace || (widget.isSecret && !_obscured)
           ? const TextStyle(fontFamily: 'monospace', letterSpacing: 0.5)
           : null,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/platform_quirks.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/utils/responsive.dart';
@@ -35,7 +36,7 @@ class CategoriesScreen extends ConsumerWidget {
         title: Text(id == null ? 'Neuer Ordner' : 'Ordner umbenennen'),
         content: TextField(
           controller: controller,
-          autofocus: true,
+          autofocus: PlatformQuirks.autofocus(true),
           decoration: const InputDecoration(labelText: 'Name'),
           onSubmitted: (v) => Navigator.pop(context, v),
         ),

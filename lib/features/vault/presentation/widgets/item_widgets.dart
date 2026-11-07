@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/utils/platform_quirks.dart';
 import '../../../../app/routes.dart';
 import '../../../../core/extensions/context_x.dart';
 import '../../../../models/vault_item.dart';
@@ -174,7 +175,7 @@ class VaultSearchBar extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
-              autofocus: autofocus,
+              autofocus: PlatformQuirks.autofocus(autofocus),
               readOnly: onTap != null,
               onTap: onTap,
               onChanged: onChanged,
