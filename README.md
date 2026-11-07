@@ -39,6 +39,7 @@ Die App verwaltet Zugangsdaten zu Websites und Portalen, aber auch zu **Geräten
 | 📊 **Sicherheitszentrum** | Sicherheits-Score, Passwortanalyse (Entropie + Muster), Duplikat-Erkennung, alte Passwörter, 2FA-Abdeckung |
 | 🔢 **2FA (TOTP)** | RFC 6238 Authenticator mit Countdown-Ringen, `otpauth://`-Links, SHA-1/256/512 |
 | 👆 **Biometrie** | Fingerabdruck, Face ID, Windows Hello (`local_auth`); in der Web-App Face ID / Fingerabdruck per Passkey (WebAuthn PRF) |
+| 🌍 **Sprachen** | Deutsch und Englisch, umschaltbar unter Einstellungen → Sprache (Standard: Gerätesprache) |
 | ⏱️ **Auto-Lock** | Sperre bei Inaktivität und im Hintergrund; konfigurierbar (sofort … nie) |
 | 📋 **Zwischenablage** | Automatisches Leeren kopierter Passwörter |
 | 🛡️ **Screenshot-Schutz** | Android `FLAG_SECURE` und Privacy-Shield in der App-Übersicht auf allen Plattformen |
@@ -179,6 +180,7 @@ lib/
 
 - [x] Verschlüsselter Tresor (AES-256-GCM, Argon2id)
 - [x] Biometrie, Auto-Lock, Clipboard-Clear, Screenshot-Schutz
+- [x] Deutsch und Englisch (`lib/core/l10n`, Test prüft Vollständigkeit)
 - [x] Generator, Analyse, Duplikate, TOTP
 - [x] Backup, CSV-Import und -Export
 - [x] Sync-Architektur (Provider-Interface)
