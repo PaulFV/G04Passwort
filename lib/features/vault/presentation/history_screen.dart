@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../widgets/common.dart';
 import '../../../widgets/g04_scaffold.dart';
@@ -16,14 +17,14 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(recentItemsProvider);
-    final fmt = DateFormat.yMMMd('de_DE').add_Hm();
+    final fmt = DateFormat.yMMMd(L10n.intlLocale).add_Hm();
     return G04Scaffold(
-      title: 'Passwort-Verlauf',
+      title: tr('Passwort-Verlauf'),
       wide: true,
       body: items.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.history_rounded,
-              title: 'Noch keine Änderungen',
+              title: tr('Noch keine Änderungen'),
             )
           : ResponsiveListView.builder(
                     gridItemExtent: 78,
@@ -43,7 +44,7 @@ class HistoryScreen extends ConsumerWidget {
                       ),
                       if (changes > 0)
                         Text(
-                          '$changes frühere',
+                          tr('{changes} frühere', {'changes': changes}),
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                     ],

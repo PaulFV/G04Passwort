@@ -1,9 +1,14 @@
+import '../l10n/l10n.dart';
+
 /// Domain exceptions of the vault. UI layers map them to user messages.
 sealed class VaultException implements Exception {
-  const VaultException(this.message);
+  const VaultException(this.messageDe);
 
-  /// Human readable (German) message, safe to show in the UI.
-  final String message;
+  /// German source text of the message (translation key).
+  final String messageDe;
+
+  /// Human readable message in the active language, safe to show in the UI.
+  String get message => tr(messageDe);
 
   @override
   String toString() => '$runtimeType: $message';
@@ -36,12 +41,24 @@ final class DataIntegrityException extends VaultException {
 
 /// Import / backup file could not be parsed.
 final class InvalidBackupException extends VaultException {
-  const InvalidBackupException([String? details])
-    : super(details ?? 'Die Datei ist kein gültiges Backup.');
+  /// [details] is an already translated message.
+  const InvalidBackupException([this.details])
+    : super('Die Datei ist kein gültiges Backup.');
+
+  final String? details;
+
+  @override
+  String get message => details ?? super.message;
 }
 
 /// A feature that is architecturally prepared but not yet available.
 final class FeatureNotAvailableException extends VaultException {
-  const FeatureNotAvailableException(String feature)
-    : super('$feature ist in Vorbereitung und bald verfügbar.');
+  const FeatureNotAvailableException(this.feature)
+    : super('{feature} ist in Vorbereitung und bald verfügbar.');
+
+  /// Name of the feature (already translated).
+  final String feature;
+
+  @override
+  String get message => tr(messageDe, {'feature': feature});
 }

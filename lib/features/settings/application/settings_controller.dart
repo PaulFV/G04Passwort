@@ -18,6 +18,10 @@ class SettingsController extends Notifier<AppSettings> {
   Future<void> completeOnboarding() =>
       _update(state.copyWith(onboardingDone: true));
 
+  /// 'system', 'de' or 'en'.
+  Future<void> setLanguage(String code) =>
+      _update(state.copyWith(languageCode: code));
+
   Future<void> setDarkMode(bool dark) =>
       _update(state.copyWith(darkMode: dark));
 

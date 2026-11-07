@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../core/l10n/l10n.dart';
 import 'passkey/passkey_bridge.dart';
 
 /// Kind of biometric hardware, used to pick the right icon/label.
@@ -74,10 +75,10 @@ class BiometricService {
 
   final LocalAuthentication _auth;
 
-  static const unsupportedWebMessage =
-      'Dieser Browser unterstützt Face ID für Web-Apps noch nicht. '
+  static String get unsupportedWebMessage =>
+      tr('Dieser Browser unterstützt Face ID für Web-Apps noch nicht. '
       'Benötigt wird iOS/iPadOS 18 oder neuer bzw. ein aktuelles Chrome, '
-      'Edge oder Safari mit Passkey-Unterstützung.';
+      'Edge oder Safari mit Passkey-Unterstützung.');
 
   /// Whether the device can authenticate the user biometrically.
   Future<bool> isAvailable() async {
@@ -121,7 +122,7 @@ class BiometricService {
   /// On the web this must be called synchronously from a tap handler and
   /// [credentialId] should be the passkey created by [enroll].
   Future<BiometricResult> authenticate({
-    String reason = 'Entsperre deinen G04Passwort-Tresor',
+    String? reason,
     String? credentialId,
   }) async {
     if (kIsWeb) {
@@ -137,7 +138,7 @@ class BiometricService {
     }
     try {
       final ok = await _auth.authenticate(
-        localizedReason: reason,
+        localizedReason: reason ?? tr('Entsperre deinen G04Passwort-Tresor'),
         biometricOnly: false,
         persistAcrossBackgrounding: true,
       );
@@ -146,13 +147,13 @@ class BiometricService {
           : const BiometricResult.cancelled();
     } on LocalAuthException catch (e) {
       debugPrint('Biometric authentication failed: ${e.code}');
-      return const BiometricResult.failure(
-        'Biometrische Bestätigung fehlgeschlagen',
+      return BiometricResult.failure(
+        tr('Biometrische Bestätigung fehlgeschlagen'),
       );
     } on Object catch (e) {
       debugPrint('Biometric authentication error: $e');
-      return const BiometricResult.failure(
-        'Biometrische Bestätigung fehlgeschlagen',
+      return BiometricResult.failure(
+        tr('Biometrische Bestätigung fehlgeschlagen'),
       );
     }
   }
@@ -160,10 +161,12 @@ class BiometricService {
   /// Sets up biometric unlock. On the web this registers a passkey and must
   /// be called synchronously from a tap handler.
   Future<BiometricEnrollment> enroll({
-    String reason = 'Biometrisches Entsperren für G04Passwort aktivieren',
+    String? reason,
   }) async {
     if (!kIsWeb) {
-      final r = await authenticate(reason: reason);
+      final r = await authenticate(
+        reason: reason ?? tr('Biometrisches Entsperren für G04Passwort aktivieren'),
+      );
       return BiometricEnrollment(ok: r.ok, error: r.error);
     }
     final r = await PasskeyBridge.create();
@@ -181,7 +184,7 @@ class BiometricService {
       );
     }
     if (r['prfEnabled'] == false) {
-      return const BiometricEnrollment(ok: false, error: unsupportedWebMessage);
+      return BiometricEnrollment(ok: false, error: unsupportedWebMessage);
     }
     // Passkey exists, secret follows with the next Face ID check.
     return BiometricEnrollment(
@@ -195,17 +198,17 @@ class BiometricService {
     debugPrint('Passkey: ${r['error']} ${r['message'] ?? ''}');
     return switch (r['error']) {
       'cancelled' => const BiometricResult.cancelled(),
-      'unsupported' || 'noprf' => const BiometricResult.failure(
+      'unsupported' || 'noprf' => BiometricResult.failure(
         unsupportedWebMessage,
       ),
-      'insecure' => const BiometricResult.failure(
-        'Face ID funktioniert nur über eine sichere Verbindung (https).',
+      'insecure' => BiometricResult.failure(
+        tr('Face ID funktioniert nur über eine sichere Verbindung (https).'),
       ),
-      'exists' => const BiometricResult.failure(
-        'Für diese Web-App ist bereits ein Passkey vorhanden.',
+      'exists' => BiometricResult.failure(
+        tr('Für diese Web-App ist bereits ein Passkey vorhanden.'),
       ),
-      _ => const BiometricResult.failure(
-        'Face ID konnte nicht verwendet werden. Bitte erneut versuchen.',
+      _ => BiometricResult.failure(
+        tr('Face ID konnte nicht verwendet werden. Bitte erneut versuchen.'),
       ),
     };
   }

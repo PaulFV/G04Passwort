@@ -5,17 +5,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../features/auth/application/auth_controller.dart';
 import '../routes.dart';
 
 /// Destinations of the bottom navigation (as on the design board).
-const _destinations = [
-  (icon: Icons.home_rounded, label: 'Start'),
-  (icon: Icons.grid_view_rounded, label: 'Kategorien'),
-  (icon: Icons.password_rounded, label: 'Generator'),
-  (icon: Icons.menu_rounded, label: 'Mehr'),
+List<({IconData icon, String label})> get _destinations => [
+  (icon: Icons.home_rounded, label: tr('Start')),
+  (icon: Icons.grid_view_rounded, label: tr('Kategorien')),
+  (icon: Icons.password_rounded, label: tr('Generator')),
+  (icon: Icons.menu_rounded, label: tr('Mehr')),
 ];
 
 /// Responsive shell:
@@ -267,13 +268,13 @@ class _GlassRail extends StatelessWidget {
                     style: FilledButton.styleFrom(minimumSize: const Size(0, 46)),
                     onPressed: onNew,
                     icon: const Icon(Icons.add_rounded),
-                    label: const Text('Neuer Eintrag'),
+                    label: Text(tr('Neuer Eintrag')),
                   ),
                 )
               else
                 FloatingActionButton.small(
                   heroTag: 'rail-new',
-                  tooltip: 'Neuer Eintrag (Strg+N)',
+                  tooltip: tr('Neuer Eintrag (Strg+N)'),
                   onPressed: onNew,
                   child: const Icon(Icons.add_rounded),
                 ),
@@ -289,12 +290,12 @@ class _GlassRail extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: 'Suche (Strg+K)',
+                    tooltip: tr('Suche (Strg+K)'),
                     icon: const Icon(Icons.search_rounded),
                     onPressed: onSearch,
                   ),
                   IconButton(
-                    tooltip: 'Tresor sperren (Strg+L)',
+                    tooltip: tr('Tresor sperren (Strg+L)'),
                     icon: const Icon(Icons.lock_outline_rounded),
                     onPressed: onLock,
                   ),

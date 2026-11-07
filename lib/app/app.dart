@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../core/constants/app_constants.dart';
+import '../core/l10n/l10n.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/application/auto_lock_controller.dart';
@@ -23,15 +25,22 @@ class G04PasswortApp extends ConsumerWidget {
     final dark = ref.watch(
       settingsControllerProvider.select((s) => s.darkMode),
     );
+    final language = L10n.resolve(
+      ref.watch(settingsControllerProvider.select((s) => s.languageCode)),
+    );
+    L10n.use(language);
+    Intl.defaultLocale = L10n.intlLocale;
 
     return MaterialApp.router(
+      // A new key rebuilds every screen when the language changes.
+      key: ValueKey(language),
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       theme: AppTheme.light(accent),
       darkTheme: AppTheme.dark(accent),
       themeMode: dark ? ThemeMode.dark : ThemeMode.light,
-      locale: const Locale('de'),
+      locale: Locale(language),
       supportedLocales: const [Locale('de'), Locale('en')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       builder: (context, child) =>

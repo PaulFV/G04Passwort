@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/theme/app_colors.dart';
@@ -29,17 +30,17 @@ class DocumentsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final docs = ref.watch(itemsByTypeProvider(VaultItemType.document));
     return G04Scaffold(
-      title: 'Dokumente',
+      title: tr('Dokumente'),
       wide: true,
       body: Column(
         children: [
           Expanded(
             child: docs.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.description_rounded,
-                    title: 'Keine Dokumente',
+                    title: tr('Keine Dokumente'),
                     message:
-                        'Reisepass, Führerschein, Verträge – Daten und PDFs verschlüsselt ablegen.',
+                        tr('Reisepass, Führerschein, Verträge – Daten und PDFs verschlüsselt ablegen.'),
                   )
                 : ListView(
                     children: [
@@ -56,12 +57,12 @@ class DocumentsScreen extends ConsumerWidget {
                           subtitle: [
                             if (d.document!.attachments.isNotEmpty)
                               d.document!.attachments.first.extension.isEmpty
-                                  ? 'Datei'
+                                  ? tr('Datei')
                                   : d.document!.attachments.first.extension,
                             if (d.document!.totalSize > 0)
                               formatBytes(d.document!.totalSize),
                             if (d.document!.attachments.isEmpty)
-                              d.document!.documentType,
+                              tr(d.document!.documentType),
                           ].join(' · '),
                           onTap: () => context.push(Routes.item(d.id)),
                         ),
@@ -73,7 +74,7 @@ class DocumentsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: NeonButton(
-              label: 'Neues Dokument',
+              label: tr('Neues Dokument'),
               icon: Icons.add_rounded,
               onPressed: () => context.push('${Routes.newItem}?type=document'),
             ),

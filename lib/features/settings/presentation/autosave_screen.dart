@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../widgets/common.dart';
@@ -23,21 +24,21 @@ class AutoSaveScreen extends ConsumerWidget {
       settingsControllerProvider.select((s) => s.autoSaveEnabled),
     );
     return G04Scaffold(
-      title: 'Auto-Save',
+      title: tr('Auto-Save'),
       body: ListView(
         children: [
           const SizedBox(height: 12),
           Center(child: Image.asset(kLock3dAsset, height: 180)),
           const SizedBox(height: 16),
           Text(
-            'Logins automatisch speichern',
+            tr('Logins automatisch speichern'),
             textAlign: TextAlign.center,
             style: context.text.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'Bei der Anmeldung auf Websites und in Apps werden neue Zugangsdaten '
-            'erkannt und sicher in deinem Tresor gespeichert.',
+            tr('Bei der Anmeldung auf Websites und in Apps werden neue Zugangsdaten '
+      'erkannt und sicher in deinem Tresor gespeichert.'),
             textAlign: TextAlign.center,
             style: context.text.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
@@ -46,7 +47,7 @@ class AutoSaveScreen extends ConsumerWidget {
           const SizedBox(height: 22),
           GlassTile(
             icon: Icons.save_as_rounded,
-            title: 'Auto-Save aktiv',
+            title: tr('Auto-Save aktiv'),
             trailing: Switch(
               value: enabled,
               onChanged: ref
@@ -62,8 +63,8 @@ class AutoSaveScreen extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'System-Autofill (Android Autofill-Dienst, iOS Passwort-Autofill) ist in Vorbereitung. '
-                    'Bis dahin kannst du Zugangsdaten per Kopieren übernehmen – die Zwischenablage wird automatisch geleert.',
+                    tr('System-Autofill (Android Autofill-Dienst, iOS Passwort-Autofill) ist in Vorbereitung. '
+      'Bis dahin kannst du Zugangsdaten per Kopieren übernehmen – die Zwischenablage wird automatisch geleert.'),
                     style: context.text.bodySmall,
                   ),
                 ),

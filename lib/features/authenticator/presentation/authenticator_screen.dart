@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
@@ -23,17 +24,17 @@ class AuthenticatorScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(totpItemsProvider);
     return G04Scaffold(
-      title: '2FA Authenticator',
+      title: tr('2FA Authenticator'),
       wide: true,
       body: Column(
         children: [
           Expanded(
             child: items.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.qr_code_2_rounded,
-                    title: 'Keine 2FA-Codes',
+                    title: tr('Keine 2FA-Codes'),
                     message:
-                        'Füge bei einem Login den TOTP-Schlüssel (Base32 oder otpauth://-Link) hinzu.',
+                        tr('Füge bei einem Login den TOTP-Schlüssel (Base32 oder otpauth://-Link) hinzu.'),
                   )
                 : ResponsiveListView.builder(
                     gridItemExtent: 124,
@@ -47,7 +48,7 @@ class AuthenticatorScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: NeonButton(
-              label: 'Neu hinzufügen',
+              label: tr('Neu hinzufügen'),
               icon: Icons.add_rounded,
               onPressed: () => context.push(Routes.newItem),
             ),
@@ -74,7 +75,7 @@ class _TotpCard extends ConsumerWidget {
           : () async {
               final ok = await ref.read(vaultActionsProvider).copy(code.code);
               if (!context.mounted) return;
-              ok ? context.showSnack('Code kopiert') : context.showError(kCopyFailed);
+              ok ? context.showSnack(tr('Code kopiert')) : context.showError(kCopyFailed);
             },
       child: Row(
         children: [

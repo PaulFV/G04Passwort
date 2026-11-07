@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../widgets/common.dart';
@@ -37,7 +38,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final tags = ref.watch(allTagsProvider);
 
     return G04Scaffold(
-      title: 'Suche',
+      title: tr('Suche'),
       wide: true,
       body: Column(
         children: [
@@ -73,8 +74,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               alignment: Alignment.centerLeft,
               child: Text(
                 query.isEmpty
-                    ? '${results.length} Einträge'
-                    : '${results.length} Treffer',
+                    ? tr('{length} Einträge', {'length': results.length})
+                    : tr('{length} Treffer', {'length': results.length}),
                 style: context.text.labelMedium?.copyWith(
                   color: context.colors.onSurfaceVariant,
                 ),
@@ -83,9 +84,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
           Expanded(
             child: results.isEmpty
-                ? const EmptyState(
+                ? EmptyState(
                     icon: Icons.search_off_rounded,
-                    title: 'Keine Treffer',
+                    title: tr('Keine Treffer'),
                   )
                 : ResponsiveListView.builder(
                     gridItemExtent: 78,

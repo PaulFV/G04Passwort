@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
+import '../core/l10n/l10n.dart';
 import '../core/constants/app_constants.dart';
 import '../core/errors/vault_exceptions.dart';
 import '../database/app_database.dart';
@@ -198,7 +199,7 @@ class VaultRepositoryImpl implements VaultRepository {
       }
     }
     return item.copyWith(
-      title: item.title.trim().isEmpty ? 'Ohne Titel' : item.title.trim(),
+      title: item.title.trim().isEmpty ? tr('Ohne Titel') : item.title.trim(),
       login: login,
       updatedAt: now,
     );
@@ -276,7 +277,7 @@ class VaultRepositoryImpl implements VaultRepository {
     String? mimeType,
   }) async {
     if (bytes.length > AppConstants.maxAttachmentBytes) {
-      throw const InvalidBackupException('Die Datei ist größer als 10 MB.');
+      throw InvalidBackupException(tr('Die Datei ist größer als 10 MB.'));
     }
     final ref = AttachmentRef(
       id: _uuid.v4(),

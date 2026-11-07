@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -23,21 +24,21 @@ class LegalScreen extends StatelessWidget {
       length: 2,
       initialIndex: initialTab.index,
       child: G04Scaffold(
-        title: 'Rechtliches',
+        title: tr('Rechtliches'),
         body: Column(
           children: [
-            const TabBar(
+            TabBar(
               tabs: [
-                Tab(text: 'Datenschutz'),
-                Tab(text: 'Copyright'),
+                Tab(text: tr('Datenschutz')),
+                Tab(text: tr('Copyright')),
               ],
             ),
             const SizedBox(height: 12),
             Expanded(
               child: TabBarView(
                 children: [
-                  const _LegalList(
-                    headline: 'Datenschutzerklärung',
+                  _LegalList(
+                    headline: tr('Datenschutzerklärung'),
                     intro: PrivacyText.intro,
                     sections: PrivacyText.sections,
                     footer: PrivacyText.updated,
@@ -133,8 +134,8 @@ class _CopyrightView extends StatelessWidget {
         const SizedBox(height: 12),
         GlassTile(
           icon: Icons.description_outlined,
-          title: 'Open-Source-Lizenzen',
-          subtitle: 'Flutter, Pakete und Schriftart Roboto',
+          title: tr('Open-Source-Lizenzen'),
+          subtitle: tr('Flutter, Pakete und Schriftart Roboto'),
           onTap: () => showLicensePage(
             context: context,
             applicationName: AppConstants.appName,

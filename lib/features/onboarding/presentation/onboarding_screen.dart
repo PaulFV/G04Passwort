@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../widgets/feature_icon.dart';
@@ -75,7 +76,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     opacity: _page == 0 ? 0 : 1,
                     child: TextButton(
                       onPressed: _finish,
-                      child: const Text('Überspringen'),
+                      child: Text(tr('Überspringen')),
                     ),
                   ),
                 ),
@@ -87,12 +88,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       const _Welcome(),
                       _Slide(
                         image: Image.asset(kLock3dAsset, height: 220),
-                        title: 'Maximale Sicherheit',
+                        title: tr('Maximale Sicherheit'),
                         text:
-                            'Alle Daten werden lokal mit AES-256-GCM verschlüsselt. '
-                            'Dein Master-Passwort wird mit Argon2id geschützt und verlässt nie dein Gerät.',
+                            tr('Alle Daten werden lokal mit AES-256-GCM verschlüsselt. '
+      'Dein Master-Passwort wird mit Argon2id geschützt und verlässt nie dein Gerät.'),
                       ),
-                      const _Slide(
+                      _Slide(
                         image: _IconRow(
                           icons: [
                             FeatureIcon.biometric,
@@ -100,17 +101,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             FeatureIcon.totp,
                           ],
                         ),
-                        title: 'Schnell & komfortabel',
+                        title: tr('Schnell & komfortabel'),
                         text:
-                            'Entsperre mit Fingerabdruck oder Face ID. Auto-Lock, Zwischenablage-Löschung '
-                            'und Screenshot-Schutz arbeiten automatisch für dich.',
+                            tr('Entsperre mit Fingerabdruck oder Face ID. Auto-Lock, Zwischenablage-Löschung '
+      'und Screenshot-Schutz arbeiten automatisch für dich.'),
                       ),
-                      const _Slide(
+                      _Slide(
                         image: _IconGrid(),
-                        title: 'Alles an einem Ort',
+                        title: tr('Alles an einem Ort'),
                         text:
-                            'Passwörter, 2FA-Codes, Kreditkarten, Dokumente und sichere Notizen – '
-                            'auch Zugänge zu Geräten, HMIs, Routern und Portalen.',
+                            tr('Passwörter, 2FA-Codes, Kreditkarten, Dokumente und sichere Notizen – '
+      'auch Zugänge zu Geräten, HMIs, Routern und Portalen.'),
                       ),
                     ],
                   ),
@@ -120,8 +121,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
                   child: NeonButton(
                     label: _page == _slides - 1
-                        ? 'Jetzt starten'
-                        : 'Los geht\'s',
+                        ? tr('Jetzt starten')
+                        : tr('Los geht\'s'),
                     loading: _finishing,
                     onPressed: _next,
                   ),
@@ -131,7 +132,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: _page == 0
                       ? TextButton(
                           onPressed: _finish,
-                          child: const Text('Anmelden'),
+                          child: Text(tr('Anmelden')),
                         )
                       : null,
                 ),

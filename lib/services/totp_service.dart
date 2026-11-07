@@ -1,6 +1,7 @@
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
 
+
 /// Hash algorithm of a TOTP secret.
 enum TotpAlgorithm { sha1, sha256, sha512 }
 
@@ -136,7 +137,7 @@ class TotpService {
 
   /// RFC 4648 Base32 decoding (case-insensitive, ignores spaces/padding).
   static Uint8List? base32Decode(String input) {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    final alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     final clean = input.toUpperCase().replaceAll(RegExp(r'[\s=-]'), '');
     final out = <int>[];
     var buffer = 0;

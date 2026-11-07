@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/errors/vault_exceptions.dart';
 import '../../../core/extensions/context_x.dart';
@@ -70,7 +71,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
     );
 
     return G04Scaffold(
-      title: 'Cloud-Synchronisation',
+      title: tr('Cloud-Synchronisation'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -80,13 +81,13 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 const FeatureIconImage(FeatureIcon.cloud, size: 84),
                 const SizedBox(height: 10),
                 Text(
-                  'Automatisch synchronisieren',
+                  tr('Automatisch synchronisieren'),
                   style: context.text.titleMedium,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Ihre Daten sicher in der Cloud – Ende-zu-Ende verschlüsselt. '
-                  'Der Anbieter sieht nur verschlüsselte Daten.',
+                  tr('Ihre Daten sicher in der Cloud – Ende-zu-Ende verschlüsselt. '
+      'Der Anbieter sieht nur verschlüsselte Daten.'),
                   textAlign: TextAlign.center,
                   style: context.text.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
@@ -95,12 +96,12 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               ],
             ),
           ),
-          const SectionHeader('Anbieter'),
+          SectionHeader(tr('Anbieter')),
           for (final p in providers)
             GlassTile(
               icon: p.icon,
               title: p.name,
-              subtitle: p.isAvailable ? null : 'In Vorbereitung',
+              subtitle: p.isAvailable ? null : tr('In Vorbereitung'),
               trailing: Switch(
                 value: enabled[p.id] ?? false,
                 onChanged: (v) => _toggle(p, v),
@@ -108,7 +109,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             ),
           const SizedBox(height: 16),
           NeonButton(
-            label: 'Jetzt synchronisieren',
+            label: tr('Jetzt synchronisieren'),
             icon: Icons.sync_rounded,
             loading: _status == SyncStatus.syncing,
             onPressed: _syncNow,
@@ -117,9 +118,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
           Center(
             child: Text(
               switch (_status) {
-                SyncStatus.success => 'Synchronisation erfolgreich',
-                SyncStatus.error => 'Synchronisation fehlgeschlagen',
-                SyncStatus.unavailable => 'Kein aktiver Anbieter verfügbar',
+                SyncStatus.success => tr('Synchronisation erfolgreich'),
+                SyncStatus.error => tr('Synchronisation fehlgeschlagen'),
+                SyncStatus.unavailable => tr('Kein aktiver Anbieter verfügbar'),
                 _ => '',
               },
               style: context.text.bodySmall?.copyWith(

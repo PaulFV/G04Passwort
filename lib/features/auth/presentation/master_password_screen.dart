@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/extensions/context_x.dart';
@@ -54,10 +55,10 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
   String? _validatePassword(String? v) {
     final value = v ?? '';
     if (value.length < AppConstants.minMasterPasswordLength) {
-      return 'Mindestens ${AppConstants.minMasterPasswordLength} Zeichen';
+      return tr('Mindestens {minMasterPasswordLength} Zeichen', {'minMasterPasswordLength': AppConstants.minMasterPasswordLength});
     }
     if (ref.read(passwordStrengthProvider(value)).score < 2) {
-      return 'Bitte wähle ein stärkeres Passwort';
+      return tr('Bitte wähle ein stärkeres Passwort');
     }
     return null;
   }
@@ -65,7 +66,7 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
     if (!widget.changeMode && !_understood) {
-      context.showError('Bitte bestätige den Hinweis zur Wiederherstellung.');
+      context.showError(tr('Bitte bestätige den Hinweis zur Wiederherstellung.'));
       return;
     }
     final controller = ref.read(authControllerProvider.notifier);
@@ -82,7 +83,7 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
       }
       await showSuccessDialog(
         context,
-        message: 'Dein Master-Passwort wurde geändert.',
+        message: tr('Dein Master-Passwort wurde geändert.'),
       );
       if (mounted) context.pop();
     } else {
@@ -96,7 +97,7 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
     final strength = ref.watch(passwordStrengthProvider(_password.text));
 
     return G04Scaffold(
-      title: widget.changeMode ? 'Master-Passwort ändern' : null,
+      title: widget.changeMode ? tr('Master-Passwort ändern') : null,
       showAppBar: widget.changeMode,
       backgroundAsset: widget.changeMode ? null : 'assets/images/bg_login.jpg',
       body: Center(
@@ -113,13 +114,13 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                     const Center(child: G04Logo(size: 96)),
                     const SizedBox(height: 18),
                     Text(
-                      'Master-Passwort erstellen',
+                      tr('Master-Passwort erstellen'),
                       textAlign: TextAlign.center,
                       style: context.text.headlineSmall,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Das einzige Passwort, das du dir merken musst. Es verschlüsselt deinen gesamten Tresor.',
+                      tr('Das einzige Passwort, das du dir merken musst. Es verschlüsselt deinen gesamten Tresor.'),
                       textAlign: TextAlign.center,
                       style: context.text.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
@@ -135,19 +136,19 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                         if (widget.changeMode) ...[
                           AppTextField(
                             controller: _current,
-                            label: 'Aktuelles Master-Passwort',
+                            label: tr('Aktuelles Master-Passwort'),
                             icon: Icons.lock_clock_outlined,
                             isSecret: true,
                             validator: (v) =>
-                                (v ?? '').isEmpty ? 'Bitte eingeben' : null,
+                                (v ?? '').isEmpty ? tr('Bitte eingeben') : null,
                           ),
                           const SizedBox(height: 14),
                         ],
                         AppTextField(
                           controller: _password,
                           label: widget.changeMode
-                              ? 'Neues Master-Passwort'
-                              : 'Master-Passwort',
+                              ? tr('Neues Master-Passwort')
+                              : tr('Master-Passwort'),
                           icon: Icons.lock_outline_rounded,
                           isSecret: true,
                           validator: _validatePassword,
@@ -169,22 +170,22 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                         const SizedBox(height: 14),
                         AppTextField(
                           controller: _confirm,
-                          label: 'Passwort bestätigen',
+                          label: tr('Passwort bestätigen'),
                           icon: Icons.verified_user_outlined,
                           isSecret: true,
                           validator: (v) => v != _password.text
-                              ? 'Passwörter stimmen nicht überein'
+                              ? tr('Passwörter stimmen nicht überein')
                               : null,
                         ),
                         const SizedBox(height: 14),
                         AppTextField(
                           controller: _hint,
-                          label: 'Hinweis (optional, unverschlüsselt)',
+                          label: tr('Hinweis (optional, unverschlüsselt)'),
                           icon: Icons.lightbulb_outline_rounded,
                           validator: (v) =>
                               (v ?? '').isNotEmpty &&
                                   _password.text.contains(v!)
-                              ? 'Der Hinweis darf das Passwort nicht enthalten'
+                              ? tr('Der Hinweis darf das Passwort nicht enthalten')
                               : null,
                         ),
                       ],
@@ -199,7 +200,7 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                       controlAffinity: ListTileControlAffinity.leading,
                       contentPadding: EdgeInsets.zero,
                       title: Text(
-                        'Ich verstehe, dass mein Master-Passwort nicht wiederhergestellt werden kann.',
+                        tr('Ich verstehe, dass mein Master-Passwort nicht wiederhergestellt werden kann.'),
                         style: context.text.bodySmall,
                       ),
                     ),
@@ -207,8 +208,8 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                   const SizedBox(height: 18),
                   NeonButton(
                     label: widget.changeMode
-                        ? 'Passwort ändern'
-                        : 'Tresor erstellen',
+                        ? tr('Passwort ändern')
+                        : tr('Tresor erstellen'),
                     icon: Icons.shield_rounded,
                     loading: auth.busy,
                     onPressed: _submit,
@@ -217,14 +218,14 @@ class _MasterPasswordScreenState extends ConsumerState<MasterPasswordScreen> {
                     Center(
                       child: TextButton(
                         onPressed: () => context.push(Routes.privacy),
-                        child: const Text('Datenschutz · Copyright'),
+                        child: Text(tr('Datenschutz · Copyright')),
                       ),
                     ),
                   if (auth.busy)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
-                        'Schlüssel wird sicher abgeleitet …',
+                        tr('Schlüssel wird sicher abgeleitet …'),
                         textAlign: TextAlign.center,
                         style: context.text.bodySmall?.copyWith(
                           color: AppColors.textMuted,

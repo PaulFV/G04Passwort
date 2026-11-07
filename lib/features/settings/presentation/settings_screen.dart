@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../app/routes.dart';
 import '../../../core/constants/app_constants.dart';
@@ -69,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
     final syncActive = s.syncProviders.values.any((v) => v);
 
     return G04Scaffold(
-      title: 'Einstellungen',
+      title: tr('Einstellungen'),
       wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
@@ -86,7 +87,7 @@ class SettingsScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        s.displayName.isEmpty ? 'Mein Profil' : s.displayName,
+                        s.displayName.isEmpty ? tr('Mein Profil') : s.displayName,
                         style: context.text.titleMedium,
                       ),
                       if (s.email.isNotEmpty)
@@ -97,14 +98,14 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ),
                       const SizedBox(height: 4),
-                      const StatusBadge(
-                        'Premium',
+                      StatusBadge(
+                        tr('Premium'),
                         color: AppColors.neonBlueLight,
                       ),
                     ],
                   ),
                 ),
-                const StatusBadge('Aktiv'),
+                StatusBadge(tr('Aktiv')),
               ],
             ),
           ),
@@ -113,35 +114,35 @@ class SettingsScreen extends ConsumerWidget {
             children: [
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.security, size: 38),
-            title: 'Sicherheit',
-            subtitle: 'Master-Passwort ändern',
+            title: tr('Sicherheit'),
+            subtitle: tr('Master-Passwort ändern'),
             onTap: () => context.push(Routes.changeMasterPassword),
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.cloud, size: 38),
-            title: 'Cloud-Synchronisation',
-            value: syncActive ? 'Aktiv' : 'Aus',
+            title: tr('Cloud-Synchronisation'),
+            value: syncActive ? tr('Aktiv') : tr('Aus'),
             onTap: () => context.push(Routes.sync),
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.settings, size: 38),
-            title: 'Design',
-            value: s.darkMode ? 'Dunkel' : 'Hell',
+            title: tr('Design'),
+            value: s.darkMode ? tr('Dunkel') : tr('Hell'),
             onTap: () => context.push(Routes.design),
           ),
-          const GlassTile(
+          GlassTile(
             icon: Icons.language_rounded,
-            title: 'Sprache',
-            value: 'Deutsch',
-            subtitle: 'Weitere Sprachen in Vorbereitung',
+            title: tr('Sprache'),
+            value: _languageLabel(s.languageCode),
+            onTap: () => _pickLanguage(context, ref, s.languageCode),
           ),
           GlassTile(
             icon: Icons.timer_outlined,
-            title: 'Auto-Lock',
+            title: tr('Auto-Lock'),
             value: AppSettings.durationLabel(s.autoLockSeconds),
             onTap: () => _pickDuration(
               context,
-              title: 'Automatisch sperren nach',
+              title: tr('Automatisch sperren nach'),
               options: AppSettings.autoLockOptions,
               current: s.autoLockSeconds,
               onSelected: settings.setAutoLock,
@@ -149,7 +150,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           GlassTile(
             icon: Icons.phonelink_lock_rounded,
-            title: 'Beim Verlassen der App sperren',
+            title: tr('Beim Verlassen der App sperren'),
             trailing: Switch(
               value: s.lockOnBackground,
               onChanged: settings.setLockOnBackground,
@@ -157,14 +158,14 @@ class SettingsScreen extends ConsumerWidget {
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.biometric, size: 38),
-            title: kIsWeb ? 'App-Sperre (Face ID / Passkey)' : 'App-Sperre (Biometrie)',
+            title: kIsWeb ? tr('App-Sperre (Face ID / Passkey)') : tr('App-Sperre (Biometrie)'),
             subtitle: auth.biometricHardware
                 ? (kIsWeb
-                      ? 'Mit Face ID / Fingerabdruck entsperren'
-                      : 'Fingerabdruck / Face ID')
+                      ? tr('Mit Face ID / Fingerabdruck entsperren')
+                      : tr('Fingerabdruck / Face ID'))
                 : (kIsWeb
-                      ? 'Dieser Browser unterstützt keine Passkeys'
-                      : 'Keine Biometrie auf diesem Gerät'),
+                      ? tr('Dieser Browser unterstützt keine Passkeys')
+                      : tr('Keine Biometrie auf diesem Gerät')),
             trailing: Switch(
               value: s.biometricEnabled,
               onChanged: !auth.biometricHardware
@@ -174,8 +175,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           GlassTile(
             icon: Icons.screenshot_monitor_rounded,
-            title: 'Screenshots blockieren',
-            subtitle: 'Verbirgt Inhalte in Screenshots und App-Übersicht',
+            title: tr('Screenshots blockieren'),
+            subtitle: tr('Verbirgt Inhalte in Screenshots und App-Übersicht'),
             trailing: Switch(
               value: s.screenshotProtection,
               onChanged: settings.setScreenshotProtection,
@@ -183,11 +184,11 @@ class SettingsScreen extends ConsumerWidget {
           ),
           GlassTile(
             icon: Icons.content_paste_off_rounded,
-            title: 'Zwischenablage leeren',
+            title: tr('Zwischenablage leeren'),
             value: AppSettings.durationLabel(s.clipboardClearSeconds),
             onTap: () => _pickDuration(
               context,
-              title: 'Kopierte Passwörter löschen nach',
+              title: tr('Kopierte Passwörter löschen nach'),
               options: AppSettings.clipboardOptions,
               current: s.clipboardClearSeconds,
               onSelected: settings.setClipboardClear,
@@ -195,49 +196,49 @@ class SettingsScreen extends ConsumerWidget {
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.passwords, size: 38),
-            title: 'Auto-Save',
-            value: s.autoSaveEnabled ? 'Aktiv' : 'Aus',
+            title: tr('Auto-Save'),
+            value: s.autoSaveEnabled ? tr('Aktiv') : tr('Aus'),
             onTap: () => context.push(Routes.autoSave),
           ),
           GlassTile(
             leading: const FeatureIconImage(FeatureIcon.importExport, size: 38),
-            title: 'Backup, Import & Export',
+            title: tr('Backup, Import & Export'),
             onTap: () => context.push(Routes.backup),
           ),
           GlassTile(
             icon: Icons.info_outline_rounded,
-            title: 'Über G04Passwort',
+            title: tr('Über G04Passwort'),
             onTap: () => context.push(Routes.about),
           ),
           GlassTile(
             icon: Icons.copyright_rounded,
-            title: 'Copyright',
+            title: tr('Copyright'),
             subtitle: AppConstants.rightsReserved,
             onTap: () => context.push(Routes.copyright),
           ),
           GlassTile(
             icon: Icons.privacy_tip_outlined,
-            title: 'Datenschutz',
-            subtitle: 'Kein Konto, kein Tracking – deine Daten bleiben verschlüsselt auf dem Gerät.',
+            title: tr('Datenschutz'),
+            subtitle: tr('Kein Konto, kein Tracking – deine Daten bleiben verschlüsselt auf dem Gerät.'),
             onTap: () => context.push(Routes.privacy),
           ),
           GlassTile(
             icon: Icons.lock_rounded,
-            title: 'Tresor jetzt sperren',
+            title: tr('Tresor jetzt sperren'),
             onTap: () => ref.read(authControllerProvider.notifier).lock(manual: true),
           ),
           GlassTile(
             icon: Icons.delete_forever_rounded,
             iconColor: AppColors.danger,
-            title: 'Tresor zurücksetzen',
-            subtitle: 'Löscht alle Daten auf diesem Gerät',
+            title: tr('Tresor zurücksetzen'),
+            subtitle: tr('Löscht alle Daten auf diesem Gerät'),
             onTap: () async {
               final ok = await context.confirm(
-                title: 'Tresor zurücksetzen?',
+                title: tr('Tresor zurücksetzen?'),
                 message:
-                    'Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht. '
-                    'Erstelle vorher ein Backup!',
-                confirmLabel: 'Alles löschen',
+                    tr('Alle Einträge, Dokumente und Schlüssel werden unwiderruflich gelöscht. '
+      'Erstelle vorher ein Backup!'),
+                confirmLabel: tr('Alles löschen'),
                 destructive: true,
               );
               if (ok)
@@ -273,10 +274,10 @@ Future<void> _toggleBiometric(
               size: 40,
               color: AppColors.neonBlueLight,
             ),
-            title: const Text('Fast fertig'),
-            content: const Text(
-              'Der Passkey wurde angelegt. Bestätige jetzt einmal mit '
-              'Face ID / Fingerabdruck, um das Entsperren zu aktivieren.',
+            title: Text(tr('Fast fertig')),
+            content: Text(
+              tr('Der Passkey wurde angelegt. Bestätige jetzt einmal mit '
+      'Face ID / Fingerabdruck, um das Entsperren zu aktivieren.'),
             ),
             actions: [
               TextButton(
@@ -284,7 +285,7 @@ Future<void> _toggleBiometric(
                   auth.cancelBiometricSetup();
                   Navigator.pop(dialogContext);
                 },
-                child: const Text('Abbrechen'),
+                child: Text(tr('Abbrechen')),
               ),
               FilledButton(
                 style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
@@ -292,7 +293,7 @@ Future<void> _toggleBiometric(
                   final r = await auth.confirmBiometricSetup();
                   if (dialogContext.mounted) Navigator.pop(dialogContext, r);
                 },
-                child: const Text('Bestätigen'),
+                child: Text(tr('Bestätigen')),
               ),
             ],
           ),
@@ -303,11 +304,60 @@ Future<void> _toggleBiometric(
   if (result.ok) {
     if (enabled) {
       context.showSnack(
-        kIsWeb ? 'Face ID / Passkey aktiviert' : 'Biometrie aktiviert',
+        kIsWeb ? tr('Face ID / Passkey aktiviert') : tr('Biometrie aktiviert'),
         icon: Icons.verified_user_rounded,
       );
     }
   } else if (result.error != null) {
     context.showError(result.error!);
+  }
+}
+
+String _languageLabel(String code) => switch (code) {
+  'de' => 'Deutsch',
+  'en' => 'English',
+  _ => tr('Systemsprache'),
+};
+
+/// Lets the user choose System / Deutsch / English.
+Future<void> _pickLanguage(
+  BuildContext context,
+  WidgetRef ref,
+  String current,
+) async {
+  final picked = await showModalBottomSheet<String>(
+    context: context,
+    builder: (sheetContext) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              tr('Sprache'),
+              style: Theme.of(sheetContext).textTheme.titleMedium,
+            ),
+          ),
+          for (final code in [L10n.system, 'de', 'en'])
+            ListTile(
+              leading: Icon(
+                code == current
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.radio_button_off_rounded,
+                color: code == current ? AppColors.neonBlueLight : null,
+              ),
+              title: Text(_languageLabel(code)),
+              subtitle: code == L10n.system
+                  ? Text(tr('Wie auf deinem Gerät eingestellt'))
+                  : null,
+              onTap: () => Navigator.pop(sheetContext, code),
+            ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
+  if (picked != null && picked != current) {
+    await ref.read(settingsControllerProvider.notifier).setLanguage(picked);
   }
 }

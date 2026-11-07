@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/extensions/context_x.dart';
@@ -215,10 +216,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       await showSuccessDialog(
         context,
         message: switch (saved.type) {
-          VaultItemType.login => 'Ihr Passwort wurde sicher gespeichert.',
-          VaultItemType.card => 'Ihre Karte wurde sicher gespeichert.',
-          VaultItemType.document => 'Ihr Dokument wurde sicher gespeichert.',
-          VaultItemType.note => 'Ihre Notiz wurde sicher gespeichert.',
+          VaultItemType.login => tr('Ihr Passwort wurde sicher gespeichert.'),
+          VaultItemType.card => tr('Ihre Karte wurde sicher gespeichert.'),
+          VaultItemType.document => tr('Ihr Dokument wurde sicher gespeichert.'),
+          VaultItemType.note => tr('Ihre Notiz wurde sicher gespeichert.'),
         },
       );
       if (!mounted) return;
@@ -228,7 +229,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         context.pop();
       }
     } on Object catch (e) {
-      if (mounted) context.showError('Speichern fehlgeschlagen: $e');
+      if (mounted) context.showError(tr('Speichern fehlgeschlagen: {e}', {'e': e}));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -257,7 +258,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   Widget build(BuildContext context) {
     final folders = ref.watch(foldersProvider);
     return G04Scaffold(
-      title: _isNew ? 'Neuer Eintrag' : 'Bearbeiten',
+      title: _isNew ? tr('Neuer Eintrag') : tr('Bearbeiten'),
       body: Form(
         key: _form,
         child: ListView(
@@ -267,16 +268,16 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             const SizedBox(height: 12),
             AppTextField(
               controller: _title,
-              label: 'Titel',
+              label: tr('Titel'),
               hint: switch (_item.type) {
-                VaultItemType.login => 'z. B. Google, Router Büro, HMI Linie 3',
-                VaultItemType.card => 'z. B. Visa Privat',
-                VaultItemType.document => 'z. B. Reisepass',
-                VaultItemType.note => 'z. B. WLAN-Passwort',
+                VaultItemType.login => tr('z. B. Google, Router Büro, HMI Linie 3'),
+                VaultItemType.card => tr('z. B. Visa Privat'),
+                VaultItemType.document => tr('z. B. Reisepass'),
+                VaultItemType.note => tr('z. B. WLAN-Passwort'),
               },
               icon: Icons.title_rounded,
               validator: (v) =>
-                  (v ?? '').trim().isEmpty ? 'Bitte Titel eingeben' : null,
+                  (v ?? '').trim().isEmpty ? tr('Bitte Titel eingeben') : null,
             ),
             const SizedBox(height: 12),
             ...switch (_item.type) {
@@ -290,8 +291,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               // Re-created when the type tab changes so the new default shows.
               key: ValueKey('category-${_item.type.name}'),
               initialValue: _category,
-              decoration: const InputDecoration(
-                labelText: 'Kategorie',
+              decoration: InputDecoration(
+                labelText: tr('Kategorie'),
                 prefixIcon: Icon(Icons.category_outlined),
               ),
               items: [
@@ -314,12 +315,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               initialValue: folders.any((f) => f.id == _folderId)
                   ? _folderId
                   : null,
-              decoration: const InputDecoration(
-                labelText: 'Ordner',
+              decoration: InputDecoration(
+                labelText: tr('Ordner'),
                 prefixIcon: Icon(Icons.folder_outlined),
               ),
               items: [
-                const DropdownMenuItem<String?>(child: Text('Kein Ordner')),
+                DropdownMenuItem<String?>(child: Text(tr('Kein Ordner'))),
                 for (final f in folders)
                   DropdownMenuItem<String?>(value: f.id, child: Text(f.name)),
               ],
@@ -334,7 +335,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             const SizedBox(height: 12),
             AppTextField(
               controller: _notes,
-              label: 'Notizen',
+              label: tr('Notizen'),
               icon: Icons.notes_rounded,
               maxLines: _item.type == VaultItemType.note ? 10 : 4,
               keyboardType: TextInputType.multiline,
@@ -349,12 +350,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                 ],
               ),
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Eigenes Feld hinzufügen'),
+              label: Text(tr('Eigenes Feld hinzufügen')),
             ),
             SwitchListTile(
               value: _favorite,
               onChanged: (v) => setState(() => _favorite = v),
-              title: const Text('Favorit'),
+              title: Text(tr('Favorit')),
               secondary: const Icon(
                 Icons.star_rounded,
                 color: Color(0xFFFFC857),
@@ -363,7 +364,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             ),
             const SizedBox(height: 16),
             NeonButton(
-              label: 'Speichern',
+              label: tr('Speichern'),
               icon: Icons.save_rounded,
               loading: _saving,
               onPressed: _save,
@@ -379,8 +380,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     return [
       AppTextField(
         controller: _username,
-        label: 'Benutzername / E-Mail',
-        hint: 'z. B. paul@example.com',
+        label: tr('Benutzername / E-Mail'),
+        hint: tr('z. B. paul@example.com'),
         icon: Icons.person_outline_rounded,
         keyboardType: TextInputType.emailAddress,
         autofillHints: const [AutofillHints.username],
@@ -388,11 +389,11 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       const SizedBox(height: 12),
       AppTextField(
         controller: _password,
-        label: 'Passwort',
+        label: tr('Passwort'),
         icon: Icons.key_rounded,
         isSecret: true,
         suffix: IconButton(
-          tooltip: 'Passwort generieren',
+          tooltip: tr('Passwort generieren'),
           icon: const Icon(Icons.auto_awesome_rounded, color: AppColors.cyan),
           onPressed: _generate,
         ),
@@ -402,14 +403,14 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       const SizedBox(height: 12),
       AppTextField(
         controller: _url,
-        label: 'Webseite / URL',
+        label: tr('Webseite / URL'),
         icon: Icons.language_rounded,
         keyboardType: TextInputType.url,
       ),
       const SizedBox(height: 12),
       AppTextField(
         controller: _host,
-        label: 'Host / IP-Adresse (Geräte, HMI, Router)',
+        label: tr('Host / IP-Adresse (Geräte, HMI, Router)'),
         hint: 'z. B. 192.168.0.1',
         icon: Icons.router_outlined,
         monospace: true,
@@ -417,14 +418,14 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       const SizedBox(height: 12),
       AppTextField(
         controller: _totp,
-        label: '2FA-Schlüssel (TOTP)',
-        hint: 'Base32-Secret oder otpauth://-Link',
+        label: tr('2FA-Schlüssel (TOTP)'),
+        hint: tr('Base32-Secret oder otpauth://-Link'),
         icon: Icons.qr_code_2_rounded,
         validator: (v) =>
             (v ?? '').trim().isEmpty ||
                 ref.read(totpServiceProvider).parse(v!) != null
             ? null
-            : 'Ungültiger TOTP-Schlüssel',
+            : tr('Ungültiger TOTP-Schlüssel'),
       ),
     ];
   }
@@ -432,13 +433,13 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   List<Widget> _cardFields() => [
     AppTextField(
       controller: _holder,
-      label: 'Karteninhaber',
+      label: tr('Karteninhaber'),
       icon: Icons.person_outline_rounded,
     ),
     const SizedBox(height: 12),
     AppTextField(
       controller: _number,
-      label: 'Kartennummer',
+      label: tr('Kartennummer'),
       icon: Icons.credit_card_rounded,
       keyboardType: TextInputType.number,
       monospace: true,
@@ -450,14 +451,14 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         Expanded(
           child: AppTextField(
             controller: _expiry,
-            label: 'Gültig bis (MM/JJ)',
+            label: tr('Gültig bis (MM/JJ)'),
             icon: Icons.event_rounded,
             keyboardType: TextInputType.datetime,
             validator: (v) =>
                 (v ?? '').isEmpty ||
                     RegExp(r'^\d{1,2}\s*/\s*\d{2,4}$').hasMatch(v!.trim())
                 ? null
-                : 'Format MM/JJ',
+                : tr('Format MM/JJ'),
           ),
         ),
         const SizedBox(width: 12),
@@ -483,41 +484,41 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   List<Widget> _documentFields() => [
     DropdownButtonFormField<String>(
       initialValue: _docType,
-      decoration: const InputDecoration(
-        labelText: 'Dokumenttyp',
+      decoration: InputDecoration(
+        labelText: tr('Dokumenttyp'),
         prefixIcon: Icon(Icons.badge_outlined),
       ),
       items: [
         for (final t in DocumentData.types)
-          DropdownMenuItem(value: t, child: Text(t)),
+          DropdownMenuItem(value: t, child: Text(tr(t))),
       ],
       onChanged: (t) => setState(() => _docType = t ?? _docType),
     ),
     const SizedBox(height: 12),
     AppTextField(
       controller: _docNumber,
-      label: 'Dokumentnummer',
+      label: tr('Dokumentnummer'),
       icon: Icons.numbers_rounded,
     ),
     const SizedBox(height: 12),
     AppTextField(
       controller: _docName,
-      label: 'Name',
+      label: tr('Name'),
       icon: Icons.person_outline_rounded,
     ),
     const SizedBox(height: 12),
     AppTextField(
       controller: _docIssuer,
-      label: 'Ausstellende Behörde',
+      label: tr('Ausstellende Behörde'),
       icon: Icons.account_balance_outlined,
     ),
     const SizedBox(height: 12),
     GlassTile(
       icon: Icons.event_available_rounded,
-      title: 'Gültig bis',
+      title: tr('Gültig bis'),
       value: _docExpiry == null
-          ? 'Nicht gesetzt'
-          : DateFormat.yMd('de_DE').format(_docExpiry!),
+          ? tr('Nicht gesetzt')
+          : DateFormat.yMd(L10n.intlLocale).format(_docExpiry!),
       onTap: () async {
         final picked = await showDatePicker(
           context: context,
@@ -535,7 +536,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         title: a.name,
         subtitle: formatBytes(a.size),
         trailing: IconButton(
-          tooltip: 'Entfernen',
+          tooltip: tr('Entfernen'),
           icon: const Icon(Icons.close_rounded),
           onPressed: () async {
             await ref.read(vaultActionsProvider).deleteAttachment(a.id);
@@ -550,8 +551,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     TextButton.icon(
       onPressed: _addAttachment,
       icon: const Icon(Icons.attach_file_rounded),
-      label: const Text(
-        'Datei anhängen (PDF, Bild – verschlüsselt, max. 10 MB)',
+      label: Text(
+        tr('Datei anhängen (PDF, Bild – verschlüsselt, max. 10 MB)'),
       ),
     ),
   ];
@@ -565,7 +566,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             Expanded(
               child: TextFormField(
                 initialValue: _fields[i].name,
-                decoration: const InputDecoration(labelText: 'Feldname'),
+                decoration: InputDecoration(labelText: tr('Feldname')),
                 onChanged: (v) => _fields[i] = CustomField(
                   name: v,
                   value: _fields[i].value,
@@ -578,7 +579,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               child: TextFormField(
                 initialValue: _fields[i].value,
                 obscureText: _fields[i].secret,
-                decoration: const InputDecoration(labelText: 'Wert'),
+                decoration: InputDecoration(labelText: tr('Wert')),
                 onChanged: (v) => _fields[i] = CustomField(
                   name: _fields[i].name,
                   value: v,
@@ -587,7 +588,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               ),
             ),
             IconButton(
-              tooltip: 'Geheim',
+              tooltip: tr('Geheim'),
               icon: Icon(
                 _fields[i].secret
                     ? Icons.lock_rounded
@@ -602,7 +603,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
               ),
             ),
             IconButton(
-              tooltip: 'Entfernen',
+              tooltip: tr('Entfernen'),
               icon: const Icon(Icons.remove_circle_outline_rounded),
               onPressed: () =>
                   setState(() => _fields = [..._fields]..removeAt(i)),
@@ -684,8 +685,8 @@ class _TagEditor extends StatelessWidget {
         TextField(
           controller: controller,
           decoration: InputDecoration(
-            labelText: 'Tags',
-            hintText: 'Tag eingeben und Enter drücken',
+            labelText: tr('Tags'),
+            hintText: tr('Tag eingeben und Enter drücken'),
             prefixIcon: const Icon(Icons.sell_outlined),
             suffixIcon: IconButton(
               icon: const Icon(Icons.add_rounded),

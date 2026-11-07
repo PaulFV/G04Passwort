@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -60,7 +61,7 @@ class DashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _QuickTile(
                       icon: FeatureIcon.passwords,
-                      label: 'Alle',
+                      label: tr('Alle'),
                       value: '${items.length}',
                       onTap: () => context.push(Routes.vault),
                     ),
@@ -69,7 +70,7 @@ class DashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _QuickTile(
                       icon: FeatureIcon.favorites,
-                      label: 'Favoriten',
+                      label: tr('Favoriten'),
                       value: '${favorites.length}',
                       accent: const Color(0xFF7C8CFF),
                       onTap: () =>
@@ -80,7 +81,7 @@ class DashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _QuickTile(
                       icon: FeatureIcon.folder,
-                      label: 'Kategorien',
+                      label: tr('Kategorien'),
                       value: '${ItemCategory.values.length}',
                       accent: AppColors.cyan,
                       onTap: () => context.go(Routes.categories),
@@ -90,15 +91,15 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SectionHeader('Schnellzugriff')),
+          SliverToBoxAdapter(child: SectionHeader(tr('Schnellzugriff'))),
           SliverToBoxAdapter(
             child: Row(
               children: [
                 for (final (i, a) in [
-                  (FeatureIcon.generator, 'Generator', () => context.go(Routes.generator)),
+                  (FeatureIcon.generator, tr('Generator'), () => context.go(Routes.generator)),
                   (FeatureIcon.totp, '2FA', () => context.push(Routes.authenticator)),
-                  (FeatureIcon.analysis, 'Analyse', () => context.push(Routes.analysis)),
-                  (FeatureIcon.importExport, 'Backup', () => context.push(Routes.backup)),
+                  (FeatureIcon.analysis, tr('Analyse'), () => context.push(Routes.analysis)),
+                  (FeatureIcon.importExport, tr('Backup'), () => context.push(Routes.backup)),
                 ].indexed) ...[
                   if (i > 0) const SizedBox(width: 10),
                   Expanded(
@@ -114,9 +115,9 @@ class DashboardScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 12),
                 child: EmptyState(
                   icon: Icons.lock_open_rounded,
-                  title: 'Dein Tresor ist bereit',
+                  title: tr('Dein Tresor ist bereit'),
                   message:
-                      'Lege deinen ersten Eintrag an oder importiere Passwörter aus einem anderen Manager.',
+                      tr('Lege deinen ersten Eintrag an oder importiere Passwörter aus einem anderen Manager.'),
                   action: Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -124,12 +125,12 @@ class DashboardScreen extends ConsumerWidget {
                     children: [
                       Button3D(
                         icon: Icons.add_rounded,
-                        label: 'Neuer Eintrag',
+                        label: tr('Neuer Eintrag'),
                         onTap: () => context.push(Routes.newItem),
                       ),
                       Button3D(
                         icon: Icons.file_download_outlined,
-                        label: 'Importieren',
+                        label: tr('Importieren'),
                         primary: false,
                         onTap: () => context.push(Routes.backup),
                       ),
@@ -149,8 +150,8 @@ class DashboardScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SectionHeader(
-                          'Favoriten',
-                          actionLabel: favorites.length > 5 ? 'Alle' : null,
+                          tr('Favoriten'),
+                          actionLabel: favorites.length > 5 ? tr('Alle') : null,
                           onAction: () =>
                               context.push('${Routes.vault}?filter=favorites'),
                         ),
@@ -164,7 +165,7 @@ class DashboardScreen extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SectionHeader('Kategorien'),
+                      SectionHeader(tr('Kategorien')),
                       for (final (c, icon) in const [
                         (ItemCategory.login, FeatureIcon.passwords),
                         (ItemCategory.card, FeatureIcon.cards),
@@ -228,20 +229,20 @@ class _Header extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TextSpan(text: 'Passwort', style: context.text.titleLarge),
+                  TextSpan(text: tr('Passwort'), style: context.text.titleLarge),
                 ],
               ),
             ),
           ),
           RoundButton3D(
             icon: Icons.shield_outlined,
-            tooltip: 'Sicherheitszentrum',
+            tooltip: tr('Sicherheitszentrum'),
             onTap: () => context.push(Routes.security),
           ),
           const SizedBox(width: 10),
           RoundButton3D(
             icon: Icons.lock_outline_rounded,
-            tooltip: 'Sperren',
+            tooltip: tr('Sperren'),
             onTap: onLock,
           ),
         ],
@@ -275,7 +276,7 @@ class _VaultHero extends StatelessWidget {
       radius: 24,
       depth: 8,
       padding: const EdgeInsets.fromLTRB(18, 16, 8, 16),
-      semanticLabel: 'Sicherheitszentrum öffnen',
+      semanticLabel: tr('Sicherheitszentrum öffnen'),
       child: Row(
         children: [
           Expanded(
@@ -288,21 +289,21 @@ class _VaultHero extends StatelessWidget {
                         shadows: [Shadow(color: color, blurRadius: 10)]),
                     const SizedBox(width: 6),
                     Text(
-                      'Tresor gesichert',
+                      tr('Tresor gesichert'),
                       style: context.text.labelLarge?.copyWith(color: color),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  hasData ? report.scoreLabel : 'Bereit für deine Daten',
+                  hasData ? report.scoreLabel : tr('Bereit für deine Daten'),
                   style: context.text.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'AES-256-GCM · Zero-Knowledge',
+                  tr('AES-256-GCM · Zero-Knowledge'),
                   style: context.text.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -312,10 +313,10 @@ class _VaultHero extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _StatChip(value: '$entries', label: 'Einträge'),
+                    _StatChip(value: '$entries', label: tr('Einträge')),
                     _StatChip(
                       value: hasData ? '${report.score}%' : '–',
-                      label: 'Sicherheit',
+                      label: tr('Sicherheit'),
                       color: color,
                     ),
                     _StatChip(value: '${report.withTotp}', label: '2FA'),

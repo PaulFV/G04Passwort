@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../widgets/common.dart';
@@ -17,79 +18,79 @@ class MoreScreen extends StatelessWidget {
         <({FeatureIcon icon, String title, String? subtitle, String route})>[
           (
             icon: FeatureIcon.importExport,
-            title: 'Passwort-Import',
-            subtitle: 'Bitwarden, KeePass, 1Password',
+            title: tr('Passwort-Import'),
+            subtitle: tr('Bitwarden, KeePass, 1Password'),
             route: Routes.backup,
           ),
           (
             icon: FeatureIcon.passwords,
-            title: 'Passwort-Verlauf',
-            subtitle: 'Letzte Änderungen',
+            title: tr('Passwort-Verlauf'),
+            subtitle: tr('Letzte Änderungen'),
             route: Routes.history,
           ),
           (
             icon: FeatureIcon.notes,
-            title: 'Sichere Notizen',
+            title: tr('Sichere Notizen'),
             subtitle: null,
             route: Routes.notes,
           ),
           (
             icon: FeatureIcon.totp,
-            title: 'TOTP Generator',
-            subtitle: '2FA Authenticator',
+            title: tr('TOTP Generator'),
+            subtitle: tr('2FA Authenticator'),
             route: Routes.authenticator,
           ),
           (
             icon: FeatureIcon.security,
-            title: 'Sicherheitszentrum',
+            title: tr('Sicherheitszentrum'),
             subtitle: null,
             route: Routes.security,
           ),
           (
             icon: FeatureIcon.analysis,
-            title: 'Passwort-Analyse',
+            title: tr('Passwort-Analyse'),
             subtitle: null,
             route: Routes.analysis,
           ),
           (
             icon: FeatureIcon.cards,
-            title: 'Kreditkarten',
+            title: tr('Kreditkarten'),
             subtitle: null,
             route: Routes.cards,
           ),
           (
             icon: FeatureIcon.documents,
-            title: 'Dokumente',
+            title: tr('Dokumente'),
             subtitle: null,
             route: Routes.documents,
           ),
           (
             icon: FeatureIcon.favorites,
-            title: 'Favoriten',
+            title: tr('Favoriten'),
             subtitle: null,
             route: '${Routes.vault}?filter=favorites',
           ),
           (
             icon: FeatureIcon.search,
-            title: 'Suche',
+            title: tr('Suche'),
             subtitle: null,
             route: Routes.search,
           ),
           (
             icon: FeatureIcon.cloud,
-            title: 'Cloud Sync',
+            title: tr('Cloud Sync'),
             subtitle: null,
             route: Routes.sync,
           ),
           (
             icon: FeatureIcon.settings,
-            title: 'Einstellungen',
+            title: tr('Einstellungen'),
             subtitle: null,
             route: Routes.settings,
           ),
         ];
     return G04Scaffold(
-      title: 'Mehr',
+      title: tr('Mehr'),
       wide: true,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 110),
@@ -109,12 +110,12 @@ class MoreScreen extends StatelessWidget {
             ),
           GlassTile(
             icon: Icons.person_rounded,
-            title: 'Profil',
+            title: tr('Profil'),
             onTap: () => context.push(Routes.profile),
           ),
           GlassTile(
             icon: Icons.info_outline_rounded,
-            title: 'Über G04Passwort',
+            title: tr('Über G04Passwort'),
             onTap: () => context.push(Routes.about),
           ),
             ],

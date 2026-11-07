@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/l10n/l10n.dart';
+
 /// The 16 feature icons taken 1:1 from the asset sheet (assets/icons).
 enum FeatureIcon {
   passwords('ic_passwords', 'Passwörter'),
@@ -19,10 +21,13 @@ enum FeatureIcon {
   importExport('ic_import_export', 'Import / Export'),
   analysis('ic_analysis', 'Analyse');
 
-  const FeatureIcon(this.file, this.label);
+  const FeatureIcon(this.file, this._labelDe);
 
   final String file;
-  final String label;
+  final String _labelDe;
+
+  /// Translated label.
+  String get label => tr(_labelDe);
 
   String get asset => 'assets/icons/$file.png';
 }

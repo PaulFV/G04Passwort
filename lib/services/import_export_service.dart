@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
+import '../core/l10n/l10n.dart';
 import '../core/errors/vault_exceptions.dart';
 import '../database/app_database.dart';
 import '../models/item_category.dart';
@@ -179,7 +180,7 @@ class ImportExportService {
   Future<ImportResult> importCsv(String content) async {
     final rows = parseCsv(content);
     if (rows.length < 2)
-      throw const InvalidBackupException('Die CSV-Datei ist leer.');
+      throw InvalidBackupException(tr('Die CSV-Datei ist leer.'));
     final header = rows.first.map((h) => h.trim().toLowerCase()).toList();
 
     int col(List<String> names) => header.indexWhere(names.contains);
@@ -199,8 +200,8 @@ class ImportExportService {
     final iFolder = col(['folder', 'grouping', 'group', 'ordner']);
     final iFav = col(['favorite', 'fav']);
     if (iPass < 0 && iUser < 0) {
-      throw const InvalidBackupException(
-        'Spalten „username“/„password“ nicht gefunden.',
+      throw InvalidBackupException(
+        tr('Spalten „username“/„password“ nicht gefunden.'),
       );
     }
 

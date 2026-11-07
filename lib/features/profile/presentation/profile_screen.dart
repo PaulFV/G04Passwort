@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -94,7 +95,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     await ref
         .read(settingsControllerProvider.notifier)
         .setProfile(name: _name.text, email: _email.text);
-    if (mounted) context.showSnack('Profil gespeichert');
+    if (mounted) context.showSnack(tr('Profil gespeichert'));
   }
 
   @override
@@ -102,10 +103,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final items = ref.watch(itemsProvider);
     final report = ref.watch(securityReportProvider);
     final settings = ref.watch(settingsControllerProvider);
-    final fmt = DateFormat.yMMMd('de_DE');
+    final fmt = DateFormat.yMMMd(L10n.intlLocale);
 
     return G04Scaffold(
-      title: 'Profil',
+      title: tr('Profil'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -117,20 +118,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: [
                 AppTextField(
                   controller: _name,
-                  label: 'Name',
+                  label: tr('Name'),
                   icon: Icons.person_outline_rounded,
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 12),
                 AppTextField(
                   controller: _email,
-                  label: 'E-Mail',
+                  label: tr('E-Mail'),
                   icon: Icons.alternate_email_rounded,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Diese Angaben bleiben lokal auf deinem Gerät.',
+                  tr('Diese Angaben bleiben lokal auf deinem Gerät.'),
                   style: context.text.bodySmall?.copyWith(
                     color: AppColors.textMuted,
                   ),
@@ -139,30 +140,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          NeonButton(label: 'Speichern', onPressed: _save),
-          const SectionHeader('Statistik'),
+          NeonButton(label: tr('Speichern'), onPressed: _save),
+          SectionHeader(tr('Statistik')),
           GlassTile(
             icon: Icons.key_rounded,
-            title: 'Einträge',
+            title: tr('Einträge'),
             value: '${items.length}',
           ),
           GlassTile(
             icon: Icons.shield_rounded,
             iconColor: AppColors.success,
-            title: 'Sicherheits-Score',
+            title: tr('Sicherheits-Score'),
             value: '${report.score}%',
           ),
           GlassTile(
             icon: Icons.backup_rounded,
-            title: 'Letztes Backup',
+            title: tr('Letztes Backup'),
             value: settings.lastBackupAt == null
-                ? 'Nie'
+                ? tr('Nie')
                 : fmt.format(settings.lastBackupAt!),
             onTap: () => context.push(Routes.backup),
           ),
           GlassTile(
             icon: Icons.password_rounded,
-            title: 'Master-Passwort ändern',
+            title: tr('Master-Passwort ändern'),
             onTap: () => context.push(Routes.changeMasterPassword),
           ),
         ],

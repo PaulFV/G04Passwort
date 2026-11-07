@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/l10n/l10n.dart';
 import 'password_strength.dart';
 
 /// Per-item finding of the security audit.
@@ -48,9 +49,9 @@ class SecurityReport {
   int get withTotp => audits.where((a) => a.hasTotp).length;
 
   String get scoreLabel => switch (score) {
-    >= 90 => 'Sehr sicher',
-    >= 75 => 'Sicher',
-    >= 50 => 'Verbesserungswürdig',
-    _ => 'Gefährdet',
+    >= 90 => tr('Sehr sicher'),
+    >= 75 => tr('Sicher'),
+    >= 50 => tr('Verbesserungswürdig'),
+    _ => tr('Gefährdet'),
   };
 }

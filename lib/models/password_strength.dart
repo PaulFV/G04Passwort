@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../core/l10n/l10n.dart';
 import '../core/theme/app_colors.dart';
 
 /// Five-step strength scale (comparable to zxcvbn's 0–4 score).
@@ -12,9 +13,12 @@ enum PasswordStrengthLevel {
   strong('Stark', Color(0xFF7BE36A)),
   veryStrong('Sehr stark', AppColors.success);
 
-  const PasswordStrengthLevel(this.label, this.color);
+  const PasswordStrengthLevel(this._labelDe, this.color);
 
-  final String label;
+  final String _labelDe;
+
+  /// Translated label.
+  String get label => tr(_labelDe);
   final Color color;
 }
 
@@ -57,14 +61,14 @@ class PasswordStrength {
         ? double.infinity
         : _pow2(entropyBits) / 2 / 1e10;
     if (seconds < 1) return 'sofort';
-    if (seconds < 60) return '${seconds.round()} Sekunden';
-    if (seconds < 3600) return '${(seconds / 60).round()} Minuten';
-    if (seconds < 86400) return '${(seconds / 3600).round()} Stunden';
-    if (seconds < 31536000) return '${(seconds / 86400).round()} Tage';
+    if (seconds < 60) return tr('{round} Sekunden', {'round': seconds.round()});
+    if (seconds < 3600) return tr('{v} Minuten', {'v': (seconds / 60).round()});
+    if (seconds < 86400) return tr('{v} Stunden', {'v': (seconds / 3600).round()});
+    if (seconds < 31536000) return tr('{v} Tage', {'v': (seconds / 86400).round()});
     final years = seconds / 31536000;
-    if (years < 1000) return '${years.round()} Jahre';
-    if (years < 1e6) return '${(years / 1000).round()} Tsd. Jahre';
-    return 'Jahrhunderte+';
+    if (years < 1000) return tr('{round} Jahre', {'round': years.round()});
+    if (years < 1e6) return tr('{v} Tsd. Jahre', {'v': (years / 1000).round()});
+    return tr('Jahrhunderte+');
   }
 
   static double _pow2(double bits) => math.pow(2, bits).toDouble();

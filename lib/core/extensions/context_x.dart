@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../theme/app_colors.dart';
 
 /// Message shown when the clipboard is not accessible.
-const kCopyFailed = 'Kopieren nicht möglich – Zwischenablage ist blockiert.';
+String get kCopyFailed => tr('Kopieren nicht möglich – Zwischenablage ist blockiert.');
 
 /// Small UI helpers on [BuildContext].
 extension ContextX on BuildContext {
@@ -44,7 +45,7 @@ extension ContextX on BuildContext {
   Future<bool> confirm({
     required String title,
     required String message,
-    String confirmLabel = 'Bestätigen',
+    String? confirmLabel,
     bool destructive = false,
   }) async {
     final result = await showDialog<bool>(
@@ -55,7 +56,7 @@ extension ContextX on BuildContext {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Abbrechen'),
+            child: Text(tr('Abbrechen')),
           ),
           FilledButton(
             style: destructive
@@ -65,7 +66,7 @@ extension ContextX on BuildContext {
                   )
                 : FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(confirmLabel),
+            child: Text(confirmLabel ?? tr('Bestätigen')),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/l10n/l10n.dart';
 import 'vault_item_type.dart';
 
 /// Categories shown in "Kategorien". Each category maps to a default item
@@ -71,9 +72,12 @@ enum ItemCategory {
     VaultItemType.login,
   );
 
-  const ItemCategory(this.label, this.icon, this.color, this.defaultType);
+  const ItemCategory(this._labelDe, this.icon, this.color, this.defaultType);
 
-  final String label;
+  final String _labelDe;
+
+  /// Translated label.
+  String get label => tr(_labelDe);
   final IconData icon;
   final Color color;
   final VaultItemType defaultType;

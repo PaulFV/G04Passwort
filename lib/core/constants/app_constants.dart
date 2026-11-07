@@ -1,10 +1,13 @@
+import '../l10n/l10n.dart';
+
 /// App-wide constants for G04Passwort.
 abstract final class AppConstants {
   static const String appName = 'G04Passwort';
   static const String version = '1.0.0';
   static const String buildNumber = '1';
   static const String copyright = '© 2026 PaulFV';
-  static const String rightsReserved = '© 2026 PaulFV · Alle Rechte vorbehalten';
+  static String get rightsReserved =>
+      tr('© 2026 PaulFV · Alle Rechte vorbehalten');
   static const String owner = 'PaulFV';
   static const String ownerUrl = 'https://github.com/PaulFV';
   static const String privacyUrl =

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../app/routes.dart';
 
 import '../../../core/constants/app_constants.dart';
@@ -19,7 +20,7 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return G04Scaffold(
-      title: 'Über',
+      title: tr('Über'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -28,7 +29,7 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 6),
           Center(
             child: Text(
-              'Version ${AppConstants.version} (${AppConstants.buildNumber})',
+              tr('Version {version} ({buildNumber})', {'version': AppConstants.version, 'buildNumber': AppConstants.buildNumber}),
               style: context.text.bodySmall?.copyWith(
                 color: AppColors.textMuted,
               ),
@@ -56,31 +57,31 @@ class AboutScreen extends StatelessWidget {
                 ),
             ],
           ),
-          const SectionHeader('Sicherheitsarchitektur'),
-          const GlassCard(
+          SectionHeader(tr('Sicherheitsarchitektur')),
+          GlassCard(
             child: Text(
-              '• Zero-Knowledge: Alle Daten werden ausschließlich lokal ver- und entschlüsselt.\n'
-              '• AES-256-GCM (authentifizierte Verschlüsselung) für jeden Eintrag, Ordner und jede Datei.\n'
-              '• Argon2id (19 MiB, t=2) leitet den Schlüssel aus dem Master-Passwort ab; PBKDF2-SHA256 als Fallback.\n'
-              '• Zufälliger 256-Bit-Tresorschlüssel, gekapselt mit dem Master-Schlüssel.\n'
-              '• Schlüssel nur im Arbeitsspeicher; Auto-Lock, Zwischenablage-Löschung, Screenshot-Schutz.',
+              tr('• Zero-Knowledge: Alle Daten werden ausschließlich lokal ver- und entschlüsselt.\n'
+      '• AES-256-GCM (authentifizierte Verschlüsselung) für jeden Eintrag, Ordner und jede Datei.\n'
+      '• Argon2id (19 MiB, t=2) leitet den Schlüssel aus dem Master-Passwort ab; PBKDF2-SHA256 als Fallback.\n'
+      '• Zufälliger 256-Bit-Tresorschlüssel, gekapselt mit dem Master-Schlüssel.\n'
+      '• Schlüssel nur im Arbeitsspeicher; Auto-Lock, Zwischenablage-Löschung, Screenshot-Schutz.'),
             ),
           ),
-          const SectionHeader('Rechtliches'),
+          SectionHeader(tr('Rechtliches')),
           GlassTile(
             icon: Icons.privacy_tip_outlined,
-            title: 'Datenschutzerklärung',
+            title: tr('Datenschutzerklärung'),
             onTap: () => context.push(Routes.privacy),
           ),
           GlassTile(
             icon: Icons.copyright_rounded,
-            title: 'Copyright',
+            title: tr('Copyright'),
             subtitle: AppConstants.rightsReserved,
             onTap: () => context.push(Routes.copyright),
           ),
           GlassTile(
             icon: Icons.description_outlined,
-            title: 'Open-Source-Lizenzen',
+            title: tr('Open-Source-Lizenzen'),
             onTap: () => showLicensePage(
               context: context,
               applicationName: AppConstants.appName,
@@ -88,9 +89,9 @@ class AboutScreen extends StatelessWidget {
               applicationLegalese: AppConstants.rightsReserved,
             ),
           ),
-          const GlassTile(
+          GlassTile(
             icon: Icons.code_rounded,
-            title: 'Quellcode',
+            title: tr('Quellcode'),
             subtitle: AppConstants.repositoryUrl,
           ),
           const SizedBox(height: 12),

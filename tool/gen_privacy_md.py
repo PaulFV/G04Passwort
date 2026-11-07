@@ -14,7 +14,7 @@ def text(block: str) -> str:
     return re.sub(r'\$\{AppConstants\.(\w+)\}', lambda m: consts[m.group(1)], t)
 
 
-privacy = src[src.index('abstract final class PrivacyText'):src.index('abstract final class CopyrightText')]
+privacy = src[src.index('abstract final class PrivacyTextDe'):src.index('abstract final class CopyrightText')]
 out = ['# Datenschutzerklärung – G04Passwort', '',
        text(re.search(r'static const intro =\s*(.*?);\n', privacy, re.S).group(1)), '']
 for m in re.finditer(r"LegalSection\('([^']*)', \[(.*?)\]\)", privacy, re.S):

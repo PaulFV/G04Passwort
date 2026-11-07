@@ -55,9 +55,12 @@
       var loader = document.getElementById('g04-loader');
       var status = document.getElementById('g04-status');
       var box = document.getElementById('g04-error');
+      var de = (navigator.language || 'de').toLowerCase().indexOf('de') === 0;
+      if (!de) status.textContent = 'Loading …';
       function showError(msg) {
         if (!loader || !loader.parentNode) return;
-        status.textContent = 'Die App konnte nicht gestartet werden.';
+        status.textContent = de ? 'Die App konnte nicht gestartet werden.'
+                                : 'The app could not be started.';
         box.style.display = 'block';
         box.textContent = String(msg || 'Unbekannter Fehler');
       }
@@ -68,7 +71,9 @@
       });
       setTimeout(function () {
         if (loader && loader.parentNode && box.style.display === 'none') {
-          status.textContent = 'Das dauert ungewöhnlich lange … bitte Seite neu laden.';
+          status.textContent = de
+              ? 'Das dauert ungewöhnlich lange … bitte Seite neu laden.'
+              : 'This is taking unusually long … please reload the page.';
         }
       }, 25000);
     })();

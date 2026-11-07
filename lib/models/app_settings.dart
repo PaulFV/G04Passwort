@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/l10n/l10n.dart';
+
 /// Available background artworks (Design & Personalisierung).
 /// Selectable backgrounds – artwork taken 1:1 from the design files
 /// (docs/design/asset_sheet.png & design_board.png).
@@ -16,9 +18,12 @@ enum AppBackgroundStyle {
   hex('Hexagon', 'assets/images/bg_hex.jpg'),
   curve('Kurve', 'assets/images/bg_curve.jpg');
 
-  const AppBackgroundStyle(this.label, this.asset);
+  const AppBackgroundStyle(this._labelDe, this.asset);
 
-  final String label;
+  final String _labelDe;
+
+  /// Translated label.
+  String get label => tr(_labelDe);
   final String asset;
 }
 
@@ -38,7 +43,7 @@ class AppSettings {
     this.passkeyId = '',
     this.screenshotProtection = true,
     this.autoSaveEnabled = false,
-    this.languageCode = 'de',
+    this.languageCode = 'system',
     this.displayName = '',
     this.email = '',
     this.syncProviders = const {},
@@ -60,7 +65,7 @@ class AppSettings {
     passkeyId: j['passkeyId'] as String? ?? '',
     screenshotProtection: j['screenshotProtection'] as bool? ?? true,
     autoSaveEnabled: j['autoSaveEnabled'] as bool? ?? false,
-    languageCode: j['languageCode'] as String? ?? 'de',
+    languageCode: j['languageCode'] as String? ?? 'system',
     displayName: j['displayName'] as String? ?? '',
     email: j['email'] as String? ?? '',
     syncProviders: (j['syncProviders'] as Map<String, dynamic>? ?? const {})
@@ -98,11 +103,11 @@ class AppSettings {
   final DateTime? lastBackupAt;
 
   static String durationLabel(int seconds) {
-    if (seconds < 0) return 'Nie';
-    if (seconds == 0) return 'Sofort';
-    if (seconds < 60) return '$seconds Sekunden';
+    if (seconds < 0) return tr('Nie');
+    if (seconds == 0) return tr('Sofort');
+    if (seconds < 60) return tr('{seconds} Sekunden', {'seconds': seconds});
     final m = seconds ~/ 60;
-    return m == 1 ? '1 Minute' : '$m Minuten';
+    return m == 1 ? tr('1 Minute') : tr('{m} Minuten', {'m': m});
   }
 
   AppSettings copyWith({

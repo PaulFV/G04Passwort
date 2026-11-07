@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/errors/vault_exceptions.dart';
 import '../../../core/extensions/context_x.dart';
 import '../../../core/theme/app_colors.dart';
@@ -34,7 +35,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     } on VaultException catch (e) {
       if (mounted) context.showError(e.message);
     } on Object catch (e) {
-      if (mounted) context.showError('Fehler: $e');
+      if (mounted) context.showError(tr('Fehler: {e}', {'e': e}));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -45,10 +46,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Backup entschlüsseln'),
+        title: Text(tr('Backup entschlüsseln')),
         content: AppTextField(
           controller: controller,
-          label: 'Master-Passwort des Backups',
+          label: tr('Master-Passwort des Backups'),
           isSecret: true,
           autofocus: true,
           onSubmitted: (v) => Navigator.pop(context, v),
@@ -56,12 +57,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(tr('Abbrechen')),
           ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Wiederherstellen'),
+            child: Text(tr('Wiederherstellen')),
           ),
         ],
       ),
@@ -76,7 +77,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       settingsControllerProvider.select((s) => s.lastBackupAt),
     );
     return G04Scaffold(
-      title: 'Backup',
+      title: tr('Backup'),
       body: Stack(
         children: [
           ListView(
@@ -92,14 +93,14 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Letztes Backup',
+                            tr('Letztes Backup'),
                             style: context.text.titleSmall,
                           ),
                           Text(
                             last == null
-                                ? 'Noch kein Backup erstellt'
+                                ? tr('Noch kein Backup erstellt')
                                 : DateFormat.yMMMd(
-                                    'de_DE',
+                                    L10n.intlLocale,
                                   ).add_Hm().format(last),
                             style: context.text.bodySmall?.copyWith(
                               color: last == null
@@ -113,62 +114,62 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   ],
                 ),
               ),
-              const SectionHeader('Sichern'),
+              SectionHeader(tr('Sichern')),
               GlassTile(
                 icon: Icons.enhanced_encryption_rounded,
                 iconColor: AppColors.success,
-                title: 'Verschlüsseltes Backup erstellen',
-                subtitle: '.g04vault – nur mit deinem Master-Passwort lesbar',
+                title: tr('Verschlüsseltes Backup erstellen'),
+                subtitle: tr('.g04vault – nur mit deinem Master-Passwort lesbar'),
                 onTap: () => _run(
                   () async => await _c.exportEncryptedBackup()
-                      ? 'Backup gespeichert'
+                      ? tr('Backup gespeichert')
                       : null,
                 ),
               ),
               GlassTile(
                 icon: Icons.restore_rounded,
-                title: 'Backup wiederherstellen',
+                title: tr('Backup wiederherstellen'),
                 subtitle:
-                    'Einträge werden zusammengeführt (neuere Version gewinnt)',
+                    tr('Einträge werden zusammengeführt (neuere Version gewinnt)'),
                 onTap: () => _run(() async {
                   final file = await _c.pickFile(['g04vault', 'json']);
                   if (file == null) return null;
                   final pw = await _askPassword();
                   if (pw == null || pw.isEmpty) return null;
                   final r = await _c.restoreBackup(file.bytes, pw);
-                  return '${r.imported} Einträge wiederhergestellt, ${r.skipped} übersprungen';
+                  return tr('{imported} Einträge wiederhergestellt, {skipped} übersprungen', {'imported': r.imported, 'skipped': r.skipped});
                 }),
               ),
-              const SectionHeader('Import'),
+              SectionHeader(tr('Import')),
               GlassTile(
                 icon: Icons.file_upload_outlined,
-                title: 'Passwörter importieren (CSV)',
+                title: tr('Passwörter importieren (CSV)'),
                 subtitle:
-                    'Bitwarden, 1Password, KeePass, Chrome, Edge, Firefox, LastPass',
+                    tr('Bitwarden, 1Password, KeePass, Chrome, Edge, Firefox, LastPass'),
                 onTap: () => _run(() async {
                   final file = await _c.pickFile(['csv']);
                   if (file == null) return null;
                   final r = await _c.importCsv(file.bytes);
-                  return '${r.imported} Einträge importiert, ${r.skipped} übersprungen';
+                  return tr('{imported} Einträge importiert, {skipped} übersprungen', {'imported': r.imported, 'skipped': r.skipped});
                 }),
               ),
-              const SectionHeader('Export'),
+              SectionHeader(tr('Export')),
               GlassTile(
                 icon: Icons.warning_amber_rounded,
                 iconColor: AppColors.warning,
-                title: 'Unverschlüsselt exportieren (CSV)',
-                subtitle: 'Nur für den Umzug zu einem anderen Manager',
+                title: tr('Unverschlüsselt exportieren (CSV)'),
+                subtitle: tr('Nur für den Umzug zu einem anderen Manager'),
                 onTap: () => _run(() async {
                   final ok = await context.confirm(
-                    title: 'Unverschlüsselter Export',
+                    title: tr('Unverschlüsselter Export'),
                     message:
-                        'Die CSV-Datei enthält alle Passwörter im Klartext. '
-                        'Lösche sie sofort nach dem Import in die Ziel-App.',
-                    confirmLabel: 'Trotzdem exportieren',
+                        tr('Die CSV-Datei enthält alle Passwörter im Klartext. '
+      'Lösche sie sofort nach dem Import in die Ziel-App.'),
+                    confirmLabel: tr('Trotzdem exportieren'),
                     destructive: true,
                   );
                   if (!ok) return null;
-                  return await _c.exportCsv() ? 'CSV exportiert' : null;
+                  return await _c.exportCsv() ? tr('CSV exportiert') : null;
                 }),
               ),
             ],
